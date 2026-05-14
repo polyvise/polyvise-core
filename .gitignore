@@ -1,0 +1,10 @@
+.next
+node_modules
+dist
+coverage
+.env
+.env.local
+.env.*.local
+drizzle/meta
+*.tsbuildinfo
+*.log

@@ -3,7 +3,7 @@ import {
   createDailyPublishManifest,
   dailyPublishManifestSchema,
   defaultDailyArtifacts
-} from "@/lib/publishing/manifest";
+} from "@polyvise/debate-engine/publishing/manifest";
 
 describe("daily publish manifest", () => {
   it("creates a portable manifest for local batch uploads", () => {

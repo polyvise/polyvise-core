@@ -1,0 +1,18 @@
+{
+  "name": "@polyvise/debatefrog-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playful Debatefrog interface powered by the Polyvise debate engine.",
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@polyvise/debate-engine": "0.1.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

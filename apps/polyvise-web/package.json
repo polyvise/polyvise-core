@@ -1,0 +1,20 @@
+{
+  "name": "@polyvise/polyvise-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Professional Polyvise demo and modeling interface.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@polyvise/debate-engine": "0.1.0",
+    "@xyflow/react": "latest",
+    "lucide-react": "latest",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

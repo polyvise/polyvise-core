@@ -1,16 +1,18 @@
 # Deployment Direction
 
-Polyvise should be deployable as a stateless presentation app backed by cloud-hosted data. The likely production shape is:
+Polyvise should be deployable as two independent branded apps backed by the same engine package and cloud-hosted data. The likely production shape is:
 
 `local batch producer -> cloud object store / database -> stateless Next.js app`
 
 The cloud app should not depend on reaching a local machine. Local jobs should publish validated daily artifacts to the cloud, then the app should read the newest complete manifest.
 
+Runtime 1 is the priority: interactive debate requests in the cloud for `polyvise.com` and eventually `debatefrog.com`, with cost limits. Runtime 2 comes later: local/backend batch analysis that publishes static artifacts.
+
 ## Recommended Path
 
-Start with Google Cloud Run for the first serious deployment. It runs a normal Node.js/Next.js service, keeps Docker available as an escape hatch, and fits future Postgres persistence and background workflow needs cleanly.
+Start with Google Cloud Run for the first serious deployment of `apps/polyvise-web`. It runs a normal Node.js/Next.js service, keeps Docker available as an escape hatch, and fits future Postgres persistence and background workflow needs cleanly.
 
-Use Cloudflare as a parallel proof of concept if edge hosting and R2 are attractive. Cloudflare Workers can run Next.js through OpenNext, but the runtime is `workerd`, so database drivers, long-running requests, and adapter compatibility need explicit validation.
+Use Cloudflare as a parallel proof of concept for `apps/debatefrog-web` if edge hosting and R2 are attractive. Cloudflare Workers can run Next.js through OpenNext, but the runtime is `workerd`, so database drivers, long-running requests, and adapter compatibility need explicit validation.
 
 Use Hostinger for a simple managed demo if predictable hosting and dashboard simplicity matter more than cloud-native workflow control.
 
@@ -74,7 +76,7 @@ current/manifest.json
 
 Only update `current/manifest.json` after all dated artifacts validate and upload successfully. If a daily run fails, the app should keep serving the previous complete manifest.
 
-The manifest contract lives in `src/lib/publishing/manifest.ts`.
+The manifest contract lives in `packages/debate-engine/src/publishing/manifest.ts`.
 
 ## First Deployment Milestones
 

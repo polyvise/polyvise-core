@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { runHybridCouncilDebate } from "@/lib/debate/engine";
-import { debateRequestSchema } from "@/lib/debate/schema";
-import { classifyTopic, detectHighStakes, frameResolution } from "@/lib/debate/topic";
-import { normalizeSources } from "@/lib/providers/search";
-import type { EvidenceSource } from "@/lib/debate/types";
+import { runHybridCouncilDebate } from "@polyvise/debate-engine/debate/engine";
+import { debateRequestSchema } from "@polyvise/debate-engine/debate/schema";
+import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/debate-engine/debate/topic";
+import { loadDebateRuntimeConfig } from "@polyvise/debate-engine/debate/config";
+import { createDefaultLlmProvider, MockLlmProvider, OpenRouterLlmProvider } from "@polyvise/debate-engine/providers/llm";
+import { normalizeSources } from "@polyvise/debate-engine/providers/search";
+import type { EvidenceSource } from "@polyvise/debate-engine/debate/types";
 
 describe("topic framing", () => {
   it("classifies personal and organizational decisions", () => {
@@ -61,6 +63,25 @@ describe("request schema", () => {
     const parsed = debateRequestSchema.parse({ subject: "Should cities ban private cars downtown?" });
     expect(parsed.mode).toBe("hybrid_council");
     expect(parsed.evidence).toBe("cited");
+  });
+});
+
+describe("LLM provider selection", () => {
+  it("keeps deterministic mock mode as the default", () => {
+    const config = loadDebateRuntimeConfig({});
+
+    expect(config.enableMockLlm).toBe(true);
+    expect(createDefaultLlmProvider(config)).toBeInstanceOf(MockLlmProvider);
+  });
+
+  it("uses OpenRouter when mock mode is explicitly disabled", () => {
+    const config = loadDebateRuntimeConfig({
+      POLYVISE_ENABLE_MOCK_LLM: "false",
+      POLYVISE_QUICK_MODEL: "openai/gpt-4o-mini"
+    });
+
+    expect(config.enableMockLlm).toBe(false);
+    expect(createDefaultLlmProvider(config)).toBeInstanceOf(OpenRouterLlmProvider);
   });
 });
 

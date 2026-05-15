@@ -1,16 +1,20 @@
 # Future Direction
 
-This note is for future project threads. The main architectural goal is to turn Polyvise from a deterministic debate renderer into a resumable, structured multi-agent workflow while preserving the existing product model.
+This note is for future project threads. The main architectural goal is to turn Polyvise from a deterministic debate renderer into a resumable, structured multi-agent workflow while preserving two branded product surfaces: `polyvise.com` and `debatefrog.com`.
 
 ## Current State
 
+- The repo is an npm workspaces monorepo.
+- `apps/polyvise-web` is the professional demo/modeling app for `polyvise.com`.
+- `apps/debatefrog-web` is the playful public app scaffold for `debatefrog.com`.
+- `packages/debate-engine` is the shared agent debate engine package.
 - The public API still creates a debate synchronously and returns the completed record.
-- `src/lib/debate/engine.ts` now runs a named step sequence with trace entries and model snapshots.
-- `src/lib/debate/schema.ts` validates structured outputs for scouts, claims, debate turns, judge scorecards, summaries, and follow-ups.
-- `src/lib/debate/config.ts` loads model roles and evidence settings from `POLYVISE_*` environment variables.
-- `src/lib/debate/repository.ts` defines the storage boundary. The default implementation is still in-memory.
+- `packages/debate-engine/src/debate/engine.ts` now runs a named step sequence with trace entries and model snapshots.
+- `packages/debate-engine/src/debate/schema.ts` validates structured outputs for scouts, claims, debate turns, judge scorecards, summaries, and follow-ups.
+- `packages/debate-engine/src/debate/config.ts` loads model roles and evidence settings from `POLYVISE_*` environment variables.
+- `packages/debate-engine/src/debate/repository.ts` defines the storage boundary. The default implementation is still in-memory.
 - `.env.example` is non-secret config only. API keys and database credentials belong in ignored `*.secrets.env` files.
-- `src/lib/publishing/manifest.ts` defines the daily publish manifest for local batch output and cloud upload handoff.
+- `packages/debate-engine/src/publishing/manifest.ts` defines the daily publish manifest for local batch output and cloud upload handoff.
 
 ## Intended End State
 
@@ -22,13 +26,14 @@ Each step should be independently observable, retryable, and persisted. Failed r
 
 ## Next Implementation Order
 
-1. Add a Drizzle-backed repository that implements the existing `DebateRepository` interface.
-2. Persist step completion and partial outputs after every workflow step.
-3. Add resume support to the inline executor before moving execution to Inngest.
-4. Implement real LLM provider adapters behind `LlmProvider.generateStructured`.
-5. Let scouts or evidence agents request targeted searches, then normalize and cite those results.
-6. Add a CLI smoke runner that can run a debate without the web app and write a full-state artifact manifest.
-7. Build eval fixtures for topic class coverage, citation quality, pro/con balance, and judge consistency.
+1. Add cost controls for Runtime 1 before making Debatefrog public.
+2. Implement real LLM provider adapters behind `LlmProvider.generateStructured`.
+3. Add a Drizzle-backed repository that implements the existing `DebateRepository` interface.
+4. Persist step completion and partial outputs after every workflow step.
+5. Add resume support to the inline executor before moving execution to Inngest.
+6. Let scouts or evidence agents request targeted searches, then normalize and cite those results.
+7. Add a CLI smoke runner that can run a debate without the web app and write a full-state artifact manifest.
+8. Build eval fixtures for topic class coverage, citation quality, balance, and judge consistency.
 
 ## Deployment Bias
 

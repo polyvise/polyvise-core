@@ -27,11 +27,18 @@ export type DebateRound =
   | "judge_review"
   | "synthesis";
 
+export interface DebateModelSelection {
+  quick?: string;
+  deep?: string;
+  judge?: string;
+}
+
 export interface DebateRequest {
   subject: string;
   context?: string;
   mode?: DebateMode;
   evidence?: EvidenceMode;
+  models?: DebateModelSelection;
 }
 
 export interface DebateRecord {

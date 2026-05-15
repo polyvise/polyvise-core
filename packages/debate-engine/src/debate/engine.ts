@@ -473,10 +473,10 @@ function buildScoutThesis(side: "pro" | "con" | "neutral", lens: string, framed:
 }
 
 function buildDebateTeams(scouts: StanceScout[]): DebateTeam {
-  const toAgent = (scout: StanceScout, role: string): DebateAgent => ({
+  const toAgent = (scout: StanceScout, role: string, side: "pro" | "con"): DebateAgent => ({
     id: makeId("agent"),
     name: scout.name,
-    side: scout.side === "con" ? "con" : "pro",
+    side,
     model: scout.model,
     role,
     thesis: scout.thesis
@@ -484,11 +484,22 @@ function buildDebateTeams(scouts: StanceScout[]): DebateTeam {
 
   const proScouts = scouts.filter((scout) => scout.side === "pro");
   const conScouts = scouts.filter((scout) => scout.side === "con");
-  const judgeScout = scouts.find((scout) => scout.side === "neutral") ?? scouts[0];
+  const neutralScouts = scouts.filter((scout) => scout.side === "neutral");
+  const anyScout = scouts[0];
+
+  if (!anyScout) {
+    throw new Error("Cannot build debate teams: no stance scouts were produced.");
+  }
+
+  const pickPro = (index: number): StanceScout =>
+    proScouts[index] ?? proScouts[0] ?? neutralScouts[index] ?? neutralScouts[0] ?? anyScout;
+  const pickCon = (index: number): StanceScout =>
+    conScouts[index] ?? conScouts[0] ?? neutralScouts[index] ?? neutralScouts[0] ?? anyScout;
+  const judgeScout = neutralScouts[0] ?? anyScout;
 
   return {
-    pro: [toAgent(proScouts[0], "opening case"), toAgent(proScouts[1], "implementation rebuttal")],
-    con: [toAgent(conScouts[0], "risk case"), toAgent(conScouts[1], "stakeholder rebuttal")],
+    pro: [toAgent(pickPro(0), "opening case", "pro"), toAgent(pickPro(1), "implementation rebuttal", "pro")],
+    con: [toAgent(pickCon(0), "risk case", "con"), toAgent(pickCon(1), "stakeholder rebuttal", "con")],
     judge: {
       id: makeId("judge"),
       name: "Neutral Synthesis Judge",
@@ -638,6 +649,11 @@ function buildRoundTurns(
   const proClaims = claims.filter((claim) => claim.side === "pro");
   const conClaims = claims.filter((claim) => claim.side === "con");
   const sourceIds = sources.slice(0, 4).map((source) => source.id);
+  const claimIdsAt = (list: Claim[], ...indexes: number[]): string[] =>
+    indexes
+      .map((index) => list[index])
+      .filter((claim): claim is Claim => Boolean(claim))
+      .map((claim) => claim.id);
   const turn = (
     round: RoundTurn["round"],
     agent: DebateAgent | DebateTeam["judge"],
@@ -676,14 +692,14 @@ function buildRoundTurns(
       teams.pro[1],
       "pro",
       `${teams.pro[1].name}: The con side should identify which risk would justify inaction rather than a limited pilot. If the concern is context fit, a measured trial may answer that question faster than delay.`,
-      [proClaims[1].id, conClaims[1].id]
+      claimIdsAt(proClaims, 1).concat(claimIdsAt(conClaims, 1))
     ),
     turn(
       "cross_examination",
       teams.con[1],
       "con",
       `${teams.con[1].name}: The pro side should explain who bears downside during the trial and what threshold stops expansion. A pilot without a stop rule can become adoption by default.`,
-      [conClaims[2].id, proClaims[0].id]
+      claimIdsAt(conClaims, 2).concat(claimIdsAt(proClaims, 0))
     ),
     turn(
       "rebuttal",

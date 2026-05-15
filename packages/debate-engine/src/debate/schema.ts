@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+const modelSlotSchema = z
+  .string()
+  .trim()
+  .min(1, "Model id cannot be empty.")
+  .max(120, "Model id is unusually long.")
+  .optional();
+
+export const debateModelSelectionSchema = z
+  .object({
+    quick: modelSlotSchema,
+    deep: modelSlotSchema,
+    judge: modelSlotSchema
+  })
+  .partial()
+  .optional();
+
 export const debateRequestSchema = z.object({
   subject: z
     .string()
@@ -8,7 +24,8 @@ export const debateRequestSchema = z.object({
     .max(600, "Keep the subject under 600 characters."),
   context: z.string().trim().max(1600, "Keep context under 1600 characters.").optional(),
   mode: z.literal("hybrid_council").default("hybrid_council"),
-  evidence: z.literal("cited").default("cited")
+  evidence: z.literal("cited").default("cited"),
+  models: debateModelSelectionSchema
 });
 
 export const followupRequestSchema = z.object({

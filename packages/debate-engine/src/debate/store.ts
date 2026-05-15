@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { createDefaultLlmProvider } from "../providers/llm";
+import { loadDebateRuntimeConfig } from "./config";
 import { debateRequestSchema, followupOutputSchema } from "./schema";
 import { frameDebateRequest, productNotes, runHybridCouncilDebate } from "./engine";
 import { createDefaultDebateRepository } from "./repository";
@@ -31,7 +32,14 @@ export async function createDebate(input: DebateRequest): Promise<DebateRecord> 
   repository.save(record);
 
   try {
-    const run = await runHybridCouncilDebate(id, request, framed);
+    const baseConfig = loadDebateRuntimeConfig();
+    const config = {
+      ...baseConfig,
+      quickModel: request.models?.quick?.trim() || baseConfig.quickModel,
+      deepModel: request.models?.deep?.trim() || baseConfig.deepModel,
+      judgeModel: request.models?.judge?.trim() || baseConfig.judgeModel
+    };
+    const run = await runHybridCouncilDebate(id, request, framed, { config });
     const completed: DebateRecord = {
       ...record,
       status: run.status,

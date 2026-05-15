@@ -20,9 +20,21 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Optional Environment
+## Environment
 
-Copy `.env.example` to `.env.local` and fill in any live provider keys.
+Copy `.env.example` to `.env.local` for non-secret local configuration.
+
+```bash
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+POLYVISE_QUICK_MODEL="gpt-4.1"
+POLYVISE_DEEP_MODEL="claude-3.7-sonnet"
+POLYVISE_JUDGE_MODEL="gemini-2.5-pro"
+POLYVISE_MAX_ROUNDS="3"
+POLYVISE_EVIDENCE_PROVIDER="brave"
+POLYVISE_ENABLE_MOCK_LLM="true"
+```
+
+Copy `.secrets.env.example` to a local file ending in `.secrets.env`, such as `local.secrets.env`, for API tokens and other secrets. Files matching `*.secrets.env` are ignored by git.
 
 ```bash
 DATABASE_URL="postgres://postgres:postgres@127.0.0.1:54322/postgres"
@@ -32,6 +44,8 @@ ANTHROPIC_API_KEY=""
 GOOGLE_GENERATIVE_AI_API_KEY=""
 OPENROUTER_API_KEY=""
 ```
+
+Load secrets into your shell before starting the app, or configure the same keys in your deployment provider.
 
 The app works without provider keys by using deterministic mock providers.
 
@@ -48,3 +62,9 @@ The app works without provider keys by using deterministic mock providers.
 npm run typecheck
 npm test
 ```
+
+## Project Notes
+
+- [Architecture](docs/architecture.md) explains the current executor, provider, repository, and persistence choices.
+- [Future Direction](docs/future-direction.md) captures the intended durable multi-agent workflow and next implementation order.
+- [Deployment Direction](docs/deployment.md) compares Google Cloud, Cloudflare, and Hostinger, and describes the local batch publishing model.

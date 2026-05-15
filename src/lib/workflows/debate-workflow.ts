@@ -5,8 +5,10 @@ export const debateWorkflowSteps = [
   "frame",
   "scout",
   "team_builder",
-  "research",
-  "rounds",
+  "evidence",
+  "opening",
+  "cross_exam",
+  "rebuttal",
   "judge",
   "persist"
 ] as const;

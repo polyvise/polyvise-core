@@ -11,7 +11,7 @@ export async function POST(request: Request, context: RouteContext) {
 
   try {
     const payload = followupRequestSchema.parse(await request.json());
-    const followup = addFollowup(id, payload.question);
+    const followup = await addFollowup(id, payload.question);
 
     if (!followup) {
       return Response.json(

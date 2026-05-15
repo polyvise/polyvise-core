@@ -1,6 +1,14 @@
 import { randomUUID } from "node:crypto";
 import { collectEvidence } from "@/lib/providers/search";
-import { modelRoster } from "@/lib/providers/llm";
+import { createDefaultLlmProvider, type LlmProvider } from "@/lib/providers/llm";
+import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "./config";
+import {
+  claimOutputSchema,
+  debateTurnOutputSchema,
+  finalSummaryOutputSchema,
+  judgeScorecardOutputSchema,
+  scoutOutputSchema
+} from "./schema";
 import { classifyTopic, detectHighStakes, frameResolution } from "./topic";
 import type {
   ArgumentEdge,
@@ -13,13 +21,16 @@ import type {
   DebateTeam,
   EvidenceSource,
   HighStakesNotice,
+  ModelSnapshot,
   ProductNote,
   RoundTurn,
+  RunArtifact,
   RunTraceEntry,
   Scorecard,
   StanceScout,
   TopicKind
 } from "./types";
+import type { z } from "zod";
 
 type FramedDebate = {
   subject: string;
@@ -68,72 +79,296 @@ export function frameDebateRequest(request: DebateRequest): FramedDebate {
   };
 }
 
+export interface DebateExecutionOptions {
+  provider?: LlmProvider;
+  config?: DebateRuntimeConfig;
+}
+
 export async function runHybridCouncilDebate(
   debateId: string,
   request: DebateRequest,
-  framed = frameDebateRequest(request)
+  framed = frameDebateRequest(request),
+  options: DebateExecutionOptions = {}
 ): Promise<DebateRun> {
-  const runId = makeId("run");
-  const startedAt = now();
-  const events: DebateEvent[] = [];
-  const trace: RunTraceEntry[] = [];
+  return new DebateWorkflowExecutor(options).run(debateId, request, framed);
+}
 
-  pushEvent(events, debateId, runId, "queued");
-  trace.push(traceEntry("frame", "ok", `Classified as ${framed.topicKind}.`));
+class DebateWorkflowExecutor {
+  private readonly config: DebateRuntimeConfig;
+  private readonly provider: LlmProvider;
 
-  pushEvent(events, debateId, runId, "framing");
-  const scouts = buildStanceScouts(framed);
-  trace.push(traceEntry("scout", "ok", "Five stance scouts generated independent lenses."));
+  constructor(options: DebateExecutionOptions = {}) {
+    this.config = options.config ?? loadDebateRuntimeConfig();
+    this.provider = options.provider ?? createDefaultLlmProvider();
+  }
 
-  const teams = buildDebateTeams(scouts);
-  trace.push(traceEntry("team_builder", "ok", "Selected two pro and two con agents plus a neutral judge."));
+  async run(debateId: string, request: DebateRequest, framed: FramedDebate): Promise<DebateRun> {
+    const runId = makeId("run");
+    const startedAt = now();
+    const events: DebateEvent[] = [];
+    const trace: RunTraceEntry[] = [];
+    const snapshots: ModelSnapshot[] = [];
 
-  pushEvent(events, debateId, runId, "researching");
-  const sources = await collectEvidence(framed.subject, framed.topicKind);
-  trace.push(
-    traceEntry(
-      "research",
-      sources.some((source) => source.retrievedVia === "brave") ? "ok" : "warning",
-      sources.some((source) => source.retrievedVia === "brave")
-        ? "Live Brave Search evidence was attached."
-        : "Using deterministic development evidence because no live search provider returned sources."
-    )
-  );
+    pushEvent(events, debateId, runId, "queued");
+    await runStep(trace, "frame", async () => {
+      return `Classified as ${framed.topicKind}.`;
+    });
 
-  const claims = buildClaims(framed, sources);
-  const { nodes, edges } = buildArgumentMap(framed, claims, sources);
+    pushEvent(events, debateId, runId, "framing");
+    const scoutResult = await runStep(trace, "scout", async () => {
+      const fallback = { scouts: buildStanceScouts(framed, this.config) };
+      const { data, snapshot } = await generateStructured(
+        this.provider,
+        "stance scout",
+        "scoutOutput",
+        fallback,
+        scoutOutputSchema
+      );
+      snapshots.push(snapshot);
+      return {
+        message: `${data.scouts.length} stance scouts generated independent lenses.`,
+        value: data.scouts.map((scout) => ({ ...scout, id: makeId("scout") }))
+      };
+    });
+    const scouts = scoutResult;
 
-  pushEvent(events, debateId, runId, "debating");
-  const turns = buildRoundTurns(teams, claims, sources, framed);
-  trace.push(traceEntry("rounds", "ok", "Structured debate rounds generated from claim graph."));
+    const teams = await runStep(trace, "team_builder", async () => {
+      return {
+        message: "Selected two pro and two con agents plus a neutral judge.",
+        value: buildDebateTeams(scouts)
+      };
+    });
 
-  pushEvent(events, debateId, runId, "judging");
-  const scorecard = buildScorecard(claims, framed.topicKind);
-  const summary = buildSummary(framed, claims, scorecard);
-  trace.push(traceEntry("judge", "ok", `Recommendation: ${scorecard.recommendation}.`));
+    pushEvent(events, debateId, runId, "researching");
+    const sources = await runStep(trace, "evidence", async () => {
+      const collected = await collectEvidence(framed.subject, framed.topicKind, this.config.evidenceProvider);
+      const live = collected.some((source) => source.retrievedVia === "brave");
+      return {
+        status: live ? "ok" : "warning",
+        message: live
+          ? "Live Brave Search evidence was attached."
+          : "Using deterministic development evidence because no live search provider returned sources.",
+        value: collected
+      };
+    });
 
-  pushEvent(events, debateId, runId, "complete");
-  trace.push(traceEntry("persist", "ok", "Run assembled for repository persistence."));
+    const claimOutput = await runStep(trace, "opening", async () => {
+      const fallback = { claims: buildClaims(framed, sources).map(({ id: _id, ...claim }) => claim) };
+      const { data, snapshot } = await generateStructured(
+        this.provider,
+        "claim builder",
+        "claimOutput",
+        fallback,
+        claimOutputSchema
+      );
+      snapshots.push(snapshot);
+      return {
+        message: `${data.claims.length} source-linked claims generated.`,
+        value: data.claims.map((claim) => ({ ...claim, id: makeId("claim") }))
+      };
+    });
+    const claims = claimOutput;
+    const { nodes, edges } = buildArgumentMap(framed, claims, sources);
 
-  return {
-    id: runId,
-    debateId,
-    status: "complete",
-    startedAt,
-    completedAt: now(),
-    events,
-    scouts,
-    teams,
-    sources,
-    claims,
-    argumentNodes: nodes,
-    argumentEdges: edges,
-    turns,
-    scorecard,
-    summary,
-    modelSnapshots: modelRoster,
-    trace
-  };
+    pushEvent(events, debateId, runId, "debating");
+    const openingTurns = await runStep(trace, "cross_exam", async () => {
+      const fallbackTurns = buildRoundTurns(teams, claims, sources, framed, this.config.maxRounds);
+      const { data, snapshot } = await generateStructured(
+        this.provider,
+        "debate turns",
+        "debateTurnOutput",
+        { turns: fallbackTurns.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) },
+        debateTurnOutputSchema
+      );
+      snapshots.push(snapshot);
+      return {
+        message: "Opening and cross-examination turns generated from the claim graph.",
+        value: data.turns.map((turn) => ({ ...turn, id: makeId("turn"), createdAt: now() }))
+      };
+    });
+
+    pushEvent(events, debateId, runId, "judging");
+    const scorecard = await runStep(trace, "rebuttal", async () => {
+      const fallback = buildScorecard(claims, framed.topicKind);
+      const { data, snapshot } = await generateStructured(
+        this.provider,
+        "scorecard judge",
+        "judgeScorecardOutput",
+        fallback,
+        judgeScorecardOutputSchema
+      );
+      snapshots.push(snapshot);
+      return {
+        message: `Judge scored the debate as ${data.recommendation}.`,
+        value: data
+      };
+    });
+    const summary = await runStep(trace, "judge", async () => {
+      const fallback = buildSummary(framed, claims, scorecard);
+      const { data, snapshot } = await generateStructured(
+        this.provider,
+        "final summary",
+        "finalSummaryOutput",
+        fallback,
+        finalSummaryOutputSchema
+      );
+      snapshots.push(snapshot);
+      return {
+        message: `Recommendation: ${scorecard.recommendation}.`,
+        value: data
+      };
+    });
+
+    pushEvent(events, debateId, runId, "complete");
+    const modelSnapshots = mergeModelSnapshots(modelRosterFromConfig(this.config), snapshots);
+    const artifactManifest = buildArtifactManifest({
+      scouts,
+      sources,
+      claims,
+      turns: openingTurns,
+      scorecard,
+      summary,
+      modelSnapshots
+    });
+    await runStep(trace, "persist", async () => "Run assembled with stable artifact manifest for repository persistence.");
+
+    return {
+      id: runId,
+      debateId,
+      status: "complete",
+      startedAt,
+      completedAt: now(),
+      events,
+      scouts,
+      teams,
+      sources,
+      claims,
+      argumentNodes: nodes,
+      argumentEdges: edges,
+      turns: openingTurns,
+      scorecard,
+      summary,
+      modelSnapshots,
+      artifactManifest,
+      trace
+    };
+  }
+}
+
+type StepResult<T> =
+  | string
+  | {
+      message: string;
+      status?: RunTraceEntry["status"];
+      value: T;
+    };
+
+async function runStep<T>(
+  trace: RunTraceEntry[],
+  step: RunTraceEntry["step"],
+  execute: () => Promise<StepResult<T>> | StepResult<T>
+): Promise<T> {
+  const started = Date.now();
+
+  try {
+    const result = await execute();
+    const durationMs = Date.now() - started;
+
+    if (typeof result === "string") {
+      trace.push(traceEntry(step, "ok", result, durationMs));
+      return undefined as T;
+    }
+
+    trace.push(traceEntry(step, result.status ?? "ok", result.message, durationMs));
+    return result.value;
+  } catch (error) {
+    trace.push(
+      traceEntry(step, "failed", error instanceof Error ? error.message : "Workflow step failed.", Date.now() - started)
+    );
+    throw error;
+  }
+}
+
+async function generateStructured<TSchema extends z.ZodTypeAny>(
+  provider: LlmProvider,
+  role: string,
+  schemaName: string,
+  fallback: z.infer<TSchema>,
+  schema: TSchema
+): Promise<{ data: z.infer<TSchema>; snapshot: ModelSnapshot }> {
+  const fallbackParse = schema.safeParse(fallback);
+  if (!fallbackParse.success) {
+    throw new Error(`Invalid deterministic fallback for ${schemaName}: ${fallbackParse.error.message}`);
+  }
+
+  try {
+    const result = await provider.generateStructured<unknown>({
+      role,
+      schemaName,
+      prompt: JSON.stringify(fallbackParse.data)
+    });
+    const parsed = schema.safeParse(result.data);
+
+    if (!parsed.success) {
+      return {
+        data: fallbackParse.data,
+        snapshot: {
+          ...result.snapshot,
+          failure: `Structured output validation failed for ${schemaName}: ${parsed.error.message}`
+        }
+      };
+    }
+
+    return {
+      data: parsed.data,
+      snapshot: result.snapshot
+    };
+  } catch (error) {
+    return {
+      data: fallbackParse.data,
+      snapshot: {
+        id: `fallback-${schemaName}`,
+        provider: "local",
+        model: "deterministic-template",
+        role,
+        configured: true,
+        failure: error instanceof Error ? error.message : "Structured generation failed."
+      }
+    };
+  }
+}
+
+function mergeModelSnapshots(roster: ModelSnapshot[], generated: ModelSnapshot[]): ModelSnapshot[] {
+  const snapshots = new Map<string, ModelSnapshot>();
+
+  for (const snapshot of [...roster, ...generated]) {
+    snapshots.set(snapshot.id, snapshot);
+  }
+
+  return Array.from(snapshots.values());
+}
+
+function buildArtifactManifest(input: {
+  scouts: StanceScout[];
+  sources: EvidenceSource[];
+  claims: Claim[];
+  turns: RoundTurn[];
+  scorecard: Scorecard;
+  summary: DebateRun["summary"];
+  modelSnapshots: ModelSnapshot[];
+}): RunArtifact[] {
+  const createdAt = now();
+
+  return [
+    { id: makeId("artifact"), kind: "run_state", label: "Workflow run state", recordCount: 1, createdAt },
+    { id: makeId("artifact"), kind: "scouts", label: "Structured scout outputs", recordCount: input.scouts.length, createdAt },
+    { id: makeId("artifact"), kind: "evidence", label: "Evidence source ledger", recordCount: input.sources.length, createdAt },
+    { id: makeId("artifact"), kind: "claims", label: "Generated claims", recordCount: input.claims.length, createdAt },
+    { id: makeId("artifact"), kind: "turns", label: "Debate transcript turns", recordCount: input.turns.length, createdAt },
+    { id: makeId("artifact"), kind: "scorecard", label: "Judge scorecard", recordCount: input.scorecard.categories.length, createdAt },
+    { id: makeId("artifact"), kind: "summary", label: "Final summary", recordCount: 1, createdAt },
+    { id: makeId("artifact"), kind: "models", label: "Model snapshots", recordCount: input.modelSnapshots.length, createdAt }
+  ];
 }
 
 export function productNotes(): ProductNote[] {
@@ -157,35 +392,35 @@ export function productNotes(): ProductNote[] {
   ];
 }
 
-function buildStanceScouts(framed: FramedDebate): StanceScout[] {
+function buildStanceScouts(framed: FramedDebate, config: DebateRuntimeConfig): StanceScout[] {
   const base = [
     {
       name: "Strategic Optimist",
-      model: "gpt-4.1",
+      model: config.quickModel,
       lens: "upside, option value, and second-order gains",
       side: "pro" as const
     },
     {
       name: "Risk Skeptic",
-      model: "claude-3.7-sonnet",
+      model: config.deepModel,
       lens: "failure modes, hidden costs, and reversibility",
       side: "con" as const
     },
     {
       name: "Empirical Referee",
-      model: "gemini-2.5-pro",
+      model: config.judgeModel,
       lens: "quality of evidence, base rates, and uncertainty",
       side: "neutral" as const
     },
     {
       name: "Implementation Pragmatist",
-      model: "openrouter/auto",
+      model: config.quickModel,
       lens: "execution design, sequencing, and measurable checkpoints",
       side: "pro" as const
     },
     {
       name: "Equity Auditor",
-      model: "claude-3.7-sonnet",
+      model: config.deepModel,
       lens: "distributional impact, incentives, and affected stakeholders",
       side: "con" as const
     }
@@ -396,7 +631,8 @@ function buildRoundTurns(
   teams: DebateTeam,
   claims: Claim[],
   sources: EvidenceSource[],
-  framed: FramedDebate
+  framed: FramedDebate,
+  maxRounds = 3
 ): RoundTurn[] {
   const proClaims = claims.filter((claim) => claim.side === "pro");
   const conClaims = claims.filter((claim) => claim.side === "con");
@@ -419,7 +655,7 @@ function buildRoundTurns(
     createdAt: now()
   });
 
-  return [
+  const turns = [
     turn(
       "opening",
       teams.pro[0],
@@ -484,6 +720,11 @@ function buildRoundTurns(
       claims.map((claim) => claim.id)
     )
   ];
+
+  const roundOrder: RoundTurn["round"][] = ["opening", "cross_examination", "rebuttal", "closing"];
+  const activeRounds = new Set(roundOrder.slice(0, Math.min(maxRounds, roundOrder.length)));
+
+  return turns.filter((item) => item.round === "judge_review" || activeRounds.has(item.round));
 }
 
 function buildScorecard(claims: Claim[], topicKind: TopicKind): Scorecard {
@@ -580,14 +821,19 @@ function pushEvent(
   });
 }
 
-function traceEntry(step: RunTraceEntry["step"], status: RunTraceEntry["status"], message: string): RunTraceEntry {
+function traceEntry(
+  step: RunTraceEntry["step"],
+  status: RunTraceEntry["status"],
+  message: string,
+  durationMs?: number
+): RunTraceEntry {
   return {
     id: makeId("trace"),
     step,
     status,
     message,
     at: now(),
-    durationMs: status === "ok" ? Math.floor(Math.random() * 40) + 10 : undefined
+    durationMs
   };
 }
 

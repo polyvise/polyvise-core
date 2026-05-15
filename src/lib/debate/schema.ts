@@ -14,3 +14,79 @@ export const debateRequestSchema = z.object({
 export const followupRequestSchema = z.object({
   question: z.string().trim().min(4).max(700)
 });
+
+const perspectiveSideSchema = z.enum(["pro", "con", "neutral"]);
+
+export const stanceScoutOutputSchema = z.object({
+  name: z.string().min(1),
+  model: z.string().min(1),
+  lens: z.string().min(1),
+  side: perspectiveSideSchema,
+  thesis: z.string().min(1),
+  assumptions: z.array(z.string().min(1)).min(1),
+  strongestArguments: z.array(z.string().min(1)).min(1)
+});
+
+export const scoutOutputSchema = z.object({
+  scouts: z.array(stanceScoutOutputSchema).min(3)
+});
+
+export const claimOutputSchema = z.object({
+  claims: z
+    .array(
+      z.object({
+        side: perspectiveSideSchema,
+        text: z.string().min(1),
+        warrant: z.string().min(1),
+        evidenceSourceIds: z.array(z.string()).default([]),
+        confidence: z.number().min(0).max(1)
+      })
+    )
+    .min(2)
+});
+
+export const debateTurnOutputSchema = z.object({
+  turns: z
+    .array(
+      z.object({
+        round: z.enum(["opening", "cross_examination", "rebuttal", "closing", "judge_review", "synthesis"]),
+        agentId: z.string().min(1),
+        agentName: z.string().min(1),
+        side: perspectiveSideSchema,
+        content: z.string().min(1),
+        claimIds: z.array(z.string()).default([]),
+        sourceIds: z.array(z.string()).default([])
+      })
+    )
+    .min(1)
+});
+
+export const judgeScorecardOutputSchema = z.object({
+  recommendation: z.enum(["conditional_yes", "lean_yes", "mixed", "lean_no", "conditional_no"]),
+  confidence: z.number().min(0).max(1),
+  categories: z
+    .array(
+      z.object({
+        name: z.enum(["evidence", "practicality", "risk", "fairness", "reversibility"]),
+        pro: z.number().min(0).max(10),
+        con: z.number().min(0).max(10),
+        note: z.string().min(1)
+      })
+    )
+    .min(1)
+});
+
+export const finalSummaryOutputSchema = z.object({
+  headline: z.string().min(1),
+  recommendation: z.string().min(1),
+  strongestPro: z.array(z.string().min(1)).default([]),
+  strongestCon: z.array(z.string().min(1)).default([]),
+  unresolvedUncertainties: z.array(z.string().min(1)).default([]),
+  whatWouldChangeMind: z.array(z.string().min(1)).default([]),
+  confidence: z.number().min(0).max(1),
+  highStakesDisclaimer: z.string().optional()
+});
+
+export const followupOutputSchema = z.object({
+  answer: z.string().min(1)
+});

@@ -68,6 +68,7 @@ export interface DebateRun {
   scorecard: Scorecard;
   summary: DebateSummary;
   modelSnapshots: ModelSnapshot[];
+  artifactManifest: RunArtifact[];
   trace: RunTraceEntry[];
 }
 
@@ -196,6 +197,14 @@ export interface ModelSnapshot {
   failure?: string;
 }
 
+export interface RunArtifact {
+  id: string;
+  kind: "run_state" | "scouts" | "evidence" | "claims" | "turns" | "scorecard" | "summary" | "models";
+  label: string;
+  recordCount: number;
+  createdAt: string;
+}
+
 export interface ProductNote {
   id: string;
   title: string;
@@ -213,7 +222,16 @@ export interface FollowupExchange {
 
 export interface RunTraceEntry {
   id: string;
-  step: "frame" | "scout" | "team_builder" | "research" | "rounds" | "judge" | "persist";
+  step:
+    | "frame"
+    | "scout"
+    | "team_builder"
+    | "evidence"
+    | "opening"
+    | "cross_exam"
+    | "rebuttal"
+    | "judge"
+    | "persist";
   status: "ok" | "warning" | "failed";
   message: string;
   at: string;

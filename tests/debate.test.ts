@@ -79,5 +79,18 @@ describe("hybrid council engine", () => {
     expect(run.claims.filter((claim) => claim.side === "con")).toHaveLength(3);
     expect(run.turns.map((turn) => turn.round)).toContain("cross_examination");
     expect(run.summary.whatWouldChangeMind.length).toBeGreaterThan(0);
+    expect(run.trace.map((entry) => entry.step)).toEqual([
+      "frame",
+      "scout",
+      "team_builder",
+      "evidence",
+      "opening",
+      "cross_exam",
+      "rebuttal",
+      "judge",
+      "persist"
+    ]);
+    expect(run.modelSnapshots.some((snapshot) => snapshot.id === "mock-claim-builder")).toBe(true);
+    expect(run.artifactManifest.map((artifact) => artifact.kind)).toContain("claims");
   });
 });

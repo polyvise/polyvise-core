@@ -1,4 +1,5 @@
 import type { EvidenceSource, TopicKind } from "@/lib/debate/types";
+import type { EvidenceProviderName } from "@/lib/debate/config";
 
 export interface EvidenceProvider {
   name: string;
@@ -71,7 +72,15 @@ export class MockEvidenceProvider implements EvidenceProvider {
   }
 }
 
-export async function collectEvidence(subject: string, topicKind: TopicKind): Promise<EvidenceSource[]> {
+export async function collectEvidence(
+  subject: string,
+  topicKind: TopicKind,
+  preferredProvider: EvidenceProviderName = "brave"
+): Promise<EvidenceSource[]> {
+  if (preferredProvider === "mock") {
+    return new MockEvidenceProvider().search(subject, topicKind);
+  }
+
   const brave = new BraveEvidenceProvider();
 
   try {

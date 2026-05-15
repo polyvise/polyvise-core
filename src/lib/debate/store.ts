@@ -1,21 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { debateRequestSchema } from "./schema";
+import { createDefaultLlmProvider } from "@/lib/providers/llm";
+import { debateRequestSchema, followupOutputSchema } from "./schema";
 import { frameDebateRequest, productNotes, runHybridCouncilDebate } from "./engine";
+import { createDefaultDebateRepository } from "./repository";
 import type { DebateRecord, DebateRequest, FollowupExchange } from "./types";
 
-type PolyviseStore = {
-  debates: Map<string, DebateRecord>;
-};
-
-const globalForStore = globalThis as typeof globalThis & {
-  __polyviseStore?: PolyviseStore;
-};
-
-const store: PolyviseStore =
-  globalForStore.__polyviseStore ??
-  (globalForStore.__polyviseStore = {
-    debates: new Map()
-  });
+const repository = createDefaultDebateRepository();
 
 export async function createDebate(input: DebateRequest): Promise<DebateRecord> {
   const request = debateRequestSchema.parse(input);
@@ -38,7 +28,7 @@ export async function createDebate(input: DebateRequest): Promise<DebateRecord> 
     followups: []
   };
 
-  store.debates.set(id, record);
+  repository.save(record);
 
   try {
     const run = await runHybridCouncilDebate(id, request, framed);
@@ -48,7 +38,7 @@ export async function createDebate(input: DebateRequest): Promise<DebateRecord> 
       latestRun: run,
       updatedAt: new Date().toISOString()
     };
-    store.debates.set(id, completed);
+    repository.save(completed);
     return completed;
   } catch (error) {
     const failed: DebateRecord = {
@@ -56,26 +46,26 @@ export async function createDebate(input: DebateRequest): Promise<DebateRecord> 
       status: "failed",
       updatedAt: new Date().toISOString()
     };
-    store.debates.set(id, failed);
+    repository.save(failed);
     throw error;
   }
 }
 
 export function getDebate(id: string): DebateRecord | null {
-  return store.debates.get(id) ?? null;
+  return repository.get(id);
 }
 
 export function listDebates(): DebateRecord[] {
-  return Array.from(store.debates.values()).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return repository.list();
 }
 
-export function addFollowup(debateId: string, question: string): FollowupExchange | null {
+export async function addFollowup(debateId: string, question: string): Promise<FollowupExchange | null> {
   const debate = getDebate(debateId);
   if (!debate?.latestRun) {
     return null;
   }
 
-  const answer = answerFollowup(question, debate);
+  const answer = await answerFollowup(question, debate);
   const exchange: FollowupExchange = {
     id: `followup_${randomUUID().slice(0, 8)}`,
     question,
@@ -88,12 +78,29 @@ export function addFollowup(debateId: string, question: string): FollowupExchang
     followups: [...debate.followups, exchange],
     updatedAt: new Date().toISOString()
   };
-  store.debates.set(debateId, updated);
+  repository.save(updated);
 
   return exchange;
 }
 
-function answerFollowup(question: string, debate: DebateRecord): string {
+async function answerFollowup(question: string, debate: DebateRecord): Promise<string> {
+  const fallback = {
+    answer: answerFollowupDeterministic(question, debate)
+  };
+
+  try {
+    const result = await createDefaultLlmProvider().generateStructured<unknown>({
+      role: "follow-up answer",
+      schemaName: "followupOutput",
+      prompt: JSON.stringify(fallback)
+    });
+    return followupOutputSchema.parse(result.data).answer;
+  } catch {
+    return fallback.answer;
+  }
+}
+
+function answerFollowupDeterministic(question: string, debate: DebateRecord): string {
   const lowered = question.toLowerCase();
   const summary = debate.latestRun?.summary;
 

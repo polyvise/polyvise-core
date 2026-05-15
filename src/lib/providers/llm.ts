@@ -1,4 +1,5 @@
 import type { ModelSnapshot } from "@/lib/debate/types";
+import { loadDebateRuntimeConfig, modelRosterFromConfig } from "@/lib/debate/config";
 
 export interface LlmRequest {
   role: string;
@@ -15,36 +16,11 @@ export interface LlmProvider {
   }>;
 }
 
-export const modelRoster: ModelSnapshot[] = [
-  {
-    id: "openai-strategist",
-    provider: "openai",
-    model: "gpt-4.1",
-    role: "stance scout and synthesis judge",
-    configured: Boolean(process.env.OPENAI_API_KEY)
-  },
-  {
-    id: "anthropic-skeptic",
-    provider: "anthropic",
-    model: "claude-3.7-sonnet",
-    role: "risk, objection, and rebuttal agent",
-    configured: Boolean(process.env.ANTHROPIC_API_KEY)
-  },
-  {
-    id: "google-empiricist",
-    provider: "google",
-    model: "gemini-2.5-pro",
-    role: "evidence and empirical uncertainty agent",
-    configured: Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY)
-  },
-  {
-    id: "openrouter-generalist",
-    provider: "openrouter",
-    model: "openrouter/auto",
-    role: "model diversity and fallback routing",
-    configured: Boolean(process.env.OPENROUTER_API_KEY)
-  }
-];
+export const modelRoster: ModelSnapshot[] = modelRosterFromConfig(loadDebateRuntimeConfig());
+
+export function createDefaultLlmProvider(): LlmProvider {
+  return new MockLlmProvider();
+}
 
 export class MockLlmProvider implements LlmProvider {
   name = "mock";
@@ -54,7 +30,7 @@ export class MockLlmProvider implements LlmProvider {
     return {
       data: JSON.parse(request.prompt) as T,
       snapshot: {
-        id: `mock-${request.role}`,
+        id: `mock-${request.role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
         provider: "local",
         model: "deterministic-template",
         role: request.role,

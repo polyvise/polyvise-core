@@ -23,6 +23,7 @@ import type {
   EvidenceSource,
   HighStakesNotice,
   ModelSnapshot,
+  PlaceholderInfo,
   ProductNote,
   RoundTurn,
   RunArtifact,
@@ -134,9 +135,10 @@ class DebateWorkflowExecutor {
 
     pushEvent(events, debateId, runId, "framing");
     this.emit({ kind: "stage", status: "framing" });
+    let scoutsPlaceholder: PlaceholderInfo | null = null;
     const scoutResult = await runStep(trace, "scout", async () => {
       const fallback = { scouts: buildStanceScouts(framed, this.config) };
-      const { data, snapshot } = await generateStructured(
+      const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "stance scout",
         "scoutOutput",
@@ -144,13 +146,14 @@ class DebateWorkflowExecutor {
         scoutOutputSchema
       );
       recordSnapshot(snapshot);
+      scoutsPlaceholder = placeholder;
       return {
         message: `${data.scouts.length} stance scouts generated independent lenses.`,
         value: data.scouts.map((scout) => ({ ...scout, id: makeId("scout") }))
       };
     });
     const scouts = scoutResult;
-    this.emit({ kind: "scouts", scouts });
+    this.emit({ kind: "scouts", scouts, ...(scoutsPlaceholder ? { placeholder: scoutsPlaceholder } : {}) });
 
     const teams = await runStep(trace, "team_builder", async () => {
       return {
@@ -175,9 +178,10 @@ class DebateWorkflowExecutor {
     });
     this.emit({ kind: "sources", sources });
 
+    let claimsPlaceholder: PlaceholderInfo | null = null;
     const claimOutput = await runStep(trace, "opening", async () => {
       const fallback = { claims: buildClaims(framed, sources).map(({ id: _id, ...claim }) => claim) };
-      const { data, snapshot } = await generateStructured(
+      const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "claim builder",
         "claimOutput",
@@ -185,21 +189,23 @@ class DebateWorkflowExecutor {
         claimOutputSchema
       );
       recordSnapshot(snapshot);
+      claimsPlaceholder = placeholder;
       return {
         message: `${data.claims.length} source-linked claims generated.`,
         value: data.claims.map((claim) => ({ ...claim, id: makeId("claim") }))
       };
     });
     const claims = claimOutput;
-    this.emit({ kind: "claims", claims });
+    this.emit({ kind: "claims", claims, ...(claimsPlaceholder ? { placeholder: claimsPlaceholder } : {}) });
     const { nodes, edges } = buildArgumentMap(framed, claims, sources);
     this.emit({ kind: "argument_map", nodes, edges });
 
     pushEvent(events, debateId, runId, "debating");
     this.emit({ kind: "stage", status: "debating" });
+    let turnsPlaceholder: PlaceholderInfo | null = null;
     const openingTurns = await runStep(trace, "cross_exam", async () => {
       const fallbackTurns = buildRoundTurns(teams, claims, sources, framed, this.config.maxRounds);
-      const { data, snapshot } = await generateStructured(
+      const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "debate turns",
         "debateTurnOutput",
@@ -207,18 +213,20 @@ class DebateWorkflowExecutor {
         debateTurnOutputSchema
       );
       recordSnapshot(snapshot);
+      turnsPlaceholder = placeholder;
       return {
         message: "Opening and cross-examination turns generated from the claim graph.",
         value: data.turns.map((turn) => ({ ...turn, id: makeId("turn"), createdAt: now() }))
       };
     });
-    this.emit({ kind: "turns", turns: openingTurns });
+    this.emit({ kind: "turns", turns: openingTurns, ...(turnsPlaceholder ? { placeholder: turnsPlaceholder } : {}) });
 
     pushEvent(events, debateId, runId, "judging");
     this.emit({ kind: "stage", status: "judging" });
+    let scorecardPlaceholder: PlaceholderInfo | null = null;
     const scorecard = await runStep(trace, "rebuttal", async () => {
       const fallback = buildScorecard(claims, framed.topicKind);
-      const { data, snapshot } = await generateStructured(
+      const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "scorecard judge",
         "judgeScorecardOutput",
@@ -226,15 +234,21 @@ class DebateWorkflowExecutor {
         judgeScorecardOutputSchema
       );
       recordSnapshot(snapshot);
+      scorecardPlaceholder = placeholder;
       return {
         message: `Judge scored the debate as ${data.recommendation}.`,
         value: data
       };
     });
-    this.emit({ kind: "scorecard", scorecard });
+    this.emit({
+      kind: "scorecard",
+      scorecard,
+      ...(scorecardPlaceholder ? { placeholder: scorecardPlaceholder } : {})
+    });
+    let summaryPlaceholder: PlaceholderInfo | null = null;
     const summary = await runStep(trace, "judge", async () => {
       const fallback = buildSummary(framed, claims, scorecard);
-      const { data, snapshot } = await generateStructured(
+      const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "final summary",
         "finalSummaryOutput",
@@ -242,12 +256,17 @@ class DebateWorkflowExecutor {
         finalSummaryOutputSchema
       );
       recordSnapshot(snapshot);
+      summaryPlaceholder = placeholder;
       return {
         message: `Recommendation: ${scorecard.recommendation}.`,
         value: data
       };
     });
-    this.emit({ kind: "summary", summary });
+    this.emit({
+      kind: "summary",
+      summary,
+      ...(summaryPlaceholder ? { placeholder: summaryPlaceholder } : {})
+    });
 
     pushEvent(events, debateId, runId, "complete");
     this.emit({ kind: "stage", status: "complete" });
@@ -327,11 +346,17 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
   schemaName: string,
   fallback: z.infer<TSchema>,
   schema: TSchema
-): Promise<{ data: z.infer<TSchema>; snapshot: ModelSnapshot }> {
+): Promise<{
+  data: z.infer<TSchema>;
+  snapshot: ModelSnapshot;
+  placeholder: PlaceholderInfo | null;
+}> {
   const fallbackParse = schema.safeParse(fallback);
   if (!fallbackParse.success) {
     throw new Error(`Invalid deterministic fallback for ${schemaName}: ${fallbackParse.error.message}`);
   }
+
+  const requestedModel = provider.modelForRole(role);
 
   try {
     const result = await provider.generateStructured<unknown>({
@@ -343,30 +368,35 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
     const parsed = schema.safeParse(result.data);
 
     if (!parsed.success) {
+      const reason = `Structured output validation failed: ${parsed.error.message}`;
       return {
         data: fallbackParse.data,
         snapshot: {
           ...result.snapshot,
-          failure: `Structured output validation failed for ${schemaName}: ${parsed.error.message}`
-        }
+          failure: reason
+        },
+        placeholder: { requestedModel: result.snapshot.model || requestedModel, reason }
       };
     }
 
     return {
       data: parsed.data,
-      snapshot: result.snapshot
+      snapshot: result.snapshot,
+      placeholder: null
     };
   } catch (error) {
+    const reason = error instanceof Error ? error.message : "Structured generation failed.";
     return {
       data: fallbackParse.data,
       snapshot: {
         id: `fallback-${schemaName}`,
         provider: "local",
-        model: "deterministic-template",
+        model: requestedModel,
         role,
         configured: true,
-        failure: error instanceof Error ? error.message : "Structured generation failed."
-      }
+        failure: reason
+      },
+      placeholder: { requestedModel, reason }
     };
   }
 }

@@ -250,17 +250,31 @@ export interface HighStakesNotice {
   message: string;
 }
 
+/**
+ * A step that fell back to deterministic placeholder content because the
+ * configured LLM either failed or returned an unusable response.
+ *
+ * When this is present on an event, the data payload IS the deterministic
+ * fallback and MUST NOT be presented to the user as a real answer.
+ */
+export interface PlaceholderInfo {
+  /** Model id that was supposed to run this step. */
+  requestedModel: string;
+  /** Human-readable explanation of why the call failed. */
+  reason: string;
+}
+
 export type DebateLiveEvent =
   | { kind: "stage"; status: DebateStatus }
   | { kind: "framed"; resolution: string; topicKind: TopicKind; highStakes: HighStakesNotice | null }
-  | { kind: "scouts"; scouts: StanceScout[] }
+  | { kind: "scouts"; scouts: StanceScout[]; placeholder?: PlaceholderInfo }
   | { kind: "teams"; teams: DebateTeam }
   | { kind: "sources"; sources: EvidenceSource[] }
-  | { kind: "claims"; claims: Claim[] }
+  | { kind: "claims"; claims: Claim[]; placeholder?: PlaceholderInfo }
   | { kind: "argument_map"; nodes: ArgumentNode[]; edges: ArgumentEdge[] }
-  | { kind: "turns"; turns: RoundTurn[] }
-  | { kind: "scorecard"; scorecard: Scorecard }
-  | { kind: "summary"; summary: DebateSummary }
+  | { kind: "turns"; turns: RoundTurn[]; placeholder?: PlaceholderInfo }
+  | { kind: "scorecard"; scorecard: Scorecard; placeholder?: PlaceholderInfo }
+  | { kind: "summary"; summary: DebateSummary; placeholder?: PlaceholderInfo }
   | { kind: "model_snapshot"; snapshot: ModelSnapshot }
   | { kind: "complete"; runId: string }
   | { kind: "error"; message: string };

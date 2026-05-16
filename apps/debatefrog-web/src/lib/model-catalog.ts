@@ -49,6 +49,6 @@ export const modelCatalog: ModelOption[] = [
 
 export const defaultSelections: Record<SlotId, string> = {
   quick: "openai/gpt-4.1",
-  deep: "anthropic/claude-3.5-sonnet",
-  judge: "google/gemini-2.5-pro"
+  deep: "openai/gpt-4o",
+  judge: "google/gemini-2.5-flash"
 };

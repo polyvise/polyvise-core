@@ -27,11 +27,22 @@ import type {
   EvidenceSource,
   HighStakesNotice,
   ModelSnapshot,
+  PlaceholderInfo,
   RoundTurn,
   Scorecard,
   StanceScout,
   TopicKind
 } from "@polyvise/debate-engine/debate/types";
+
+type StepId = "scouts" | "claims" | "turns" | "scorecard" | "summary";
+
+const stepLabels: Record<StepId, string> = {
+  scouts: "Stance scouts",
+  claims: "Pro and con arguments",
+  turns: "Debate turns",
+  scorecard: "Judge scorecard",
+  summary: "Final verdict"
+};
 
 const prompts = [
   "Should every meeting need a written reason to exist?",
@@ -58,6 +69,11 @@ type LiveState = {
   scorecard: Scorecard | null;
   summary: DebateSummary | null;
   snapshots: ModelSnapshot[];
+  /**
+   * Steps that fell back to placeholder content. When a step is here, the
+   * UI must NOT render the corresponding data as a real answer.
+   */
+  fallbacks: Partial<Record<StepId, PlaceholderInfo>>;
   errorMessage: string | null;
   done: boolean;
 };
@@ -84,6 +100,7 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
       scorecard: null,
       summary: null,
       snapshots: [],
+      fallbacks: {},
       errorMessage: null,
       done: false
     };
@@ -101,19 +118,39 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
         highStakes: event.highStakes
       };
     case "scouts":
-      return { ...state, scouts: event.scouts };
+      return {
+        ...state,
+        scouts: event.scouts,
+        fallbacks: mergeFallback(state.fallbacks, "scouts", event.placeholder)
+      };
     case "teams":
       return { ...state, teams: event.teams };
     case "sources":
       return { ...state, sources: event.sources };
     case "claims":
-      return { ...state, claims: event.claims };
+      return {
+        ...state,
+        claims: event.claims,
+        fallbacks: mergeFallback(state.fallbacks, "claims", event.placeholder)
+      };
     case "turns":
-      return { ...state, turns: event.turns };
+      return {
+        ...state,
+        turns: event.turns,
+        fallbacks: mergeFallback(state.fallbacks, "turns", event.placeholder)
+      };
     case "scorecard":
-      return { ...state, scorecard: event.scorecard };
+      return {
+        ...state,
+        scorecard: event.scorecard,
+        fallbacks: mergeFallback(state.fallbacks, "scorecard", event.placeholder)
+      };
     case "summary":
-      return { ...state, summary: event.summary };
+      return {
+        ...state,
+        summary: event.summary,
+        fallbacks: mergeFallback(state.fallbacks, "summary", event.placeholder)
+      };
     case "model_snapshot":
       return { ...state, snapshots: [...state.snapshots, event.snapshot] };
     case "complete":
@@ -123,6 +160,15 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
     default:
       return state;
   }
+}
+
+function mergeFallback(
+  current: LiveState["fallbacks"],
+  step: StepId,
+  placeholder: PlaceholderInfo | undefined
+): LiveState["fallbacks"] {
+  if (!placeholder) return current;
+  return { ...current, [step]: placeholder };
 }
 
 export function DebatefrogWorkspace() {
@@ -521,6 +567,11 @@ function LiveView({
 }) {
   const isComplete = live.done && live.status === "complete";
   const isFailed = live.status === "failed";
+  const fallbackSteps = Object.keys(live.fallbacks) as StepId[];
+  const verdictFellBack = Boolean(live.fallbacks.scorecard || live.fallbacks.summary);
+  const claimsFellBack = Boolean(live.fallbacks.claims);
+  const turnsFellBack = Boolean(live.fallbacks.turns);
+  const summaryFellBack = Boolean(live.fallbacks.summary);
 
   return (
     <div className="mt-6 space-y-5">
@@ -532,13 +583,23 @@ function LiveView({
         </div>
       ) : null}
 
-      <Verdict live={live} />
+      {fallbackSteps.length > 0 ? <FallbackBanner live={live} steps={fallbackSteps} /> : null}
 
-      <FrogStage live={live} />
+      {verdictFellBack ? <VerdictUnavailable live={live} /> : <Verdict live={live} />}
 
-      <ProsCons live={live} />
+      {turnsFellBack ? (
+        <SectionUnavailable title="Lily pad debate unavailable" info={live.fallbacks.turns!} />
+      ) : (
+        <FrogStage live={live} />
+      )}
 
-      {live.summary ? <Context live={live} /> : null}
+      {claimsFellBack ? (
+        <SectionUnavailable title="Pros and cons unavailable" info={live.fallbacks.claims!} />
+      ) : (
+        <ProsCons live={live} />
+      )}
+
+      {summaryFellBack ? null : live.summary ? <Context live={live} /> : null}
 
       {live.sources.length > 0 ? (
         <Disclosure title={`Sources (${live.sources.length})`}>
@@ -563,6 +624,87 @@ function LiveView({
         />
       ) : null}
     </div>
+  );
+}
+
+function FallbackBanner({ live, steps }: { live: LiveState; steps: StepId[] }) {
+  return (
+    <section className="rounded-2xl border border-berry/40 bg-berry/10 p-4 shadow-pop">
+      <h3 className="text-sm font-black text-berry">
+        {steps.length === 1
+          ? "One frog couldn't speak with your chosen brain"
+          : `${steps.length} frogs couldn't speak with your chosen brains`}
+      </h3>
+      <p className="mt-1 text-sm leading-relaxed text-ink/80">
+        Rather than fake those parts, the affected sections below are hidden. Pick different models
+        and try again.
+      </p>
+      <ul className="mt-3 space-y-1.5 text-sm text-ink/85">
+        {steps.map((step) => {
+          const info = live.fallbacks[step]!;
+          return (
+            <li key={step} className="border-l-2 border-berry/50 pl-3">
+              <span className="font-bold text-ink">{stepLabels[step]}</span>
+              <span className="text-ink/65"> — asked </span>
+              <code className="rounded bg-white/80 px-1 py-0.5 text-xs font-mono text-ink">
+                {info.requestedModel}
+              </code>
+              <div className="mt-0.5 text-xs text-ink/65">{info.reason}</div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function VerdictUnavailable({ live }: { live: LiveState }) {
+  const reasons: { label: string; info: PlaceholderInfo }[] = [];
+  if (live.fallbacks.scorecard) reasons.push({ label: "Scorecard", info: live.fallbacks.scorecard });
+  if (live.fallbacks.summary) reasons.push({ label: "Summary", info: live.fallbacks.summary });
+  return (
+    <section className="rounded-2xl border border-berry/40 bg-panel/95 p-6 shadow-lily">
+      <div className="flex items-start gap-3">
+        <Frog mood="judge" size={56} />
+        <div className="min-w-0">
+          <h2 className="text-xl font-black text-pond">The judge frog couldn't deliver a verdict</h2>
+          <p className="mt-1 text-sm leading-relaxed text-ink/80">
+            Your selected judge model didn't return a usable response, so there's no verdict to
+            show. The hardcoded placeholder built into the engine is not a real answer and won't be
+            displayed here.
+          </p>
+          <ul className="mt-3 space-y-1.5 text-sm text-ink/85">
+            {reasons.map(({ label, info }) => (
+              <li key={label} className="border-l-2 border-berry/50 pl-3">
+                <span className="font-bold text-ink">{label}</span>
+                <span className="text-ink/65"> — asked </span>
+                <code className="rounded bg-cream/60 px-1 py-0.5 text-xs font-mono text-ink">
+                  {info.requestedModel}
+                </code>
+                <div className="mt-0.5 text-xs text-ink/65">{info.reason}</div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SectionUnavailable({ title, info }: { title: string; info: PlaceholderInfo }) {
+  return (
+    <section className="rounded-2xl border border-berry/30 bg-panel/95 p-5 shadow-sm">
+      <h3 className="text-sm font-black text-berry">{title}</h3>
+      <p className="mt-1 text-sm leading-relaxed text-ink/80">
+        Asked{" "}
+        <code className="rounded bg-cream/60 px-1 py-0.5 text-xs font-mono text-ink">
+          {info.requestedModel}
+        </code>{" "}
+        but it didn't return a usable response, so this section is empty rather than filled with
+        placeholder text.
+      </p>
+      <p className="mt-2 text-xs text-ink/65">{info.reason}</p>
+    </section>
   );
 }
 
@@ -937,21 +1079,35 @@ function Sources({ sources }: { sources: EvidenceSource[] }) {
 function Snapshots({ snapshots }: { snapshots: ModelSnapshot[] }) {
   return (
     <div className="space-y-2">
-      {snapshots.map((snapshot, index) => (
-        <div
-          key={`${snapshot.id}-${index}`}
-          className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-mud/15 bg-cream/30 px-3 py-2"
-        >
-          <div className="min-w-0">
-            <div className="text-sm font-bold text-ink">{snapshot.model}</div>
-            <div className="text-xs text-ink/60">{snapshot.role}</div>
+      {snapshots.map((snapshot, index) => {
+        const failed = Boolean(snapshot.failure);
+        return (
+          <div
+            key={`${snapshot.id}-${index}`}
+            className={`flex flex-wrap items-center justify-between gap-2 rounded-xl border px-3 py-2 ${
+              failed ? "border-berry/40 bg-berry/10" : "border-mud/15 bg-cream/30"
+            }`}
+          >
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink">
+                <span>{snapshot.model}</span>
+                {failed ? (
+                  <span className="rounded-full border border-berry/40 bg-white px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-berry">
+                    Fallback
+                  </span>
+                ) : null}
+              </div>
+              <div className="text-xs text-ink/60">{snapshot.role}</div>
+              {snapshot.failure ? (
+                <div className="mt-1 text-xs text-berry">{snapshot.failure}</div>
+              ) : null}
+            </div>
+            <div className="text-xs text-ink/60">
+              {snapshot.latencyMs ? `${snapshot.latencyMs}ms` : null}
+            </div>
           </div>
-          <div className="text-xs text-ink/60">
-            {snapshot.latencyMs ? `${snapshot.latencyMs}ms` : null}
-            {snapshot.failure ? <span className="ml-2 text-berry">{snapshot.failure}</span> : null}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

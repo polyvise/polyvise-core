@@ -15,6 +15,8 @@ export interface LlmProvider {
     data: T;
     snapshot: ModelSnapshot;
   }>;
+  /** Returns the model id that would be used for a given role, before any call is made. */
+  modelForRole(role: string): string;
 }
 
 export const modelRoster: ModelSnapshot[] = modelRosterFromConfig(loadDebateRuntimeConfig());
@@ -46,6 +48,10 @@ export class MockLlmProvider implements LlmProvider {
         estimatedCostUsd: 0
       }
     };
+  }
+
+  modelForRole(_role: string): string {
+    return "deterministic-template";
   }
 }
 
@@ -173,7 +179,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
     }
   }
 
-  private modelForRole(role: string): string {
+  modelForRole(role: string): string {
     const normalized = role.toLowerCase();
     if (normalized.includes("judge") || normalized.includes("summary") || normalized.includes("scorecard")) {
       return this.config.judgeModel;

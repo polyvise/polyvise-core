@@ -79,7 +79,7 @@ export function detectHighStakes(subject: string, context = ""): HighStakesNotic
     return {
       category: "medical",
       message:
-        "Polyvise can organize considerations, but this is not medical advice. Consult a qualified clinician for health decisions."
+        "This is not medical advice. Consult a qualified clinician for health decisions."
     };
   }
 
@@ -87,7 +87,7 @@ export function detectHighStakes(subject: string, context = ""): HighStakesNotic
     return {
       category: "legal",
       message:
-        "Polyvise can map issues, but this is not legal advice. Consult a qualified attorney for legal decisions."
+        "This is not legal advice. Consult a qualified attorney for legal decisions."
     };
   }
 
@@ -95,7 +95,7 @@ export function detectHighStakes(subject: string, context = ""): HighStakesNotic
     return {
       category: "financial",
       message:
-        "Polyvise can compare tradeoffs, but this is not financial advice. Consult a qualified professional before acting."
+        "This is not financial advice. Consult a qualified professional before acting."
     };
   }
 
@@ -103,7 +103,7 @@ export function detectHighStakes(subject: string, context = ""): HighStakesNotic
     return {
       category: "safety",
       message:
-        "Polyvise can support non-operational risk framing, but it should not be used for dangerous or emergency decisions."
+        "This is not a substitute for emergency or safety guidance. Do not use this output for dangerous or emergency decisions."
     };
   }
 

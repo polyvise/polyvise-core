@@ -244,8 +244,8 @@ function selectMockCatalog(subject: string, topicKind: TopicKind): Omit<Evidence
     },
     {
       title: `Evidence search placeholder for ${topicKind} topics`,
-      url: "https://polyvise.ai/evidence-provider-required",
-      publisher: "Polyvise",
+      url: "https://example.com/evidence-provider-required",
+      publisher: "Internal reference",
       snippet:
         "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
       quality: "context"

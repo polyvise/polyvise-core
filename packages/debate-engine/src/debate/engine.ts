@@ -48,7 +48,7 @@ const stageCopy: Record<string, { label: string; detail: string }> = {
   },
   framing: {
     label: "Resolution framed",
-    detail: "Polyvise converted the free-text subject into a neutral debate resolution."
+    detail: "The free-text subject was converted into a neutral debate resolution."
   },
   researching: {
     label: "Evidence gathered",
@@ -830,7 +830,7 @@ function buildSummary(framed: FramedDebate, claims: Claim[], scorecard: Scorecar
 
   return {
     headline: "Proceed conditionally, with explicit evidence thresholds and rollback rules.",
-    recommendation: `Polyvise recommends treating "${framed.resolution}" as a conditional yes rather than a blank-check approval. The strongest path is a staged decision: define the success metrics, limit the first commitment, and name the evidence that would stop or expand the plan.`,
+    recommendation: `The verdict is a conditional yes rather than a blank-check approval. The strongest path is a staged decision: define the success metrics, limit the first commitment, and name the evidence that would stop or expand the plan.`,
     strongestPro: proClaims.map((claim) => claim.text),
     strongestCon: conClaims.map((claim) => claim.text),
     unresolvedUncertainties: [

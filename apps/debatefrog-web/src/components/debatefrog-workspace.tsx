@@ -629,8 +629,11 @@ function Verdict({ live }: { live: LiveState }) {
     <section className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4 sm:max-w-xl">
-          <div className="shrink-0">
+          <div className="flex shrink-0 flex-col items-center gap-1">
             <Frog mood="judge" size={64} />
+            <span className="rounded-full bg-[#9978b8]/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#5c4583]">
+              Judge
+            </span>
           </div>
           <div>
             <span
@@ -679,23 +682,7 @@ function FrogStage({ live }: { live: LiveState }) {
 
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-black text-pond">Lily pad debate</h3>
-        <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-wide text-mud/55">
-          <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-leaf" />
-            Pro
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-berry" />
-            Con
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="h-2 w-2 rounded-full bg-[#9978b8]" />
-            Judge
-          </span>
-        </div>
-      </div>
+      <h3 className="mb-4 text-sm font-black text-pond">Lily pad debate</h3>
 
       {live.teams ? <Lineup teams={live.teams} /> : null}
 

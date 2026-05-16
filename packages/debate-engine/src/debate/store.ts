@@ -227,7 +227,7 @@ function answerFollowupDeterministic(question: string, debate: DebateRecord): st
   const summary = debate.latestRun?.summary;
 
   if (!summary) {
-    return "The debate has not completed yet, so Polyvise cannot answer from the run record.";
+    return "The debate has not completed yet, so this question cannot be answered from the run record.";
   }
 
   if (lowered.includes("change") || lowered.includes("mind")) {

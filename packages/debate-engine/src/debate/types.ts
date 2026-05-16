@@ -249,3 +249,18 @@ export interface HighStakesNotice {
   category: "medical" | "legal" | "financial" | "safety";
   message: string;
 }
+
+export type DebateLiveEvent =
+  | { kind: "stage"; status: DebateStatus }
+  | { kind: "framed"; resolution: string; topicKind: TopicKind; highStakes: HighStakesNotice | null }
+  | { kind: "scouts"; scouts: StanceScout[] }
+  | { kind: "teams"; teams: DebateTeam }
+  | { kind: "sources"; sources: EvidenceSource[] }
+  | { kind: "claims"; claims: Claim[] }
+  | { kind: "argument_map"; nodes: ArgumentNode[]; edges: ArgumentEdge[] }
+  | { kind: "turns"; turns: RoundTurn[] }
+  | { kind: "scorecard"; scorecard: Scorecard }
+  | { kind: "summary"; summary: DebateSummary }
+  | { kind: "model_snapshot"; snapshot: ModelSnapshot }
+  | { kind: "complete"; runId: string }
+  | { kind: "error"; message: string };

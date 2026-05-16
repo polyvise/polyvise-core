@@ -10,7 +10,7 @@ import {
   Settings2,
   SendHorizontal
 } from "lucide-react";
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { ArgumentMap } from "@/components/argument-map";
 import {
   defaultSelections,
@@ -19,13 +19,22 @@ import {
   type SlotId
 } from "@/lib/model-catalog";
 import type {
+  ArgumentEdge,
+  ArgumentNode,
   Claim,
+  DebateLiveEvent,
   DebateRecord,
   DebateRound,
+  DebateStatus,
+  DebateSummary,
+  DebateTeam,
   EvidenceSource,
+  HighStakesNotice,
   ModelSnapshot,
   RoundTurn,
-  Scorecard
+  Scorecard,
+  StanceScout,
+  TopicKind
 } from "@polyvise/debate-engine/debate/types";
 
 const examples = [
@@ -38,34 +47,129 @@ const examples = [
 
 type ModelSelections = Record<SlotId, string>;
 
-type PendingDebate = {
+type LiveState = {
+  debateId: string;
   subject: string;
-  context: string;
   models: ModelSelections;
+  status: DebateStatus;
+  resolution?: string;
+  topicKind?: TopicKind;
+  highStakes: HighStakesNotice | null;
+  scouts: StanceScout[];
+  teams: DebateTeam | null;
+  sources: EvidenceSource[];
+  claims: Claim[];
+  argumentNodes: ArgumentNode[];
+  argumentEdges: ArgumentEdge[];
+  turns: RoundTurn[];
+  scorecard: Scorecard | null;
+  summary: DebateSummary | null;
+  snapshots: ModelSnapshot[];
+  errorMessage: string | null;
+  done: boolean;
 };
+
+type LiveAction =
+  | { type: "init"; debateId: string; subject: string; models: ModelSelections }
+  | { type: "event"; event: DebateLiveEvent }
+  | { type: "reset" };
+
+function emptyLive(): LiveState | null {
+  return null;
+}
+
+function liveReducer(state: LiveState | null, action: LiveAction): LiveState | null {
+  if (action.type === "reset") {
+    return null;
+  }
+  if (action.type === "init") {
+    return {
+      debateId: action.debateId,
+      subject: action.subject,
+      models: action.models,
+      status: "queued",
+      highStakes: null,
+      scouts: [],
+      teams: null,
+      sources: [],
+      claims: [],
+      argumentNodes: [],
+      argumentEdges: [],
+      turns: [],
+      scorecard: null,
+      summary: null,
+      snapshots: [],
+      errorMessage: null,
+      done: false
+    };
+  }
+  if (!state) return state;
+  const event = action.event;
+  switch (event.kind) {
+    case "stage":
+      return { ...state, status: event.status };
+    case "framed":
+      return {
+        ...state,
+        resolution: event.resolution,
+        topicKind: event.topicKind,
+        highStakes: event.highStakes
+      };
+    case "scouts":
+      return { ...state, scouts: event.scouts };
+    case "teams":
+      return { ...state, teams: event.teams };
+    case "sources":
+      return { ...state, sources: event.sources };
+    case "claims":
+      return { ...state, claims: event.claims };
+    case "argument_map":
+      return { ...state, argumentNodes: event.nodes, argumentEdges: event.edges };
+    case "turns":
+      return { ...state, turns: event.turns };
+    case "scorecard":
+      return { ...state, scorecard: event.scorecard };
+    case "summary":
+      return { ...state, summary: event.summary };
+    case "model_snapshot":
+      return { ...state, snapshots: [...state.snapshots, event.snapshot] };
+    case "complete":
+      return { ...state, status: "complete", done: true };
+    case "error":
+      return { ...state, status: "failed", done: true, errorMessage: event.message };
+    default:
+      return state;
+  }
+}
 
 export function DebateWorkspace() {
   const [subject, setSubject] = useState("");
   const [context, setContext] = useState("");
   const [models, setModels] = useState<ModelSelections>(defaultSelections);
   const [showModels, setShowModels] = useState(false);
-  const [debate, setDebate] = useState<DebateRecord | null>(null);
-  const [pending, setPending] = useState<PendingDebate | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [debate, setDebate] = useState<DebateRecord | null>(null);
+  const [live, dispatch] = useReducer(liveReducer, null, emptyLive);
   const [followupQuestion, setFollowupQuestion] = useState("");
   const [isFollowupLoading, setIsFollowupLoading] = useState(false);
-  const resultRef = useRef<HTMLDivElement | null>(null);
+  const [followupError, setFollowupError] = useState<string | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    return () => {
+      eventSourceRef.current?.close();
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (subject.trim().length < 4 || isSubmitting) {
-      return;
-    }
+    if (subject.trim().length < 4 || isSubmitting) return;
+
     setIsSubmitting(true);
-    setError(null);
+    setSubmitError(null);
     setDebate(null);
-    setPending({ subject, context, models });
+    eventSourceRef.current?.close();
 
     try {
       const response = await fetch("/api/debates", {
@@ -81,33 +185,87 @@ export function DebateWorkspace() {
       });
 
       const payload = (await response.json()) as { debate?: DebateRecord; error?: string };
-
       if (!response.ok || !payload.debate) {
-        throw new Error(payload.error ?? "Unable to run the debate.");
+        throw new Error(payload.error ?? "Unable to start the debate.");
       }
 
-      setDebate(payload.debate);
-      requestAnimationFrame(() => {
-        resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const seed = payload.debate;
+      dispatch({ type: "init", debateId: seed.id, subject: seed.subject, models });
+
+      // open SSE stream
+      const es = new EventSource(`/api/debates/${seed.id}/events`);
+      eventSourceRef.current = es;
+
+      const eventKinds: DebateLiveEvent["kind"][] = [
+        "stage",
+        "framed",
+        "scouts",
+        "teams",
+        "sources",
+        "claims",
+        "argument_map",
+        "turns",
+        "scorecard",
+        "summary",
+        "model_snapshot",
+        "complete",
+        "error"
+      ];
+
+      for (const kind of eventKinds) {
+        es.addEventListener(kind, (msgEvent) => {
+          try {
+            const parsed = JSON.parse((msgEvent as MessageEvent).data) as DebateLiveEvent;
+            dispatch({ type: "event", event: parsed });
+          } catch {
+            // ignore malformed events
+          }
+        });
+      }
+
+      const finalize = async () => {
+        es.close();
+        eventSourceRef.current = null;
+        try {
+          const finalRes = await fetch(`/api/debates/${seed.id}`, { cache: "no-store" });
+          const finalPayload = (await finalRes.json()) as { debate?: DebateRecord };
+          if (finalPayload.debate) {
+            setDebate(finalPayload.debate);
+          }
+        } catch {
+          // ignore; we still have the live state to render from
+        }
+      };
+
+      es.addEventListener("complete", () => {
+        void finalize();
+      });
+      es.addEventListener("error", () => {
+        // EventSource fires its own 'error' on disconnect; treat as close only if we have terminal data
+        void finalize();
+      });
+      es.addEventListener("closed", () => {
+        es.close();
+        eventSourceRef.current = null;
       });
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "Unable to run the debate.");
+      setSubmitError(
+        caughtError instanceof Error ? caughtError.message : "Unable to start the debate."
+      );
     } finally {
       setIsSubmitting(false);
-      setPending(null);
     }
   }
 
   async function handleFollowup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!debate || followupQuestion.trim().length < 4) {
-      return;
-    }
+    const targetId = debate?.id ?? live?.debateId;
+    if (!targetId || followupQuestion.trim().length < 4) return;
     setIsFollowupLoading(true);
-    setError(null);
+    setFollowupError(null);
 
     try {
-      const response = await fetch(`/api/debates/${debate.id}/followups`, {
+      const response = await fetch(`/api/debates/${targetId}/followups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: followupQuestion })
@@ -116,21 +274,35 @@ export function DebateWorkspace() {
       if (!response.ok) {
         throw new Error(payload.error ?? "Unable to answer the follow-up.");
       }
-      const refreshed = await fetch(`/api/debates/${debate.id}`, { cache: "no-store" });
+      const refreshed = await fetch(`/api/debates/${targetId}`, { cache: "no-store" });
       const refreshedPayload = (await refreshed.json()) as { debate: DebateRecord };
       setDebate(refreshedPayload.debate);
       setFollowupQuestion("");
     } catch (caughtError) {
-      setError(caughtError instanceof Error ? caughtError.message : "Unable to answer the follow-up.");
+      setFollowupError(
+        caughtError instanceof Error ? caughtError.message : "Unable to answer the follow-up."
+      );
     } finally {
       setIsFollowupLoading(false);
     }
   }
 
   function startNewDebate() {
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
     setDebate(null);
-    setError(null);
+    dispatch({ type: "reset" });
+    setSubmitError(null);
+    setFollowupError(null);
     setFollowupQuestion("");
+  }
+
+  function rerunWithDifferentModels() {
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
+    setDebate(null);
+    dispatch({ type: "reset" });
+    setShowModels(true);
   }
 
   return (
@@ -138,7 +310,7 @@ export function DebateWorkspace() {
       <div className="border-b border-graphite/10 bg-paper/80 backdrop-blur">
         <div className="mx-auto flex max-w-[1180px] items-center justify-between px-5 py-3">
           <span className="text-sm font-semibold tracking-tight text-ink">polyvise</span>
-          {debate ? (
+          {live ? (
             <button
               type="button"
               onClick={startNewDebate}
@@ -152,7 +324,7 @@ export function DebateWorkspace() {
       </div>
 
       <div className="mx-auto w-full max-w-[1180px] px-5 py-8 sm:py-12">
-        {!debate ? (
+        {!live ? (
           <InputState
             subject={subject}
             onSubjectChange={setSubject}
@@ -163,31 +335,27 @@ export function DebateWorkspace() {
             showModels={showModels}
             onToggleModels={() => setShowModels((v) => !v)}
             isSubmitting={isSubmitting}
-            pending={pending}
-            error={error}
+            error={submitError}
             onSubmit={handleSubmit}
           />
         ) : (
-          <div ref={resultRef}>
-            <ResultsState
-              debate={debate}
-              models={models}
-              followupQuestion={followupQuestion}
-              onFollowupQuestionChange={setFollowupQuestion}
-              onFollowupSubmit={handleFollowup}
-              isFollowupLoading={isFollowupLoading}
-              error={error}
-              onRerun={() => {
-                setDebate(null);
-                setShowModels(true);
-              }}
-            />
-          </div>
+          <LiveView
+            live={live}
+            finalRecord={debate}
+            followupQuestion={followupQuestion}
+            onFollowupQuestionChange={setFollowupQuestion}
+            onFollowupSubmit={handleFollowup}
+            isFollowupLoading={isFollowupLoading}
+            followupError={followupError}
+            onRerun={rerunWithDifferentModels}
+          />
         )}
       </div>
     </main>
   );
 }
+
+/* ------------------------------ Input state ------------------------------ */
 
 function InputState({
   subject,
@@ -199,7 +367,6 @@ function InputState({
   showModels,
   onToggleModels,
   isSubmitting,
-  pending,
   error,
   onSubmit
 }: {
@@ -212,14 +379,9 @@ function InputState({
   showModels: boolean;
   onToggleModels: () => void;
   isSubmitting: boolean;
-  pending: PendingDebate | null;
   error: string | null;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
-  if (isSubmitting && pending) {
-    return <RunningState pending={pending} />;
-  }
-
   return (
     <div className="mx-auto max-w-[720px]">
       <h1 className="text-3xl font-semibold leading-tight text-ink sm:text-4xl">
@@ -267,10 +429,14 @@ function InputState({
 
         <button
           type="submit"
-          disabled={subject.trim().length < 4}
+          disabled={subject.trim().length < 4 || isSubmitting}
           className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-graphite disabled:cursor-not-allowed disabled:bg-graphite/30"
         >
-          <SendHorizontal className="h-4 w-4" />
+          {isSubmitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <SendHorizontal className="h-4 w-4" />
+          )}
           Run debate
         </button>
       </form>
@@ -312,7 +478,7 @@ function ModelPicker({
         onClick={onToggle}
         className="flex w-full items-center justify-between px-3.5 py-2.5 text-left"
       >
-        <span className="flex items-center gap-2 text-sm font-medium text-graphite">
+        <span className="flex flex-wrap items-center gap-2 text-sm font-medium text-graphite">
           <Settings2 className="h-4 w-4 text-graphite/60" />
           Models
           <span className="text-xs font-normal text-graphite/55">
@@ -330,18 +496,13 @@ function ModelPicker({
           <div className="grid gap-3 sm:grid-cols-3">
             {slots.map((slot) => (
               <div key={slot.id}>
-                <label
-                  htmlFor={`model-${slot.id}`}
-                  className="mb-1 block text-xs font-medium text-graphite"
-                >
+                <label htmlFor={`model-${slot.id}`} className="mb-1 block text-xs font-medium text-graphite">
                   {slot.title}
                 </label>
                 <select
                   id={`model-${slot.id}`}
                   value={models[slot.id]}
-                  onChange={(event) =>
-                    onModelsChange({ ...models, [slot.id]: event.target.value })
-                  }
+                  onChange={(event) => onModelsChange({ ...models, [slot.id]: event.target.value })}
                   className="w-full rounded-md border border-graphite/20 bg-white px-2.5 py-2 text-sm text-ink outline-none transition focus:border-jade"
                 >
                   {modelCatalog.map((option) => (
@@ -366,136 +527,144 @@ function modelLabel(id: string): string {
   return entry?.label ?? id;
 }
 
-function RunningState({ pending }: { pending: PendingDebate }) {
-  const stages = [
-    { id: "framing", label: "Framing the resolution" },
-    { id: "researching", label: "Gathering evidence" },
-    { id: "debating", label: "Agents debating" },
-    { id: "judging", label: "Judge synthesizing" }
-  ];
+/* ------------------------------ Live view ------------------------------ */
 
-  return (
-    <div className="mx-auto max-w-[720px]">
-      <div className="rounded-md border border-graphite/15 bg-white px-5 py-5">
-        <div className="text-xs font-medium uppercase tracking-wide text-graphite/55">Running</div>
-        <h2 className="mt-1 text-lg font-semibold leading-snug text-ink">{pending.subject}</h2>
-        <div className="mt-1 text-xs text-graphite/60">
-          Pro {modelLabel(pending.models.quick)} · Con {modelLabel(pending.models.deep)} · Judge{" "}
-          {modelLabel(pending.models.judge)}
-        </div>
-        <div className="mt-5 space-y-2">
-          {stages.map((stage) => (
-            <div
-              key={stage.id}
-              className="flex items-center gap-3 rounded-md border border-graphite/10 bg-paper px-3 py-2.5"
-            >
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-jade" />
-              <span className="text-sm text-graphite">{stage.label}</span>
-            </div>
-          ))}
-        </div>
-        <p className="mt-5 text-xs leading-relaxed text-graphite/55">
-          A full debate run usually completes in under a minute. The page will update with the
-          verdict and transcript when finished.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ResultsState({
-  debate,
-  models,
+function LiveView({
+  live,
+  finalRecord,
   followupQuestion,
   onFollowupQuestionChange,
   onFollowupSubmit,
   isFollowupLoading,
-  error,
+  followupError,
   onRerun
 }: {
-  debate: DebateRecord;
-  models: ModelSelections;
+  live: LiveState;
+  finalRecord: DebateRecord | null;
   followupQuestion: string;
   onFollowupQuestionChange: (value: string) => void;
   onFollowupSubmit: (event: FormEvent<HTMLFormElement>) => void;
   isFollowupLoading: boolean;
-  error: string | null;
+  followupError: string | null;
   onRerun: () => void;
 }) {
-  const run = debate.latestRun;
-  const summary = run?.summary;
-  const scorecard = run?.scorecard;
-
-  if (!run || !summary || !scorecard) {
-    return (
-      <div className="rounded-md border border-graphite/15 bg-white p-6 text-sm text-graphite">
-        The debate did not produce a complete run.
-      </div>
-    );
-  }
+  const isComplete = live.done && live.status === "complete";
+  const isFailed = live.status === "failed";
 
   return (
     <div className="space-y-6">
-      <Verdict
-        debate={debate}
-        summary={summary}
-        scorecard={scorecard}
-        models={models}
-        onRerun={onRerun}
-      />
+      <RunHeader live={live} />
 
-      <ProsConsRow claims={run.claims} />
+      {isFailed ? (
+        <div className="flex gap-2 rounded-md border border-coral/30 bg-coral/5 px-3 py-2.5 text-sm text-graphite">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-coral" />
+          <span>{live.errorMessage ?? "The debate failed."}</span>
+        </div>
+      ) : null}
 
-      <ContextRow summary={summary} />
+      <Verdict live={live} onRerun={onRerun} />
 
-      <Disclosure title="Argument map" defaultOpen>
-        <ArgumentMap nodes={run.argumentNodes} edges={run.argumentEdges} />
-      </Disclosure>
+      <ProsConsRow claims={live.claims} status={live.status} />
 
-      <Disclosure title={`Full debate transcript (${run.turns.length} turns)`}>
-        <Transcript turns={run.turns} />
-      </Disclosure>
+      {live.summary ? <ContextRow summary={live.summary} /> : null}
 
-      <Disclosure title={`Sources (${run.sources.length})`}>
-        <SourceLedger sources={run.sources} />
-      </Disclosure>
+      <DebateStage live={live} />
 
-      <Disclosure title="Run details">
-        <RunDetails snapshots={run.modelSnapshots} />
-      </Disclosure>
+      {live.argumentNodes.length > 0 ? (
+        <Disclosure title="Argument map">
+          <ArgumentMap nodes={live.argumentNodes} edges={live.argumentEdges} />
+        </Disclosure>
+      ) : null}
 
-      <Followups
-        debate={debate}
-        followupQuestion={followupQuestion}
-        onFollowupQuestionChange={onFollowupQuestionChange}
-        onFollowupSubmit={onFollowupSubmit}
-        isFollowupLoading={isFollowupLoading}
-        error={error}
-      />
+      {live.sources.length > 0 ? (
+        <Disclosure title={`Sources (${live.sources.length})`}>
+          <SourceLedger sources={live.sources} />
+        </Disclosure>
+      ) : null}
+
+      {live.snapshots.length > 0 ? (
+        <Disclosure title="Run details">
+          <RunDetails snapshots={live.snapshots} />
+        </Disclosure>
+      ) : null}
+
+      {isComplete ? (
+        <Followups
+          followups={finalRecord?.followups ?? []}
+          followupQuestion={followupQuestion}
+          onFollowupQuestionChange={onFollowupQuestionChange}
+          onFollowupSubmit={onFollowupSubmit}
+          isFollowupLoading={isFollowupLoading}
+          error={followupError}
+        />
+      ) : null}
     </div>
   );
 }
 
-function Verdict({
-  debate,
-  summary,
-  scorecard,
-  models,
-  onRerun
-}: {
-  debate: DebateRecord;
-  summary: NonNullable<DebateRecord["latestRun"]>["summary"];
-  scorecard: Scorecard;
-  models: ModelSelections;
-  onRerun: () => void;
-}) {
+function RunHeader({ live }: { live: LiveState }) {
+  const stageEntries: { id: DebateStatus; label: string }[] = [
+    { id: "framing", label: "Framing" },
+    { id: "researching", label: "Research" },
+    { id: "debating", label: "Debate" },
+    { id: "judging", label: "Judging" },
+    { id: "complete", label: "Done" }
+  ];
+  const currentIndex = stageEntries.findIndex((entry) => entry.id === live.status);
+
+  return (
+    <section className="rounded-md border border-graphite/15 bg-white p-5">
+      <div className="flex flex-col gap-1 text-xs text-graphite/55">
+        <span>{live.resolution ?? live.subject}</span>
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {stageEntries.map((stage, index) => {
+          const reached =
+            live.status === "complete" || index <= currentIndex || (currentIndex < 0 && stage.id === "framing");
+          const active = stage.id === live.status;
+          return (
+            <span
+              key={stage.id}
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                active
+                  ? "border border-jade/30 bg-jade/10 text-jade"
+                  : reached
+                    ? "border border-graphite/15 bg-paper text-graphite/70"
+                    : "border border-graphite/10 bg-white text-graphite/40"
+              }`}
+            >
+              {active && !live.done ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+              {stage.label}
+            </span>
+          );
+        })}
+      </div>
+      <div className="mt-3 text-xs text-graphite/55">
+        Pro {modelLabel(live.models.quick)} · Con {modelLabel(live.models.deep)} · Judge{" "}
+        {modelLabel(live.models.judge)}
+      </div>
+    </section>
+  );
+}
+
+function Verdict({ live, onRerun }: { live: LiveState; onRerun: () => void }) {
+  if (!live.scorecard || !live.summary) {
+    return (
+      <section className="rounded-md border border-graphite/15 bg-white p-6">
+        <div className="flex items-center gap-2 text-sm text-graphite/55">
+          <Loader2 className="h-4 w-4 animate-spin text-jade" />
+          Waiting for the verdict…
+        </div>
+      </section>
+    );
+  }
+
+  const scorecard = live.scorecard;
+  const summary = live.summary;
+
   return (
     <section className="rounded-md border border-graphite/15 bg-white p-6">
-      <div className="flex flex-col gap-1 text-xs text-graphite/60">
-        <span>{debate.resolution}</span>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-2xl">
           <div
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${recommendationToneClass(scorecard.recommendation)}`}
@@ -515,10 +684,7 @@ function Verdict({
         </div>
       ) : null}
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-graphite/10 pt-4 text-xs text-graphite/60">
-        <span>
-          Pro {modelLabel(models.quick)} · Con {modelLabel(models.deep)} · Judge {modelLabel(models.judge)}
-        </span>
+      <div className="mt-5 flex flex-wrap items-center justify-end gap-3 border-t border-graphite/10 pt-4">
         <button
           type="button"
           onClick={onRerun}
@@ -545,10 +711,20 @@ function ConfidenceMeter({ value }: { value: number }) {
   );
 }
 
-function ProsConsRow({ claims }: { claims: Claim[] }) {
+function ProsConsRow({ claims, status }: { claims: Claim[]; status: DebateStatus }) {
+  if (claims.length === 0) {
+    if (status === "queued" || status === "framing" || status === "researching") {
+      return (
+        <section className="grid gap-4 md:grid-cols-2">
+          <ClaimSkeleton tone="pro" />
+          <ClaimSkeleton tone="con" />
+        </section>
+      );
+    }
+    return null;
+  }
   const pros = claims.filter((claim) => claim.side === "pro");
   const cons = claims.filter((claim) => claim.side === "con");
-
   return (
     <section className="grid gap-4 md:grid-cols-2">
       <ClaimCard title="Strongest pros" tone="pro" claims={pros} />
@@ -557,15 +733,25 @@ function ProsConsRow({ claims }: { claims: Claim[] }) {
   );
 }
 
-function ClaimCard({
-  title,
-  tone,
-  claims
-}: {
-  title: string;
-  tone: "pro" | "con";
-  claims: Claim[];
-}) {
+function ClaimSkeleton({ tone }: { tone: "pro" | "con" }) {
+  const accent = tone === "pro" ? "text-jade" : "text-coral";
+  const title = tone === "pro" ? "Strongest pros" : "Strongest cons";
+  return (
+    <article className="rounded-md border border-graphite/15 bg-white p-5">
+      <h3 className={`text-sm font-semibold ${accent}`}>{title}</h3>
+      <div className="mt-3 space-y-3">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="border-l-2 border-graphite/10 pl-3">
+            <div className="h-3 w-full animate-pulse rounded bg-graphite/10" />
+            <div className="mt-2 h-2 w-3/4 animate-pulse rounded bg-graphite/10" />
+          </div>
+        ))}
+      </div>
+    </article>
+  );
+}
+
+function ClaimCard({ title, tone, claims }: { title: string; tone: "pro" | "con"; claims: Claim[] }) {
   const accent = tone === "pro" ? "text-jade" : "text-coral";
   return (
     <article className="rounded-md border border-graphite/15 bg-white p-5">
@@ -582,11 +768,7 @@ function ClaimCard({
   );
 }
 
-function ContextRow({
-  summary
-}: {
-  summary: NonNullable<DebateRecord["latestRun"]>["summary"];
-}) {
+function ContextRow({ summary }: { summary: DebateSummary }) {
   return (
     <section className="grid gap-4 md:grid-cols-2">
       <article className="rounded-md border border-graphite/15 bg-white p-5">
@@ -612,6 +794,134 @@ function ContextRow({
     </section>
   );
 }
+
+/* ------------------------------ Chat-lane debate stage ------------------------------ */
+
+function DebateStage({ live }: { live: LiveState }) {
+  const grouped = useMemo(() => groupTurns(live.turns), [live.turns]);
+  const roundOrder: DebateRound[] = [
+    "opening",
+    "cross_examination",
+    "rebuttal",
+    "closing",
+    "judge_review",
+    "synthesis"
+  ];
+  const orderedRounds = roundOrder.filter((round) => grouped[round]?.length);
+
+  const isDebating = live.status === "debating";
+  const isAwaitingDebate =
+    live.status === "queued" || live.status === "framing" || live.status === "researching";
+
+  return (
+    <section className="rounded-md border border-graphite/15 bg-white p-5">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h3 className="text-sm font-semibold text-ink">Debate floor</h3>
+        <div className="flex items-center gap-3 text-[11px] uppercase tracking-wide text-graphite/55">
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-jade" />
+            Pro
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-coral" />
+            Con
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2 w-2 rounded-full bg-plum" />
+            Judge
+          </span>
+        </div>
+      </div>
+
+      {live.teams ? <AgentRoster teams={live.teams} /> : null}
+
+      {orderedRounds.length === 0 ? (
+        <div className="mt-4 rounded-md border border-dashed border-graphite/15 bg-paper/60 p-6 text-center text-sm text-graphite/60">
+          {isAwaitingDebate ? (
+            <span className="inline-flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-jade" />
+              Preparing the council — {stageLabel(live.status)}
+            </span>
+          ) : isDebating ? (
+            <span className="inline-flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-jade" />
+              Agents are speaking
+            </span>
+          ) : (
+            "No turns yet."
+          )}
+        </div>
+      ) : (
+        <div className="mt-4 space-y-6">
+          {orderedRounds.map((round) => (
+            <div key={round}>
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-graphite/55">
+                {formatRound(round)}
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                {grouped[round]?.map((turn) => (
+                  <TurnBubble key={turn.id} turn={turn} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AgentRoster({ teams }: { teams: DebateTeam }) {
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      <div className="rounded-md border border-jade/20 bg-jade/5 p-3">
+        <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-jade">Pro lineup</div>
+        <ul className="space-y-1 text-xs text-graphite">
+          {teams.pro.map((agent) => (
+            <li key={agent.id} className="flex flex-wrap items-center gap-1.5">
+              <span className="font-semibold text-ink">{agent.name}</span>
+              <span className="text-graphite/55">·</span>
+              <span className="text-graphite/65">{agent.role}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="rounded-md border border-coral/20 bg-coral/5 p-3">
+        <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-coral">Con lineup</div>
+        <ul className="space-y-1 text-xs text-graphite">
+          {teams.con.map((agent) => (
+            <li key={agent.id} className="flex flex-wrap items-center gap-1.5">
+              <span className="font-semibold text-ink">{agent.name}</span>
+              <span className="text-graphite/55">·</span>
+              <span className="text-graphite/65">{agent.role}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function TurnBubble({ turn }: { turn: RoundTurn }) {
+  const tone =
+    turn.side === "pro"
+      ? "border-jade/30 bg-jade/5"
+      : turn.side === "con"
+        ? "border-coral/30 bg-coral/5"
+        : "border-plum/30 bg-plum/5";
+  const align = turn.side === "con" ? "md:col-start-2" : turn.side === "pro" ? "md:col-start-1" : "md:col-span-2";
+  return (
+    <article className={`rounded-md border px-4 py-3 ${tone} ${align}`}>
+      <div className="mb-1 flex flex-wrap items-center gap-2 text-xs">
+        <span className="font-semibold text-ink">{turn.agentName}</span>
+        <SideBadge side={turn.side} />
+      </div>
+      <p className="text-sm leading-relaxed text-graphite">{turn.content}</p>
+    </article>
+  );
+}
+
+/* ------------------------------ Shared bits ------------------------------ */
 
 function Disclosure({
   title,
@@ -639,42 +949,6 @@ function Disclosure({
       </button>
       {open ? <div className="border-t border-graphite/10 p-5">{children}</div> : null}
     </section>
-  );
-}
-
-function Transcript({ turns }: { turns: RoundTurn[] }) {
-  const grouped = useMemo(() => groupTurns(turns), [turns]);
-
-  return (
-    <div className="space-y-6">
-      {Object.entries(grouped).map(([round, roundTurns]) => (
-        <div key={round}>
-          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-graphite/55">
-            {formatRound(round as DebateRound)}
-          </div>
-          <div className="space-y-3">
-            {roundTurns.map((turn) => (
-              <article
-                key={turn.id}
-                className={`rounded-md border-l-2 bg-paper/60 px-4 py-3 ${
-                  turn.side === "pro"
-                    ? "border-jade/60"
-                    : turn.side === "con"
-                      ? "border-coral/60"
-                      : "border-plum/50"
-                }`}
-              >
-                <div className="mb-1 flex items-center gap-2 text-xs">
-                  <span className="font-semibold text-ink">{turn.agentName}</span>
-                  <SideBadge side={turn.side} />
-                </div>
-                <p className="text-sm leading-relaxed text-graphite">{turn.content}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
   );
 }
 
@@ -709,9 +983,9 @@ function SourceLedger({ sources }: { sources: EvidenceSource[] }) {
 function RunDetails({ snapshots }: { snapshots: ModelSnapshot[] }) {
   return (
     <div className="space-y-2">
-      {snapshots.map((snapshot) => (
+      {snapshots.map((snapshot, index) => (
         <div
-          key={snapshot.id}
+          key={`${snapshot.id}-${index}`}
           className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-graphite/10 bg-paper/60 px-3 py-2"
         >
           <div className="min-w-0">
@@ -729,14 +1003,14 @@ function RunDetails({ snapshots }: { snapshots: ModelSnapshot[] }) {
 }
 
 function Followups({
-  debate,
+  followups,
   followupQuestion,
   onFollowupQuestionChange,
   onFollowupSubmit,
   isFollowupLoading,
   error
 }: {
-  debate: DebateRecord;
+  followups: DebateRecord["followups"];
   followupQuestion: string;
   onFollowupQuestionChange: (value: string) => void;
   onFollowupSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -774,9 +1048,9 @@ function Followups({
         </div>
       ) : null}
 
-      {debate.followups.length > 0 ? (
+      {followups.length > 0 ? (
         <div className="mt-4 space-y-3">
-          {debate.followups.map((followup) => (
+          {followups.map((followup) => (
             <div key={followup.id} className="rounded-md border border-graphite/10 bg-paper/60 p-3">
               <div className="text-sm font-semibold text-ink">{followup.question}</div>
               <p className="mt-1 text-sm leading-relaxed text-graphite/75">{followup.answer}</p>
@@ -836,6 +1110,27 @@ function formatRecommendation(recommendation: Scorecard["recommendation"]): stri
 
 function formatRound(round: DebateRound): string {
   return round.replace("_", " ");
+}
+
+function stageLabel(status: DebateStatus): string {
+  switch (status) {
+    case "queued":
+      return "queued";
+    case "framing":
+      return "framing the question";
+    case "researching":
+      return "gathering evidence";
+    case "debating":
+      return "agents are debating";
+    case "judging":
+      return "judge is synthesizing";
+    case "complete":
+      return "done";
+    case "failed":
+      return "failed";
+    default:
+      return status;
+  }
 }
 
 function groupTurns(turns: RoundTurn[]) {

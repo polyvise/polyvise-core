@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { ZodError } from "zod";
-import { createDebate, listDebates } from "@polyvise/debate-engine/debate/store";
+import { listDebates, startDebate } from "@polyvise/debate-engine/debate/store";
 
 export async function GET() {
   return Response.json(
@@ -18,14 +18,14 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json();
-    const debate = await createDebate(payload);
+    const { debate } = startDebate(payload);
 
     return Response.json(
       {
         debate
       },
       {
-        status: 201,
+        status: 202,
         headers: {
           "Cache-Control": "no-store"
         }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     return Response.json(
       {
-        error: error instanceof Error ? error.message : "Unable to create debate."
+        error: error instanceof Error ? error.message : "Unable to start debate."
       },
       {
         status: 500

@@ -1,14 +1,85 @@
 import { randomUUID } from "node:crypto";
 import { createDefaultLlmProvider } from "../providers/llm";
-import { loadDebateRuntimeConfig } from "./config";
+import { loadDebateRuntimeConfig, type DebateRuntimeConfig } from "./config";
 import { debateRequestSchema, followupOutputSchema } from "./schema";
 import { frameDebateRequest, productNotes, runHybridCouncilDebate } from "./engine";
 import { createDefaultDebateRepository } from "./repository";
-import type { DebateRecord, DebateRequest, FollowupExchange } from "./types";
+import type {
+  DebateLiveEvent,
+  DebateRecord,
+  DebateRequest,
+  FollowupExchange
+} from "./types";
 
 const repository = createDefaultDebateRepository();
 
-export async function createDebate(input: DebateRequest): Promise<DebateRecord> {
+type Listener = (event: DebateLiveEvent) => void;
+
+class DebateEventBus {
+  readonly buffer: DebateLiveEvent[] = [];
+  private listeners = new Set<Listener>();
+  private terminal = false;
+
+  emit(event: DebateLiveEvent): void {
+    this.buffer.push(event);
+    for (const listener of this.listeners) {
+      try {
+        listener(event);
+      } catch {
+        // listener errors should not break the run
+      }
+    }
+    if (event.kind === "complete" || event.kind === "error") {
+      this.terminal = true;
+    }
+  }
+
+  subscribe(listener: Listener): () => void {
+    // replay buffered events so a late subscriber catches up
+    for (const event of this.buffer) {
+      try {
+        listener(event);
+      } catch {
+        // ignore
+      }
+    }
+    if (this.terminal) {
+      return () => {};
+    }
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  isTerminal(): boolean {
+    return this.terminal;
+  }
+}
+
+const buses = new Map<string, DebateEventBus>();
+
+function getOrCreateBus(id: string): DebateEventBus {
+  let bus = buses.get(id);
+  if (!bus) {
+    bus = new DebateEventBus();
+    buses.set(id, bus);
+  }
+  return bus;
+}
+
+function scheduleBusCleanup(id: string, delayMs = 5 * 60 * 1000): void {
+  setTimeout(() => {
+    buses.delete(id);
+  }, delayMs).unref?.();
+}
+
+function buildSeedRecord(input: DebateRequest): {
+  record: DebateRecord;
+  request: DebateRequest;
+  config: DebateRuntimeConfig;
+  framed: ReturnType<typeof frameDebateRequest>;
+} {
   const request = debateRequestSchema.parse(input);
   const id = `debate_${randomUUID().slice(0, 10)}`;
   const framed = frameDebateRequest(request);
@@ -29,34 +100,77 @@ export async function createDebate(input: DebateRequest): Promise<DebateRecord> 
     followups: []
   };
 
-  repository.save(record);
+  const baseConfig = loadDebateRuntimeConfig();
+  const config: DebateRuntimeConfig = {
+    ...baseConfig,
+    quickModel: request.models?.quick?.trim() || baseConfig.quickModel,
+    deepModel: request.models?.deep?.trim() || baseConfig.deepModel,
+    judgeModel: request.models?.judge?.trim() || baseConfig.judgeModel
+  };
 
-  try {
-    const baseConfig = loadDebateRuntimeConfig();
-    const config = {
-      ...baseConfig,
-      quickModel: request.models?.quick?.trim() || baseConfig.quickModel,
-      deepModel: request.models?.deep?.trim() || baseConfig.deepModel,
-      judgeModel: request.models?.judge?.trim() || baseConfig.judgeModel
-    };
-    const run = await runHybridCouncilDebate(id, request, framed, { config });
-    const completed: DebateRecord = {
-      ...record,
-      status: run.status,
-      latestRun: run,
-      updatedAt: new Date().toISOString()
-    };
-    repository.save(completed);
-    return completed;
-  } catch (error) {
-    const failed: DebateRecord = {
-      ...record,
-      status: "failed",
-      updatedAt: new Date().toISOString()
-    };
-    repository.save(failed);
-    throw error;
+  return { record, request, config, framed };
+}
+
+export interface StartDebateResult {
+  debate: DebateRecord;
+  completion: Promise<DebateRecord>;
+}
+
+export function startDebate(input: DebateRequest): StartDebateResult {
+  const { record, request, config, framed } = buildSeedRecord(input);
+  repository.save(record);
+  const bus = getOrCreateBus(record.id);
+
+  const completion = (async (): Promise<DebateRecord> => {
+    try {
+      const run = await runHybridCouncilDebate(record.id, request, framed, {
+        config,
+        emit: (event) => bus.emit(event)
+      });
+      const completed: DebateRecord = {
+        ...record,
+        status: run.status,
+        latestRun: run,
+        updatedAt: new Date().toISOString()
+      };
+      repository.save(completed);
+      scheduleBusCleanup(record.id);
+      return completed;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Debate run failed.";
+      bus.emit({ kind: "error", message });
+      const failed: DebateRecord = {
+        ...record,
+        status: "failed",
+        updatedAt: new Date().toISOString()
+      };
+      repository.save(failed);
+      scheduleBusCleanup(record.id);
+      throw error;
+    }
+  })();
+
+  // Prevent unhandled rejection warnings when callers only consume via SSE.
+  completion.catch(() => {});
+
+  return { debate: record, completion };
+}
+
+export async function createDebate(input: DebateRequest): Promise<DebateRecord> {
+  const { completion } = startDebate(input);
+  return completion;
+}
+
+export function subscribeToDebate(
+  debateId: string,
+  listener: Listener
+): { unsubscribe: () => void; terminal: boolean } {
+  const bus = buses.get(debateId);
+  if (!bus) {
+    return { unsubscribe: () => {}, terminal: true };
   }
+  const unsubscribe = bus.subscribe(listener);
+  return { unsubscribe, terminal: bus.isTerminal() };
 }
 
 export function getDebate(id: string): DebateRecord | null {

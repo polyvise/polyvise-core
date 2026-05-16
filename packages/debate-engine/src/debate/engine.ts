@@ -16,6 +16,7 @@ import type {
   Claim,
   DebateAgent,
   DebateEvent,
+  DebateLiveEvent,
   DebateRequest,
   DebateRun,
   DebateTeam,
@@ -79,9 +80,12 @@ export function frameDebateRequest(request: DebateRequest): FramedDebate {
   };
 }
 
+export type DebateEventEmitter = (event: DebateLiveEvent) => void;
+
 export interface DebateExecutionOptions {
   provider?: LlmProvider;
   config?: DebateRuntimeConfig;
+  emit?: DebateEventEmitter;
 }
 
 export async function runHybridCouncilDebate(
@@ -96,10 +100,12 @@ export async function runHybridCouncilDebate(
 class DebateWorkflowExecutor {
   private readonly config: DebateRuntimeConfig;
   private readonly provider: LlmProvider;
+  private readonly emit: DebateEventEmitter;
 
   constructor(options: DebateExecutionOptions = {}) {
     this.config = options.config ?? loadDebateRuntimeConfig();
     this.provider = options.provider ?? createDefaultLlmProvider(this.config);
+    this.emit = options.emit ?? (() => {});
   }
 
   async run(debateId: string, request: DebateRequest, framed: FramedDebate): Promise<DebateRun> {
@@ -109,12 +115,25 @@ class DebateWorkflowExecutor {
     const trace: RunTraceEntry[] = [];
     const snapshots: ModelSnapshot[] = [];
 
+    const recordSnapshot = (snapshot: ModelSnapshot) => {
+      snapshots.push(snapshot);
+      this.emit({ kind: "model_snapshot", snapshot });
+    };
+
     pushEvent(events, debateId, runId, "queued");
+    this.emit({ kind: "stage", status: "queued" });
     await runStep(trace, "frame", async () => {
       return `Classified as ${framed.topicKind}.`;
     });
+    this.emit({
+      kind: "framed",
+      resolution: framed.resolution,
+      topicKind: framed.topicKind,
+      highStakes: framed.highStakes
+    });
 
     pushEvent(events, debateId, runId, "framing");
+    this.emit({ kind: "stage", status: "framing" });
     const scoutResult = await runStep(trace, "scout", async () => {
       const fallback = { scouts: buildStanceScouts(framed, this.config) };
       const { data, snapshot } = await generateStructured(
@@ -124,13 +143,14 @@ class DebateWorkflowExecutor {
         fallback,
         scoutOutputSchema
       );
-      snapshots.push(snapshot);
+      recordSnapshot(snapshot);
       return {
         message: `${data.scouts.length} stance scouts generated independent lenses.`,
         value: data.scouts.map((scout) => ({ ...scout, id: makeId("scout") }))
       };
     });
     const scouts = scoutResult;
+    this.emit({ kind: "scouts", scouts });
 
     const teams = await runStep(trace, "team_builder", async () => {
       return {
@@ -138,8 +158,10 @@ class DebateWorkflowExecutor {
         value: buildDebateTeams(scouts)
       };
     });
+    this.emit({ kind: "teams", teams });
 
     pushEvent(events, debateId, runId, "researching");
+    this.emit({ kind: "stage", status: "researching" });
     const sources = await runStep(trace, "evidence", async () => {
       const collected = await collectEvidence(framed.subject, framed.topicKind, this.config.evidenceProvider);
       const live = collected.some((source) => source.retrievedVia === "brave");
@@ -151,6 +173,7 @@ class DebateWorkflowExecutor {
         value: collected
       };
     });
+    this.emit({ kind: "sources", sources });
 
     const claimOutput = await runStep(trace, "opening", async () => {
       const fallback = { claims: buildClaims(framed, sources).map(({ id: _id, ...claim }) => claim) };
@@ -161,16 +184,19 @@ class DebateWorkflowExecutor {
         fallback,
         claimOutputSchema
       );
-      snapshots.push(snapshot);
+      recordSnapshot(snapshot);
       return {
         message: `${data.claims.length} source-linked claims generated.`,
         value: data.claims.map((claim) => ({ ...claim, id: makeId("claim") }))
       };
     });
     const claims = claimOutput;
+    this.emit({ kind: "claims", claims });
     const { nodes, edges } = buildArgumentMap(framed, claims, sources);
+    this.emit({ kind: "argument_map", nodes, edges });
 
     pushEvent(events, debateId, runId, "debating");
+    this.emit({ kind: "stage", status: "debating" });
     const openingTurns = await runStep(trace, "cross_exam", async () => {
       const fallbackTurns = buildRoundTurns(teams, claims, sources, framed, this.config.maxRounds);
       const { data, snapshot } = await generateStructured(
@@ -180,14 +206,16 @@ class DebateWorkflowExecutor {
         { turns: fallbackTurns.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) },
         debateTurnOutputSchema
       );
-      snapshots.push(snapshot);
+      recordSnapshot(snapshot);
       return {
         message: "Opening and cross-examination turns generated from the claim graph.",
         value: data.turns.map((turn) => ({ ...turn, id: makeId("turn"), createdAt: now() }))
       };
     });
+    this.emit({ kind: "turns", turns: openingTurns });
 
     pushEvent(events, debateId, runId, "judging");
+    this.emit({ kind: "stage", status: "judging" });
     const scorecard = await runStep(trace, "rebuttal", async () => {
       const fallback = buildScorecard(claims, framed.topicKind);
       const { data, snapshot } = await generateStructured(
@@ -197,12 +225,13 @@ class DebateWorkflowExecutor {
         fallback,
         judgeScorecardOutputSchema
       );
-      snapshots.push(snapshot);
+      recordSnapshot(snapshot);
       return {
         message: `Judge scored the debate as ${data.recommendation}.`,
         value: data
       };
     });
+    this.emit({ kind: "scorecard", scorecard });
     const summary = await runStep(trace, "judge", async () => {
       const fallback = buildSummary(framed, claims, scorecard);
       const { data, snapshot } = await generateStructured(
@@ -212,14 +241,17 @@ class DebateWorkflowExecutor {
         fallback,
         finalSummaryOutputSchema
       );
-      snapshots.push(snapshot);
+      recordSnapshot(snapshot);
       return {
         message: `Recommendation: ${scorecard.recommendation}.`,
         value: data
       };
     });
+    this.emit({ kind: "summary", summary });
 
     pushEvent(events, debateId, runId, "complete");
+    this.emit({ kind: "stage", status: "complete" });
+    this.emit({ kind: "complete", runId });
     const modelSnapshots = mergeModelSnapshots(modelRosterFromConfig(this.config), snapshots);
     const artifactManifest = buildArtifactManifest({
       scouts,

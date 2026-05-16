@@ -1,49 +1,82 @@
-import { getDebate } from "@polyvise/debate-engine/debate/store";
+import { getDebate, subscribeToDebate } from "@polyvise/debate-engine/debate/store";
+import type { DebateLiveEvent } from "@polyvise/debate-engine/debate/types";
+
+export const dynamic = "force-dynamic";
 
 type RouteContext = {
   params: Promise<{ id: string }> | { id: string };
 };
 
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
   const debate = getDebate(id);
 
   if (!debate) {
-    return Response.json(
-      {
-        error: "Debate not found."
-      },
-      {
-        status: 404
-      }
-    );
+    return Response.json({ error: "Debate not found." }, { status: 404 });
   }
 
-  const events = debate.latestRun?.events ?? [];
+  const encoder = new TextEncoder();
+  let teardown: (() => void) | null = null;
 
-  if (request.headers.get("accept")?.includes("text/event-stream")) {
-    const body = [
-      ...events.map((event) => `event: ${event.status}\ndata: ${JSON.stringify(event)}\n\n`),
-      "event: done\ndata: {}\n\n"
-    ].join("");
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      let closed = false;
 
-    return new Response(body, {
-      headers: {
-        "Cache-Control": "no-store",
-        Connection: "keep-alive",
-        "Content-Type": "text/event-stream"
+      const closeStream = () => {
+        if (closed) return;
+        closed = true;
+        try {
+          controller.close();
+        } catch {
+          // already closed
+        }
+      };
+
+      const safeEnqueue = (chunk: Uint8Array) => {
+        if (closed) return;
+        try {
+          controller.enqueue(chunk);
+        } catch {
+          closeStream();
+        }
+      };
+
+      const writeEvent = (event: DebateLiveEvent) => {
+        safeEnqueue(encoder.encode(`event: ${event.kind}\ndata: ${JSON.stringify(event)}\n\n`));
+        if (event.kind === "complete" || event.kind === "error") {
+          setTimeout(closeStream, 50);
+        }
+      };
+
+      const { unsubscribe, terminal } = subscribeToDebate(id, writeEvent);
+
+      if (terminal) {
+        safeEnqueue(encoder.encode(`event: closed\ndata: {}\n\n`));
+        closeStream();
+        return;
       }
-    });
-  }
 
-  return Response.json(
-    {
-      events
+      const heartbeat = setInterval(() => {
+        safeEnqueue(encoder.encode(`: ping\n\n`));
+      }, 15000);
+
+      teardown = () => {
+        clearInterval(heartbeat);
+        unsubscribe();
+        closeStream();
+      };
     },
-    {
-      headers: {
-        "Cache-Control": "no-store"
-      }
+    cancel() {
+      teardown?.();
     }
-  );
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-store, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no"
+    }
+  });
 }

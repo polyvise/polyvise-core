@@ -76,3 +76,18 @@ input:focus-visible {
   border-radius: 8px;
   overflow: hidden;
 }
+
+@keyframes turn-in {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.turn-in {
+  animation: turn-in 320ms ease-out both;
+}

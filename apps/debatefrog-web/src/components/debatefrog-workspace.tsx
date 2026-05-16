@@ -74,6 +74,11 @@ type LiveState = {
    * UI must NOT render the corresponding data as a real answer.
    */
   fallbacks: Partial<Record<StepId, PlaceholderInfo>>;
+  /**
+   * Per-round failure info for the debate turns. A round in here means we
+   * shouldn't render its bubbles — show an inline error in their place.
+   */
+  turnFailuresByRound: Partial<Record<DebateRound, PlaceholderInfo>>;
   errorMessage: string | null;
   done: boolean;
 };
@@ -101,6 +106,7 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
       summary: null,
       snapshots: [],
       fallbacks: {},
+      turnFailuresByRound: {},
       errorMessage: null,
       done: false
     };
@@ -136,7 +142,12 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
     case "turns":
       return {
         ...state,
-        turns: event.turns,
+        // Each turns event carries one round's worth; append rather than
+        // replace so the lily-pad fills up incrementally.
+        turns: event.placeholder ? state.turns : [...state.turns, ...event.turns],
+        turnFailuresByRound: event.placeholder
+          ? { ...state.turnFailuresByRound, [event.round]: event.placeholder }
+          : state.turnFailuresByRound,
         fallbacks: mergeFallback(state.fallbacks, "turns", event.placeholder)
       };
     case "scorecard":
@@ -570,7 +581,6 @@ function LiveView({
   const fallbackSteps = Object.keys(live.fallbacks) as StepId[];
   const verdictFellBack = Boolean(live.fallbacks.scorecard || live.fallbacks.summary);
   const claimsFellBack = Boolean(live.fallbacks.claims);
-  const turnsFellBack = Boolean(live.fallbacks.turns);
   const summaryFellBack = Boolean(live.fallbacks.summary);
 
   return (
@@ -587,11 +597,7 @@ function LiveView({
 
       {verdictFellBack ? <VerdictUnavailable live={live} /> : <Verdict live={live} />}
 
-      {turnsFellBack ? (
-        <SectionUnavailable title="Lily pad debate unavailable" info={live.fallbacks.turns!} />
-      ) : (
-        <FrogStage live={live} />
-      )}
+      <FrogStage live={live} />
 
       {claimsFellBack ? (
         <SectionUnavailable title="Pros and cons unavailable" info={live.fallbacks.claims!} />
@@ -817,10 +823,13 @@ function FrogStage({ live }: { live: LiveState }) {
     "judge_review",
     "synthesis"
   ];
-  const orderedRounds = roundOrder.filter((round) => grouped[round]?.length);
+  const presentRounds = roundOrder.filter(
+    (round) => grouped[round]?.length || live.turnFailuresByRound[round]
+  );
 
   const isAwaitingDebate =
     live.status === "queued" || live.status === "framing" || live.status === "researching";
+  const isDebating = live.status === "debating";
 
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
@@ -828,7 +837,7 @@ function FrogStage({ live }: { live: LiveState }) {
 
       {live.teams ? <Lineup teams={live.teams} /> : null}
 
-      {orderedRounds.length === 0 ? (
+      {presentRounds.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-mud/25 bg-cream/40 p-6 text-center text-sm text-ink/65">
           {isAwaitingDebate ? (
             <span className="inline-flex items-center gap-2">
@@ -838,25 +847,61 @@ function FrogStage({ live }: { live: LiveState }) {
           ) : (
             <span className="inline-flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin text-leaf" />
-              The frogs are arguing now
+              The frogs are warming up
             </span>
           )}
         </div>
       ) : (
         <div className="mt-4 space-y-6">
-          {orderedRounds.map((round) => (
-            <div key={round}>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-mud">
-                {formatRound(round)}
+          {presentRounds.map((round) => {
+            const failure = live.turnFailuresByRound[round];
+            const turns = grouped[round] ?? [];
+            return (
+              <div key={round}>
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-mud">
+                  {formatRound(round)}
+                </div>
+                {failure ? (
+                  <RoundFailedInline info={failure} />
+                ) : (
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {turns.map((turn, index) => (
+                      <TurnBubble key={turn.id} turn={turn} index={index} />
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                {grouped[round]?.map((turn) => <TurnBubble key={turn.id} turn={turn} />)}
-              </div>
-            </div>
-          ))}
+            );
+          })}
+          {isDebating ? <NextRoundComing /> : null}
         </div>
       )}
     </section>
+  );
+}
+
+function RoundFailedInline({ info }: { info: PlaceholderInfo }) {
+  return (
+    <div className="rounded-xl border border-berry/30 bg-berry/10 p-3 text-sm text-ink/85">
+      <div className="text-sm font-black text-berry">This round didn't run</div>
+      <div className="mt-0.5 text-xs text-ink/70">
+        Asked{" "}
+        <code className="rounded bg-white/80 px-1 py-0.5 font-mono text-[11px] text-ink">
+          {info.requestedModel}
+        </code>{" "}
+        but it didn't return a usable response.
+      </div>
+      <div className="mt-0.5 text-xs text-ink/60">{info.reason}</div>
+    </div>
+  );
+}
+
+function NextRoundComing() {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-dashed border-leaf/40 bg-mint/40 px-3 py-1.5 text-xs font-bold text-pond">
+      <Loader2 className="h-3 w-3 animate-spin text-leaf" />
+      Next round hopping in…
+    </div>
   );
 }
 
@@ -895,7 +940,7 @@ function Lineup({ teams }: { teams: DebateTeam }) {
   );
 }
 
-function TurnBubble({ turn }: { turn: RoundTurn }) {
+function TurnBubble({ turn, index = 0 }: { turn: RoundTurn; index?: number }) {
   const isPro = turn.side === "pro";
   const isCon = turn.side === "con";
   const mood: "pro" | "con" | "judge" = isPro ? "pro" : isCon ? "con" : "judge";
@@ -906,7 +951,10 @@ function TurnBubble({ turn }: { turn: RoundTurn }) {
       : "border-[#9978b8]/30 bg-[#ece4f5]/60";
   const align = isCon ? "md:col-start-2" : isPro ? "md:col-start-1" : "md:col-span-2";
   return (
-    <article className={`hop-in flex gap-3 rounded-2xl border px-4 py-3 ${tone} ${align}`}>
+    <article
+      className={`hop-in flex gap-3 rounded-2xl border px-4 py-3 ${tone} ${align}`}
+      style={{ animationDelay: `${index * 280}ms` }}
+    >
       <div className="shrink-0">
         <Frog mood={mood} size={44} speaking />
       </div>

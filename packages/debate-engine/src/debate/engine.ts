@@ -202,24 +202,52 @@ class DebateWorkflowExecutor {
 
     pushEvent(events, debateId, runId, "debating");
     this.emit({ kind: "stage", status: "debating" });
-    let turnsPlaceholder: PlaceholderInfo | null = null;
-    const openingTurns = await runStep(trace, "cross_exam", async () => {
-      const fallbackTurns = buildRoundTurns(teams, claims, sources, framed, this.config.maxRounds);
-      const { data, snapshot, placeholder } = await generateStructured(
-        this.provider,
-        "debate turns",
-        "debateTurnOutput",
-        { turns: fallbackTurns.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) },
-        debateTurnOutputSchema
-      );
-      recordSnapshot(snapshot);
-      turnsPlaceholder = placeholder;
-      return {
-        message: "Opening and cross-examination turns generated from the claim graph.",
-        value: data.turns.map((turn) => ({ ...turn, id: makeId("turn"), createdAt: now() }))
-      };
-    });
-    this.emit({ kind: "turns", turns: openingTurns, ...(turnsPlaceholder ? { placeholder: turnsPlaceholder } : {}) });
+
+    // Generate turns one round at a time so they stream to the client as they
+    // arrive instead of landing as a single dump at the end of the debating
+    // phase. Each round is its own LLM call with role-derived model routing.
+    const allFallbackTurns = buildRoundTurns(teams, claims, sources, framed, this.config.maxRounds);
+    const roundOrder: RoundTurn["round"][] = [
+      "opening",
+      "cross_examination",
+      "rebuttal",
+      "closing",
+      "judge_review"
+    ];
+    const presentRounds = roundOrder.filter((round) =>
+      allFallbackTurns.some((turn) => turn.round === round)
+    );
+
+    const openingTurns: RoundTurn[] = [];
+    for (const round of presentRounds) {
+      const roundFallback = allFallbackTurns.filter((turn) => turn.round === round);
+      if (roundFallback.length === 0) continue;
+
+      let roundPlaceholder: PlaceholderInfo | null = null;
+      const turnsForRound = await runStep(trace, traceStepForRound(round), async () => {
+        const { data, snapshot, placeholder } = await generateStructured(
+          this.provider,
+          roleForRound(round),
+          "debateTurnOutput",
+          { turns: roundFallback.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) },
+          debateTurnOutputSchema
+        );
+        recordSnapshot(snapshot);
+        roundPlaceholder = placeholder;
+        return {
+          message: `${data.turns.length} turns generated for ${round.replace("_", " ")}.`,
+          value: data.turns.map((turn) => ({ ...turn, id: makeId("turn"), createdAt: now() }))
+        };
+      });
+
+      openingTurns.push(...turnsForRound);
+      this.emit({
+        kind: "turns",
+        round,
+        turns: turnsForRound,
+        ...(roundPlaceholder ? { placeholder: roundPlaceholder } : {})
+      });
+    }
 
     pushEvent(events, debateId, runId, "judging");
     this.emit({ kind: "stage", status: "judging" });
@@ -914,6 +942,45 @@ function traceEntry(
     at: now(),
     durationMs
   };
+}
+
+function traceStepForRound(round: RoundTurn["round"]): RunTraceEntry["step"] {
+  switch (round) {
+    case "opening":
+      return "opening";
+    case "cross_examination":
+      return "cross_exam";
+    case "rebuttal":
+      return "rebuttal";
+    case "closing":
+      return "closing";
+    case "judge_review":
+      return "judge_review";
+    case "synthesis":
+    default:
+      return "judge";
+  }
+}
+
+function roleForRound(round: RoundTurn["round"]): string {
+  // The role string is matched against model routing keywords in
+  // LlmProvider.modelForRole(): "judge" / "summary" / "scorecard" => judge slot,
+  // "claim" / "rebuttal" => deep slot, otherwise => quick slot.
+  switch (round) {
+    case "opening":
+      return "opening round";
+    case "cross_examination":
+      return "cross-examination round";
+    case "rebuttal":
+      return "rebuttal round";
+    case "closing":
+      return "closing round";
+    case "judge_review":
+      return "judge review round";
+    case "synthesis":
+    default:
+      return "synthesis round";
+  }
 }
 
 function makeId(prefix: string): string {

@@ -237,6 +237,8 @@ export interface RunTraceEntry {
     | "opening"
     | "cross_exam"
     | "rebuttal"
+    | "closing"
+    | "judge_review"
     | "judge"
     | "persist";
   status: "ok" | "warning" | "failed";
@@ -272,7 +274,7 @@ export type DebateLiveEvent =
   | { kind: "sources"; sources: EvidenceSource[] }
   | { kind: "claims"; claims: Claim[]; placeholder?: PlaceholderInfo }
   | { kind: "argument_map"; nodes: ArgumentNode[]; edges: ArgumentEdge[] }
-  | { kind: "turns"; turns: RoundTurn[]; placeholder?: PlaceholderInfo }
+  | { kind: "turns"; round: DebateRound; turns: RoundTurn[]; placeholder?: PlaceholderInfo }
   | { kind: "scorecard"; scorecard: Scorecard; placeholder?: PlaceholderInfo }
   | { kind: "summary"; summary: DebateSummary; placeholder?: PlaceholderInfo }
   | { kind: "model_snapshot"; snapshot: ModelSnapshot }

@@ -82,6 +82,12 @@ type LiveState = {
    * — the UI must NOT render it as a real answer.
    */
   fallbacks: Partial<Record<StepId, PlaceholderInfo>>;
+  /**
+   * Per-round failure info for the debate turns. A round in here means we
+   * shouldn't render its bubbles — show an inline error in their place.
+   * Other rounds that succeeded still render normally.
+   */
+  turnFailuresByRound: Partial<Record<DebateRound, PlaceholderInfo>>;
   errorMessage: string | null;
   done: boolean;
 };
@@ -126,6 +132,7 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
       summary: null,
       snapshots: [],
       fallbacks: {},
+      turnFailuresByRound: {},
       errorMessage: null,
       done: false
     };
@@ -163,7 +170,12 @@ function liveReducer(state: LiveState | null, action: LiveAction): LiveState | n
     case "turns":
       return {
         ...state,
-        turns: event.turns,
+        // Each turns event now carries one round's worth of turns; append
+        // rather than replace so the transcript builds up incrementally.
+        turns: event.placeholder ? state.turns : [...state.turns, ...event.turns],
+        turnFailuresByRound: event.placeholder
+          ? { ...state.turnFailuresByRound, [event.round]: event.placeholder }
+          : state.turnFailuresByRound,
         fallbacks: mergeFallback(state.fallbacks, "turns", event.placeholder)
       };
     case "scorecard":
@@ -601,7 +613,6 @@ function LiveView({
   const fallbackSteps = Object.keys(live.fallbacks) as StepId[];
   const verdictFellBack = Boolean(live.fallbacks.scorecard || live.fallbacks.summary);
   const claimsFellBack = Boolean(live.fallbacks.claims);
-  const turnsFellBack = Boolean(live.fallbacks.turns);
   const summaryFellBack = Boolean(live.fallbacks.summary);
 
   return (
@@ -635,15 +646,7 @@ function LiveView({
 
       {summaryFellBack ? null : live.summary ? <ContextRow summary={live.summary} /> : null}
 
-      {turnsFellBack ? (
-        <SectionUnavailable
-          title="Debate transcript unavailable"
-          step="turns"
-          info={live.fallbacks.turns!}
-        />
-      ) : (
-        <DebateStage live={live} />
-      )}
+      <DebateStage live={live} />
 
       {live.argumentNodes.length > 0 ? (
         <Disclosure title="Argument map">
@@ -985,7 +988,11 @@ function DebateStage({ live }: { live: LiveState }) {
     "judge_review",
     "synthesis"
   ];
-  const orderedRounds = roundOrder.filter((round) => grouped[round]?.length);
+  // A round is "present" if we have real turns for it OR if it failed (we
+  // want to render an inline error in its slot, in the right order).
+  const presentRounds = roundOrder.filter(
+    (round) => grouped[round]?.length || live.turnFailuresByRound[round]
+  );
 
   const isDebating = live.status === "debating";
   const isAwaitingDebate =
@@ -1013,7 +1020,7 @@ function DebateStage({ live }: { live: LiveState }) {
 
       {live.teams ? <AgentRoster teams={live.teams} /> : null}
 
-      {orderedRounds.length === 0 ? (
+      {presentRounds.length === 0 ? (
         <div className="mt-4 rounded-md border border-dashed border-graphite/15 bg-paper/60 p-6 text-center text-sm text-graphite/60">
           {isAwaitingDebate ? (
             <span className="inline-flex items-center gap-2">
@@ -1031,21 +1038,62 @@ function DebateStage({ live }: { live: LiveState }) {
         </div>
       ) : (
         <div className="mt-4 space-y-6">
-          {orderedRounds.map((round) => (
-            <div key={round}>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-graphite/55">
-                {formatRound(round)}
+          {presentRounds.map((round) => {
+            const failure = live.turnFailuresByRound[round];
+            const turns = grouped[round] ?? [];
+            return (
+              <div key={round}>
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-graphite/55">
+                  {formatRound(round)}
+                </div>
+                {failure ? (
+                  <RoundFailedInline info={failure} />
+                ) : (
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {turns.map((turn, index) => (
+                      <TurnBubble key={turn.id} turn={turn} index={index} />
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                {grouped[round]?.map((turn) => (
-                  <TurnBubble key={turn.id} turn={turn} />
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
+          {isDebating ? <NextRoundComing /> : null}
         </div>
       )}
     </section>
+  );
+}
+
+function RoundFailedInline({ info }: { info: PlaceholderInfo }) {
+  return (
+    <div className="rounded-md border border-coral/30 bg-coral/5 p-3 text-sm text-graphite">
+      <div className="flex items-start gap-2">
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-coral" />
+        <div className="min-w-0">
+          <div className="text-sm font-semibold text-ink">This round didn't run</div>
+          <div className="mt-0.5 text-xs text-graphite/75">
+            Asked{" "}
+            <code className="rounded bg-white px-1 py-0.5 font-mono text-[11px] text-ink">
+              {info.requestedModel}
+            </code>{" "}
+            but no usable response came back.
+          </div>
+          <div className="mt-0.5 text-xs text-graphite/60">{info.reason}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NextRoundComing() {
+  return (
+    <div className="rounded-md border border-dashed border-jade/30 bg-jade/5 px-3 py-2 text-xs text-graphite/70">
+      <span className="inline-flex items-center gap-2">
+        <Loader2 className="h-3 w-3 animate-spin text-jade" />
+        Next round coming…
+      </span>
+    </div>
   );
 }
 
@@ -1080,7 +1128,7 @@ function AgentRoster({ teams }: { teams: DebateTeam }) {
   );
 }
 
-function TurnBubble({ turn }: { turn: RoundTurn }) {
+function TurnBubble({ turn, index = 0 }: { turn: RoundTurn; index?: number }) {
   const tone =
     turn.side === "pro"
       ? "border-jade/30 bg-jade/5"
@@ -1089,7 +1137,10 @@ function TurnBubble({ turn }: { turn: RoundTurn }) {
         : "border-plum/30 bg-plum/5";
   const align = turn.side === "con" ? "md:col-start-2" : turn.side === "pro" ? "md:col-start-1" : "md:col-span-2";
   return (
-    <article className={`rounded-md border px-4 py-3 ${tone} ${align}`}>
+    <article
+      className={`turn-in rounded-md border px-4 py-3 ${tone} ${align}`}
+      style={{ animationDelay: `${index * 220}ms` }}
+    >
       <div className="mb-1 flex flex-wrap items-center gap-2 text-xs">
         <span className="font-semibold text-ink">{turn.agentName}</span>
         <SideBadge side={turn.side} />

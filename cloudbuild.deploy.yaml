@@ -1,0 +1,14 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg
+      - APP_WORKSPACE=${_APP_WORKSPACE}
+      - --build-arg
+      - APP_DIR=${_APP_DIR}
+      - --tag
+      - ${_IMAGE}
+      - .
+
+images:
+  - ${_IMAGE}

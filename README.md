@@ -116,6 +116,19 @@ npm test
 npm run build
 ```
 
+## Deploy to Google Cloud Run
+
+The repo includes a Docker/Cloud Build path for low-cost Cloud Run deployment:
+
+```bash
+export GCP_PROJECT_ID="your-gcp-project-id"
+./scripts/gcp-bootstrap.sh
+./scripts/gcp-deploy.sh polyvise
+./scripts/gcp-deploy.sh debatefrog
+```
+
+See [Deployment Direction](docs/deployment.md) for cost guardrails, environment variables, and the secrets handoff.
+
 ## Project Notes
 
 - [Architecture](docs/architecture.md) explains the current executor, provider, repository, and persistence choices.

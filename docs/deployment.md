@@ -16,6 +16,42 @@ Use Cloudflare as a parallel proof of concept for `apps/debatefrog-web` if edge 
 
 Use Hostinger for a simple managed demo if predictable hosting and dashboard simplicity matter more than cloud-native workflow control.
 
+## Google Cloud Run Quickstart
+
+The repo includes a container-based Cloud Run path for both branded apps:
+
+```bash
+export GCP_PROJECT_ID="your-gcp-project-id"
+export GCP_REGION="us-central1"
+
+./scripts/gcp-bootstrap.sh
+./scripts/gcp-deploy.sh polyvise
+./scripts/gcp-deploy.sh debatefrog
+```
+
+The bootstrap script enables the required APIs and creates a Docker Artifact Registry repository named `polyvise` by default. The deploy script builds the selected workspace with Cloud Build, pushes the image to Artifact Registry, and deploys it to Cloud Run.
+
+Default deployment guardrails:
+
+- `min-instances=0` so low-traffic services can scale down.
+- `max-instances=3` to avoid accidental cost spikes while the product is early.
+- `POLYVISE_ENABLE_MOCK_LLM=true` and mock evidence by default for cheap smoke deployments.
+- `timeout=300` to leave room for current inline debate runs.
+
+Override defaults with environment variables:
+
+```bash
+export GCP_CLOUD_RUN_MAX_INSTANCES="5"
+export GCP_CLOUD_RUN_MEMORY="1Gi"
+export GCP_CLOUD_RUN_CPU="1"
+export POLYVISE_ENABLE_MOCK_LLM="false"
+export POLYVISE_EVIDENCE_PROVIDER="brave"
+export POLYVISE_SITE_URL="https://polyvise.com"
+export DEBATEFROG_SITE_URL="https://debatefrog.com"
+```
+
+Secrets such as `OPENROUTER_API_KEY`, `BRAVE_SEARCH_API_KEY`, and `DATABASE_URL` should be stored in Secret Manager and attached to Cloud Run with `--set-secrets` once production persistence and live providers are enabled. Do not pass provider keys through `--set-env-vars`.
+
 ## Platform Fit
 
 ### Google Cloud

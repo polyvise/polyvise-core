@@ -1,6 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import Link from "next/link";
+import type { Route } from "next";
 import {
   ChevronDown,
   ChevronUp,
@@ -482,6 +484,18 @@ function PondHero({
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="mt-5 border-t border-mud/10 pt-3 text-center">
+          <Link
+            // typed-routes generates the route map at build time; cast keeps
+            // tsc happy in CI where .next/types may be stale.
+            href={"/froglings" as Route}
+            className="inline-flex items-center gap-1 text-xs font-semibold text-pond/70 transition hover:text-pond"
+          >
+            <span aria-hidden="true">→</span>
+            <span>Try the funner version (for younger frogs)</span>
+          </Link>
         </div>
       </form>
     </section>

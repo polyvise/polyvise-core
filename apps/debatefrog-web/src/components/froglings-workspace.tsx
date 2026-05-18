@@ -63,7 +63,7 @@ const kidPrompts = [
  */
 const friendlyStage: Record<DebateStatus, string> = {
   queued: "the frogs are getting ready",
-  framing: "the frogs are picking the question",
+  framing: "the frogs are reading the question",
   researching: "the frogs are looking up facts",
   debating: "the frogs are arguing!",
   judging: "the judge frog is thinking",

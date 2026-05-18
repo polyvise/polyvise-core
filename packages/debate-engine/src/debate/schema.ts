@@ -25,7 +25,10 @@ export const debateRequestSchema = z.object({
   context: z.string().trim().max(1600, "Keep context under 1600 characters.").optional(),
   mode: z.literal("hybrid_council").default("hybrid_council"),
   evidence: z.literal("cited").default("cited"),
-  models: debateModelSelectionSchema
+  models: debateModelSelectionSchema,
+  // Defaults to "quartet" so legacy callers keep the canonical 2+2+judge
+  // shape. The /froglings UI sends "duo" for a 1-on-1 debate.
+  councilSize: z.enum(["duo", "quartet"]).default("quartet")
 });
 
 export const followupRequestSchema = z.object({

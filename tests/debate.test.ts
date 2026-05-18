@@ -126,4 +126,47 @@ describe("hybrid council engine", () => {
     expect(run.modelSnapshots.some((snapshot) => snapshot.id === "mock-claim-builder")).toBe(true);
     expect(run.artifactManifest.map((artifact) => artifact.kind)).toContain("claims");
   });
+
+  it("collapses to a single pro and single con agent when councilSize is duo", async () => {
+    const run = await runHybridCouncilDebate("debate_duo_test", {
+      subject: "Should schools have longer recess for kids?",
+      councilSize: "duo"
+    });
+
+    expect(run.status).toBe("complete");
+    // Duo mode: exactly one debater per side plus the neutral judge.
+    expect(run.teams.pro).toHaveLength(1);
+    expect(run.teams.con).toHaveLength(1);
+
+    // Every debate round (opening, cross-examination, rebuttal, closing)
+    // must still feature both a pro and a con voice — otherwise we'd lose
+    // the "this is how a debate works" teaching value of duo mode. With
+    // only one agent per side, that single agent should be the speaker
+    // in every round on its side.
+    const proAgentId = run.teams.pro[0].id;
+    const conAgentId = run.teams.con[0].id;
+    const debateRounds: Array<"opening" | "cross_examination" | "rebuttal" | "closing"> = [
+      "opening",
+      "cross_examination",
+      "rebuttal",
+      "closing"
+    ];
+    for (const round of debateRounds) {
+      const turnsForRound = run.turns.filter((turn) => turn.round === round);
+      const proTurn = turnsForRound.find((turn) => turn.side === "pro");
+      const conTurn = turnsForRound.find((turn) => turn.side === "con");
+      expect(proTurn, `pro turn missing for ${round}`).toBeDefined();
+      expect(conTurn, `con turn missing for ${round}`).toBeDefined();
+      expect(proTurn?.agentId).toBe(proAgentId);
+      expect(conTurn?.agentId).toBe(conAgentId);
+    }
+  });
+
+  it("defaults to the quartet shape when councilSize is omitted", async () => {
+    const run = await runHybridCouncilDebate("debate_default_test", {
+      subject: "Should remote work be the default for software teams?"
+    });
+    expect(run.teams.pro).toHaveLength(2);
+    expect(run.teams.con).toHaveLength(2);
+  });
 });

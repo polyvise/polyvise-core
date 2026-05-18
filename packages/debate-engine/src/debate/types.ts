@@ -19,6 +19,18 @@ export type DebateMode = "hybrid_council";
 export type EvidenceMode = "cited";
 export type PerspectiveSide = "pro" | "con" | "neutral";
 
+/**
+ * How many debaters per side appear on the lily pad.
+ *
+ * - "quartet" (default): two pro agents + two con agents + a neutral judge.
+ *   This is the canonical Hybrid Council shape.
+ * - "duo": one pro agent + one con agent + a neutral judge. The single pro
+ *   and single con agent each speak in every round, which makes the debate
+ *   easier to follow for younger or first-time viewers. Used by the
+ *   /froglings funner experience.
+ */
+export type CouncilSize = "duo" | "quartet";
+
 export type DebateRound =
   | "opening"
   | "cross_examination"
@@ -39,6 +51,12 @@ export interface DebateRequest {
   mode?: DebateMode;
   evidence?: EvidenceMode;
   models?: DebateModelSelection;
+  /**
+   * Number of debaters per side. Defaults to "quartet" when omitted so
+   * existing callers see no behavior change. Set to "duo" for a simpler
+   * 1-on-1 debate suitable for the /froglings experience.
+   */
+  councilSize?: CouncilSize;
 }
 
 export interface DebateRecord {

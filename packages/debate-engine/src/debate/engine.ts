@@ -14,6 +14,7 @@ import type {
   ArgumentEdge,
   ArgumentNode,
   Claim,
+  CouncilSize,
   DebateAgent,
   DebateEvent,
   DebateLiveEvent,
@@ -115,6 +116,9 @@ class DebateWorkflowExecutor {
     const events: DebateEvent[] = [];
     const trace: RunTraceEntry[] = [];
     const snapshots: ModelSnapshot[] = [];
+    // "quartet" is the legacy shape (2 pro + 2 con). "duo" is the simpler
+    // 1-on-1 shape used by the /froglings funner experience.
+    const councilSize: CouncilSize = request.councilSize ?? "quartet";
 
     const recordSnapshot = (snapshot: ModelSnapshot) => {
       snapshots.push(snapshot);
@@ -161,9 +165,13 @@ class DebateWorkflowExecutor {
     this.emit({ kind: "scouts", scouts, ...(scoutsPlaceholder ? { placeholder: scoutsPlaceholder } : {}) });
 
     const teams = await runStep(trace, "team_builder", async () => {
+      const built = buildDebateTeams(scouts, councilSize);
       return {
-        message: "Selected two pro and two con agents plus a neutral judge.",
-        value: buildDebateTeams(scouts)
+        message:
+          councilSize === "duo"
+            ? "Selected one pro and one con agent plus a neutral judge."
+            : "Selected two pro and two con agents plus a neutral judge.",
+        value: built
       };
     });
     this.emit({ kind: "teams", teams });
@@ -684,7 +692,7 @@ function buildScoutThesis(side: "pro" | "con" | "neutral", lens: string, framed:
   return `From a ${lens} lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.`;
 }
 
-function buildDebateTeams(scouts: StanceScout[]): DebateTeam {
+function buildDebateTeams(scouts: StanceScout[], councilSize: CouncilSize = "quartet"): DebateTeam {
   const toAgent = (scout: StanceScout, role: string, side: "pro" | "con"): DebateAgent => ({
     id: makeId("agent"),
     name: scout.name,
@@ -709,9 +717,21 @@ function buildDebateTeams(scouts: StanceScout[]): DebateTeam {
     conScouts[index] ?? conScouts[0] ?? neutralScouts[index] ?? neutralScouts[0] ?? anyScout;
   const judgeScout = neutralScouts[0] ?? anyScout;
 
+  // In duo mode the single pro and single con agent each speak in every
+  // round, so we give them a generic "debater" role label rather than the
+  // round-specific quartet labels.
+  const pro: DebateAgent[] =
+    councilSize === "duo"
+      ? [toAgent(pickPro(0), "pro debater", "pro")]
+      : [toAgent(pickPro(0), "opening case", "pro"), toAgent(pickPro(1), "implementation rebuttal", "pro")];
+  const con: DebateAgent[] =
+    councilSize === "duo"
+      ? [toAgent(pickCon(0), "con debater", "con")]
+      : [toAgent(pickCon(0), "risk case", "con"), toAgent(pickCon(1), "stakeholder rebuttal", "con")];
+
   return {
-    pro: [toAgent(pickPro(0), "opening case", "pro"), toAgent(pickPro(1), "implementation rebuttal", "pro")],
-    con: [toAgent(pickCon(0), "risk case", "con"), toAgent(pickCon(1), "stakeholder rebuttal", "con")],
+    pro,
+    con,
     judge: {
       id: makeId("judge"),
       name: "Neutral Synthesis Judge",
@@ -868,6 +888,13 @@ function buildRoundTurns(
   const conSecond = conClaims[1]?.text ?? conLead;
   const proEvidence = sourceLabel(sources, proClaims[0]?.evidenceSourceIds[0]);
   const conEvidence = sourceLabel(sources, conClaims[0]?.evidenceSourceIds[0]);
+  // In duo mode there is only a single pro agent and a single con agent;
+  // collapse the "second voice" references onto the same agent so every
+  // round still has both sides speaking.
+  const proA: DebateAgent = teams.pro[0];
+  const proB: DebateAgent = teams.pro[1] ?? teams.pro[0];
+  const conA: DebateAgent = teams.con[0];
+  const conB: DebateAgent = teams.con[1] ?? teams.con[0];
   const claimIdsAt = (list: Claim[], ...indexes: number[]): string[] =>
     indexes
       .map((index) => list[index])
@@ -894,58 +921,58 @@ function buildRoundTurns(
   const turns = [
     turn(
       "opening",
-      teams.pro[0],
+      proA,
       "pro",
-      `${teams.pro[0].name}: The affirmative case for "${framed.resolution}" starts with this claim: ${proLead} The most relevant evidence comes from ${proEvidence}.`,
+      `${proA.name}: The affirmative case for "${framed.resolution}" starts with this claim: ${proLead} The most relevant evidence comes from ${proEvidence}.`,
       proClaims.slice(0, 2).map((claim) => claim.id)
     ),
     turn(
       "opening",
-      teams.con[0],
+      conA,
       "con",
-      `${teams.con[0].name}: The negative case challenges the resolution by arguing: ${conLead} The con side anchors that challenge in ${conEvidence}.`,
+      `${conA.name}: The negative case challenges the resolution by arguing: ${conLead} The con side anchors that challenge in ${conEvidence}.`,
       conClaims.slice(0, 2).map((claim) => claim.id)
     ),
     turn(
       "cross_examination",
-      teams.pro[1],
+      proB,
       "pro",
-      `${teams.pro[1].name}: The con side needs to explain why "${conLead}" outweighs the affirmative evidence for "${proSecond}".`,
+      `${proB.name}: The con side needs to explain why "${conLead}" outweighs the affirmative evidence for "${proSecond}".`,
       claimIdsAt(proClaims, 1).concat(claimIdsAt(conClaims, 1))
     ),
     turn(
       "cross_examination",
-      teams.con[1],
+      conB,
       "con",
-      `${teams.con[1].name}: The pro side needs to define its standard clearly; otherwise "${proLead}" may not be enough to prove the resolution.`,
+      `${conB.name}: The pro side needs to define its standard clearly; otherwise "${proLead}" may not be enough to prove the resolution.`,
       claimIdsAt(conClaims, 2).concat(claimIdsAt(proClaims, 0))
     ),
     turn(
       "rebuttal",
-      teams.pro[0],
+      proA,
       "pro",
-      `${teams.pro[0].name}: The negative side raises a fair comparison problem, but the pro case still stands if breadth, depth, and downstream effects are weighted together.`,
+      `${proA.name}: The negative side raises a fair comparison problem, but the pro case still stands if breadth, depth, and downstream effects are weighted together.`,
       proClaims.map((claim) => claim.id)
     ),
     turn(
       "rebuttal",
-      teams.con[0],
+      conA,
       "con",
-      `${teams.con[0].name}: The affirmative case depends heavily on how the key standard is counted. If the rival benchmark explains more of the evidence, the resolution remains unproven.`,
+      `${conA.name}: The affirmative case depends heavily on how the key standard is counted. If the rival benchmark explains more of the evidence, the resolution remains unproven.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
       "closing",
-      teams.pro[1],
+      proB,
       "pro",
-      `${teams.pro[1].name}: Vote pro if the evidence shows the affirmative side explains more of the relevant facts, consequences, and downstream effects.`,
+      `${proB.name}: Vote pro if the evidence shows the affirmative side explains more of the relevant facts, consequences, and downstream effects.`,
       proClaims.map((claim) => claim.id)
     ),
     turn(
       "closing",
-      teams.con[1],
+      conB,
       "con",
-      `${teams.con[1].name}: Vote con if the stronger case belongs to the opposing benchmark once the evidence is measured by consistent criteria.`,
+      `${conB.name}: Vote con if the stronger case belongs to the opposing benchmark once the evidence is measured by consistent criteria.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
@@ -956,6 +983,7 @@ function buildRoundTurns(
       claims.map((claim) => claim.id)
     )
   ];
+
 
   const roundOrder: RoundTurn["round"][] = ["opening", "cross_examination", "rebuttal", "closing"];
   const activeRounds = new Set(roundOrder.slice(0, Math.min(maxRounds, roundOrder.length)));

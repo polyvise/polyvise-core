@@ -18,6 +18,15 @@ describe("topic framing", () => {
     );
   });
 
+  it("frames comparative is questions as direct comparison resolutions", () => {
+    const subject = "Is Carl Jung's work more influential than Sigmund Freud's?";
+
+    expect(classifyTopic(subject)).toBe("comparison");
+    expect(frameResolution(subject, "comparison")).toBe(
+      "Resolved: Carl Jung's work is more influential than Sigmund Freud's."
+    );
+  });
+
   it("flags high-stakes topics", () => {
     expect(detectHighStakes("Should I change my medication dose?")?.category).toBe("medical");
     expect(detectHighStakes("Should I invest my retirement portfolio in a single stock?")?.category).toBe("financial");

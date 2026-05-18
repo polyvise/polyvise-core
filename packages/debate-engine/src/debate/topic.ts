@@ -18,11 +18,12 @@ const valueTerms = ["ethical", "moral", "right", "wrong", "fair", "justice", "go
 const decisionTerms = ["should i", "should we", "my company", "our team", "choose", "adopt", "buy", "switch"];
 const comparisonTerms = [" vs ", " versus ", "compared with", "compare", "between"];
 const empiricalTerms = ["is it true", "does", "will", "can", "cause", "evidence", "effective"];
+const comparativeQuestionPattern = /\bis\b.+\b(more|less|better|worse|greater|stronger|weaker)\b.+\bthan\b/;
 
 export function classifyTopic(subject: string, context = ""): TopicKind {
   const text = `${subject} ${context}`.toLowerCase();
 
-  if (comparisonTerms.some((term) => text.includes(term))) {
+  if (comparisonTerms.some((term) => text.includes(term)) || comparativeQuestionPattern.test(text)) {
     return "comparison";
   }
 
@@ -55,6 +56,16 @@ export function frameResolution(subject: string, topicKind: TopicKind): string {
 
   if (lower.startsWith("should ")) {
     return `Resolved: ${cleanSubject.charAt(0).toUpperCase()}${cleanSubject.slice(1)}.`;
+  }
+
+  if (topicKind === "comparison" && lower.startsWith("is ")) {
+    const declarative = cleanSubject
+      .replace(
+        /^is\s+(.+?)\s+(more|less|better|worse|greater|stronger|weaker)\s+(.+)\s+than\s+(.+)$/i,
+        "$1 is $2 $3 than $4"
+      )
+      .replace(/^is\s+/i, "");
+    return `Resolved: ${declarative.charAt(0).toUpperCase()}${declarative.slice(1)}.`;
   }
 
   if (topicKind === "comparison") {

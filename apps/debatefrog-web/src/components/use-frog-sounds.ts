@@ -9,24 +9,63 @@
  *    real interaction (the "Start the debate!" button click).
  *  - Mute state is persisted to localStorage so a parent/teacher can
  *    silence it once and have it stick across navigations and reloads.
- *  - Real CC0 mp3 files at /sounds/pro-chirp.mp3 + /sounds/con-croak.mp3
- *    are preferred. If either is missing (404), the hook quietly falls
- *    back to a synthesized cartoon chirp/croak so the page is never
- *    silent. See public/sounds/CREDITS.md for upgrade instructions.
+ *  - Real CC0 files at /sounds/pro-chirp.{ogg,mp3} +
+ *    /sounds/con-croak.{ogg,mp3} are preferred. .ogg is selected first
+ *    when the browser reports support for it (smaller files, slightly
+ *    higher quality at the same bitrate); .mp3 is the fallback for the
+ *    handful of browsers that still don't decode .ogg cleanly. If
+ *    neither is present, the hook drops to a procedural Web Audio synth
+ *    so the page is never silent. See public/sounds/CREDITS.md.
+ *  - Each real file is fetched with a `?v=<content-hash>` query
+ *    parameter sourced from the build-time audio-manifest, so swapping
+ *    a clip auto-busts the browser cache without manual versioning.
  *  - `play(side)` starts a softly-looping chirp/croak for that side and
  *    ducks any other side that's currently playing. `stop(side)` fades
  *    that side back to silence.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  audioFileNames,
+  audioManifest,
+  type AudioFormat,
+  type AudioSide
+} from "@/lib/audio-manifest";
 
-type Side = "pro" | "con";
+type Side = AudioSide;
 
 const MUTE_STORAGE_KEY = "froglings:muted";
-const SOUND_URLS: Record<Side, string> = {
-  pro: "/sounds/pro-chirp.mp3",
-  con: "/sounds/con-croak.mp3"
+
+const MIME_FOR_FORMAT: Record<AudioFormat, string> = {
+  ogg: "audio/ogg",
+  mp3: "audio/mpeg"
 };
+
+/**
+ * Picks the best real-file URL for a side, or null if no real file
+ * exists / the browser can't play any of them. Honors the build-time
+ * manifest so we never 404 in steady state, and appends a content-hash
+ * query string for automatic cache-busting.
+ *
+ * .ogg is tried before .mp3 because Ogg Vorbis is smaller at equivalent
+ * quality and every evergreen browser plus Safari 18+ supports it.
+ */
+function pickSourceUrl(side: Side): string | null {
+  if (typeof window === "undefined") return null;
+  const audioProbe = document.createElement("audio");
+  const formats: AudioFormat[] = ["ogg", "mp3"];
+  for (const fmt of formats) {
+    const entry = audioManifest[side][fmt];
+    if (!entry.exists) continue;
+    const support = audioProbe.canPlayType(MIME_FOR_FORMAT[fmt]);
+    // canPlayType returns "" / "maybe" / "probably". We accept anything
+    // non-empty so older Safari, which only ever returns "maybe" for
+    // Ogg, still works.
+    if (support === "") continue;
+    return `/sounds/${audioFileNames[side]}.${fmt}?v=${entry.hash}`;
+  }
+  return null;
+}
 
 interface SideAudio {
   /** Decoded sample if a real file was loaded. */
@@ -120,13 +159,21 @@ export function useFrogSounds(): FrogSoundsApi {
     masterGainRef.current = master;
 
     // Try to fetch + decode each real file in parallel. Whichever ones
-    // 404 or fail to decode just flip useSynth=true for that side.
+    // are absent from the manifest (or 404 / fail to decode for any
+    // other reason) just flip useSynth=true for that side.
     const loadSide = async (side: Side): Promise<SideAudio> => {
       const sideGain = ctx.createGain();
       sideGain.gain.value = 0;
       sideGain.connect(master);
+
+      const url = pickSourceUrl(side);
+      if (!url) {
+        // No real file the browser can play. Drop straight to synth.
+        return { buffer: null, useSynth: true, gain: sideGain, source: null };
+      }
+
       try {
-        const response = await fetch(SOUND_URLS[side]);
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const bytes = await response.arrayBuffer();
         const buffer = await ctx.decodeAudioData(bytes.slice(0));

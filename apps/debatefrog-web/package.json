@@ -4,9 +4,12 @@
   "private": true,
   "description": "Playful Debatefrog interface powered by the Polyvise debate engine.",
   "scripts": {
+    "predev": "node scripts/generate-audio-manifest.mjs",
     "dev": "next dev --port 3001",
+    "prebuild": "node scripts/generate-audio-manifest.mjs",
     "build": "next build",
     "start": "next start --port 3001",
+    "audio:manifest": "node scripts/generate-audio-manifest.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

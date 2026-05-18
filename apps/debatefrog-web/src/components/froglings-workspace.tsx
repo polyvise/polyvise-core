@@ -18,6 +18,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { Loader2, RotateCcw, Send } from "lucide-react";
 import { FunFrog } from "@/components/fun-frog";
+import { SlowPrint } from "@/components/slow-print";
 import type {
   Claim,
   DebateLiveEvent,
@@ -532,19 +533,24 @@ function Bubble({
   content: string;
 }) {
   const isPro = side === "pro";
+  // Tracks whether the typewriter is currently revealing characters; the
+  // FunFrog mouth chatters only while it is, and Phase 6 will gate audio
+  // playback on this same signal.
+  const [typing, setTyping] = useState(false);
   return (
     <div
-      className={`flex gap-3 rounded-2xl border px-4 py-3 ${
+      className={`hop-in flex gap-3 rounded-2xl border px-4 py-3 ${
         isPro ? "border-leaf/30 bg-mint/50" : "border-berry/30 bg-lily/40"
       }`}
     >
       <div className="shrink-0">
-        {/* Phase 5 will gate `speaking` on whether the typewriter is actively printing. */}
-        <FunFrog mood={side} size={40} speaking bob={false} />
+        <FunFrog mood={side} size={40} speaking={typing} bob={!typing} />
       </div>
       <div className="min-w-0">
         <div className="mb-1 text-xs font-black text-ink">{name}</div>
-        <p className="text-sm leading-relaxed text-ink/85">{content}</p>
+        <p className="text-sm leading-relaxed text-ink/85">
+          <SlowPrint text={content} onTypingChange={setTyping} />
+        </p>
       </div>
     </div>
   );

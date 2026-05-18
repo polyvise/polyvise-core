@@ -133,7 +133,7 @@ export function FroglingsIntro({ onDismiss }: FroglingsIntroProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="froglings-intro-title"
-        className="hop-in w-full max-w-xl rounded-3xl border border-mud/20 bg-panel/98 p-6 shadow-lily sm:p-8"
+        className="hop-in w-full max-w-xl rounded-3xl border border-mud/20 bg-[#fffdf2] p-6 shadow-lily sm:p-8"
       >
         <header className="flex items-start justify-between gap-3">
           <h2

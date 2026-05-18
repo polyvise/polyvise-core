@@ -114,6 +114,7 @@ type FroglingsLiveState = {
 type LiveAction =
   | { type: "init"; debateId: string; subject: string }
   | { type: "event"; event: DebateLiveEvent }
+  | { type: "hydrate"; debate: DebateRecord }
   | { type: "reset" };
 
 function liveReducer(state: FroglingsLiveState | null, action: LiveAction): FroglingsLiveState | null {
@@ -130,6 +131,23 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       summary: null,
       errorMessage: null,
       done: false
+    };
+  }
+  if (action.type === "hydrate") {
+    const run = action.debate.latestRun;
+    if (!run) return state;
+    return {
+      debateId: action.debate.id,
+      subject: action.debate.subject,
+      status: action.debate.status,
+      resolution: action.debate.resolution,
+      teams: run.teams,
+      claims: run.claims,
+      turns: run.turns,
+      scorecard: run.scorecard,
+      summary: run.summary,
+      errorMessage: null,
+      done: action.debate.status === "complete" || action.debate.status === "failed"
     };
   }
   if (!state) return state;
@@ -283,7 +301,10 @@ export function FroglingsWorkspace() {
         try {
           const finalRes = await fetch(`/api/debates/${seed.id}`, { cache: "no-store" });
           const finalPayload = (await finalRes.json()) as { debate?: DebateRecord };
-          if (finalPayload.debate) setDebate(finalPayload.debate);
+          if (finalPayload.debate) {
+            setDebate(finalPayload.debate);
+            dispatch({ type: "hydrate", debate: finalPayload.debate });
+          }
         } catch {
           // ignore
         }
@@ -721,12 +742,22 @@ function Bubble({
 
 function Verdict({ live }: { live: FroglingsLiveState }) {
   if (!live.summary || !live.scorecard) {
-    if (live.status === "judging" || live.status === "debating") {
+    if (live.status === "debating" || live.status === "judging") {
       return (
         <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
           <div className="flex items-center gap-3 text-sm text-mud/70">
+            <FunFrog mood="judge" size={48} bob={live.status === "debating"} />
+            {froglingsVerdictPendingCopy(live.status)}
+          </div>
+        </section>
+      );
+    }
+    if (live.status === "complete" || live.done) {
+      return (
+        <section className="rounded-2xl border border-berry/30 bg-lily/30 p-5 shadow-lily">
+          <div className="flex items-center gap-3 text-sm text-mud/70">
             <FunFrog mood="judge" size={48} />
-            The judge frog is thinking about who made the better case…
+            The judge frog could not pick a winner this time.
           </div>
         </section>
       );
@@ -761,4 +792,9 @@ function Verdict({ live }: { live: FroglingsLiveState }) {
       </div>
     </section>
   );
+}
+
+function froglingsVerdictPendingCopy(status: DebateStatus): string {
+  if (status === "judging") return "The judge frog is thinking about who made the better case...";
+  return "The judge frog is listening until all four rounds are finished.";
 }

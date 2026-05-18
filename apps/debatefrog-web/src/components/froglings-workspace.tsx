@@ -13,8 +13,11 @@
  *  - Phase 4: FunFrog animation (bob, blink, mouth chatter, hop).
  *  - Phase 5: SlowPrint typewriter driving the mouth-chatter signal.
  *  - Phase 6: useFrogSounds() chirp/croak audio + header mute toggle.
- *  - Phase 7: educational intro + per-round explainer (not yet).
+ *  - Phase 7: first-visit FroglingsIntro overlay (sessionStorage-gated)
+ *             + per-round explainer banner on the live stage.
  */
+
+const INTRO_SEEN_KEY = "froglings:intro-seen";
 
 import { createContext, FormEvent, useContext, useEffect, useReducer, useRef, useState } from "react";
 import Link from "next/link";
@@ -23,6 +26,7 @@ import { Loader2, RotateCcw, Send, Volume2, VolumeX } from "lucide-react";
 import { FunFrog } from "@/components/fun-frog";
 import { SlowPrint } from "@/components/slow-print";
 import { useFrogSounds } from "@/components/use-frog-sounds";
+import { FroglingsIntro } from "@/components/froglings-intro";
 import type {
   Claim,
   DebateLiveEvent,
@@ -180,6 +184,31 @@ export function FroglingsWorkspace() {
   const [, setDebate] = useState<DebateRecord | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
   const sounds = useFrogSounds();
+  // Show the intro on first session only. We default to false on the
+  // server (so the overlay never SSRs and flashes), then flip to true
+  // after mount if sessionStorage says we haven't shown it yet.
+  const [showIntro, setShowIntro] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const seen = window.sessionStorage.getItem(INTRO_SEEN_KEY);
+      if (seen !== "1") setShowIntro(true);
+    } catch {
+      // sessionStorage may be unavailable; just skip the overlay.
+    }
+  }, []);
+
+  const dismissIntro = () => {
+    setShowIntro(false);
+    try {
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem(INTRO_SEEN_KEY, "1");
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   useEffect(() => {
     return () => {
@@ -335,6 +364,19 @@ export function FroglingsWorkspace() {
           <FroglingsLive live={live} />
         </FrogSoundsContext.Provider>
       )}
+
+      {/* Tucked-away link so a kid (or parent) can re-open the explainer. */}
+      <footer className="mt-10 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setShowIntro(true)}
+          className="text-[11px] font-semibold text-pond/55 underline-offset-2 transition hover:text-pond hover:underline"
+        >
+          Show intro again
+        </button>
+      </footer>
+
+      {showIntro ? <FroglingsIntro onDismiss={dismissIntro} /> : null}
     </main>
   );
 }
@@ -461,6 +503,7 @@ function FroglingsLive({ live }: { live: FroglingsLiveState }) {
         </div>
       ) : null}
       {live.teams ? <FrogIntros teams={live.teams} /> : null}
+      <CurrentRoundCallout live={live} />
       <Rounds live={live} />
       <Verdict live={live} />
     </div>
@@ -504,6 +547,54 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
           <div className="mt-0.5 text-sm font-bold text-ink truncate">{con?.name ?? "—"}</div>
           <div className="text-xs text-ink/60">Will say NO to the question</div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Announces the currently-arriving round in plain language. Uses the
+ * latest debate-round turn in live.turns as the "now playing" signal,
+ * and re-keys on round change so the hop-in animation replays each
+ * time. Hidden once judging/complete take over.
+ */
+function CurrentRoundCallout({ live }: { live: FroglingsLiveState }) {
+  // Treat only the four kid-facing debate rounds as "now playing"
+  // candidates; judge_review/synthesis are handled by Verdict.
+  const trackedRounds: DebateRound[] = [
+    "opening",
+    "cross_examination",
+    "rebuttal",
+    "closing"
+  ];
+
+  const latestDebateRound = [...live.turns]
+    .reverse()
+    .find((turn) => trackedRounds.includes(turn.round))?.round;
+
+  if (!latestDebateRound) return null;
+  if (live.status === "judging" || live.status === "complete") return null;
+
+  const meta = friendlyRound[latestDebateRound];
+  const index = trackedRounds.indexOf(latestDebateRound);
+  const ordinal = index >= 0 ? index + 1 : 1;
+
+  return (
+    <section
+      // Re-key on round so the hop-in animation runs each time a new
+      // round arrives — kids see a clear "we just changed gears" signal.
+      key={latestDebateRound}
+      className="hop-in flex items-center gap-3 rounded-2xl border border-leaf/40 bg-gradient-to-br from-mint/70 to-cream/40 p-4 shadow-sm"
+    >
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pond text-base font-black text-white shadow-lily">
+        {ordinal}
+      </div>
+      <div className="min-w-0">
+        <div className="text-[11px] font-extrabold uppercase tracking-wide text-pond/70">
+          Now arriving — Round {ordinal} of 4
+        </div>
+        <div className="mt-0.5 text-base font-black text-pond">{meta.title.replace(/^Round \d+ — /, "")}</div>
+        <div className="mt-0.5 text-xs text-ink/70">{meta.blurb}</div>
       </div>
     </section>
   );

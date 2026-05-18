@@ -1,0 +1,594 @@
+"use client";
+
+/**
+ * FroglingsWorkspace — the "funner version" of Debatefrog aimed at younger
+ * viewers. Consumes the SAME /api/debates POST + SSE stream as the main
+ * Debatefrog app, but hardcodes `councilSize: "duo"` so the engine returns
+ * a 1-on-1 debate (one pro frog, one con frog, one judge), and renders the
+ * stream in a simpler, more playful layout.
+ *
+ * Phase 3 scope: bones only — kid-friendly prompts, plain-language stage
+ * labels, single pro/con bubbles per round, simple verdict. Phases 4–7
+ * add the FunFrog animation, slow-print typewriter, frog sounds, and the
+ * educational scaffolding.
+ */
+
+import { FormEvent, useEffect, useReducer, useRef, useState } from "react";
+import Link from "next/link";
+import type { Route } from "next";
+import { Loader2, RotateCcw, Send } from "lucide-react";
+import { Frog } from "@/components/frog";
+import type {
+  Claim,
+  DebateLiveEvent,
+  DebateRecord,
+  DebateRound,
+  DebateStatus,
+  DebateSummary,
+  DebateTeam,
+  RoundTurn,
+  Scorecard
+} from "@polyvise/debate-engine/debate/types";
+
+const kidPrompts = [
+  "Should schools have longer recess?",
+  "Should kids be allowed to vote?",
+  "Should video games count as exercise?",
+  "Should pets be allowed at school?",
+  "Should homework be banned?"
+];
+
+/**
+ * Plain-language stage labels for younger readers. The engine emits the
+ * same DebateStatus values as the grown-up app — we just rename them.
+ */
+const friendlyStage: Record<DebateStatus, string> = {
+  queued: "the frogs are getting ready",
+  framing: "the frogs are picking the question",
+  researching: "the frogs are looking up facts",
+  debating: "the frogs are arguing!",
+  judging: "the judge frog is thinking",
+  complete: "all done!",
+  failed: "uh oh — the frogs slipped off the lily pad",
+  partial: "the frogs only got part way"
+};
+
+/**
+ * Plain-language round labels. Matches DebateRound from the engine.
+ */
+const friendlyRound: Record<DebateRound, { title: string; blurb: string }> = {
+  opening: {
+    title: "Round 1 — Opening",
+    blurb: "Each frog says what they think."
+  },
+  cross_examination: {
+    title: "Round 2 — Tough Questions",
+    blurb: "Each frog asks the other tricky questions."
+  },
+  rebuttal: {
+    title: "Round 3 — Comeback",
+    blurb: "Each frog answers back to defend their side."
+  },
+  closing: {
+    title: "Round 4 — Last Word",
+    blurb: "Each frog says why they should win."
+  },
+  judge_review: {
+    title: "Judge's Notes",
+    blurb: "The judge frog jots down what stood out."
+  },
+  synthesis: {
+    title: "Wrap-up",
+    blurb: "Putting it all together."
+  }
+};
+
+// -------------------------------------------------------------------------
+// Live state — a slim version of the grown-up app's reducer. We only keep
+// the fields the funner UI renders.
+// -------------------------------------------------------------------------
+
+type FroglingsLiveState = {
+  debateId: string;
+  subject: string;
+  status: DebateStatus;
+  resolution?: string;
+  teams: DebateTeam | null;
+  claims: Claim[];
+  turns: RoundTurn[];
+  scorecard: Scorecard | null;
+  summary: DebateSummary | null;
+  errorMessage: string | null;
+  done: boolean;
+};
+
+type LiveAction =
+  | { type: "init"; debateId: string; subject: string }
+  | { type: "event"; event: DebateLiveEvent }
+  | { type: "reset" };
+
+function liveReducer(state: FroglingsLiveState | null, action: LiveAction): FroglingsLiveState | null {
+  if (action.type === "reset") return null;
+  if (action.type === "init") {
+    return {
+      debateId: action.debateId,
+      subject: action.subject,
+      status: "queued",
+      teams: null,
+      claims: [],
+      turns: [],
+      scorecard: null,
+      summary: null,
+      errorMessage: null,
+      done: false
+    };
+  }
+  if (!state) return state;
+  const event = action.event;
+  switch (event.kind) {
+    case "stage":
+      return { ...state, status: event.status };
+    case "framed":
+      return { ...state, resolution: event.resolution };
+    case "teams":
+      return { ...state, teams: event.teams };
+    case "claims":
+      // In duo mode placeholder fallbacks would be a corner case; the
+      // funner UI hides claims rather than showing fallback text.
+      return { ...state, claims: event.placeholder ? state.claims : event.claims };
+    case "turns":
+      return { ...state, turns: event.placeholder ? state.turns : [...state.turns, ...event.turns] };
+    case "scorecard":
+      return { ...state, scorecard: event.placeholder ? null : event.scorecard };
+    case "summary":
+      return { ...state, summary: event.placeholder ? null : event.summary };
+    case "complete":
+      return { ...state, status: "complete", done: true };
+    case "error":
+      return { ...state, status: "failed", done: true, errorMessage: event.message };
+    default:
+      return state;
+  }
+}
+
+// -------------------------------------------------------------------------
+// Top-level workspace
+// -------------------------------------------------------------------------
+
+export function FroglingsWorkspace() {
+  const [subject, setSubject] = useState(kidPrompts[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [live, dispatch] = useReducer(liveReducer, null);
+  const [, setDebate] = useState<DebateRecord | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+
+  useEffect(() => {
+    return () => {
+      eventSourceRef.current?.close();
+    };
+  }, []);
+
+  async function runDebate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (subject.trim().length < 4 || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+    setDebate(null);
+    eventSourceRef.current?.close();
+
+    try {
+      const response = await fetch("/api/debates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject,
+          mode: "hybrid_council",
+          evidence: "cited",
+          // The whole point of the funner version: ask the engine for
+          // the simpler 1-on-1 shape.
+          councilSize: "duo"
+        })
+      });
+      const payload = (await response.json()) as { debate?: DebateRecord; error?: string };
+      if (!response.ok || !payload.debate) {
+        throw new Error(payload.error ?? "The pond is murky today. Try again.");
+      }
+
+      const seed = payload.debate;
+      dispatch({ type: "init", debateId: seed.id, subject: seed.subject });
+
+      const es = new EventSource(`/api/debates/${seed.id}/events`);
+      eventSourceRef.current = es;
+
+      const eventKinds: DebateLiveEvent["kind"][] = [
+        "stage",
+        "framed",
+        "scouts",
+        "teams",
+        "sources",
+        "claims",
+        "argument_map",
+        "turns",
+        "scorecard",
+        "summary",
+        "model_snapshot",
+        "complete",
+        "error"
+      ];
+      for (const kind of eventKinds) {
+        es.addEventListener(kind, (msgEvent) => {
+          try {
+            const parsed = JSON.parse((msgEvent as MessageEvent).data) as DebateLiveEvent;
+            dispatch({ type: "event", event: parsed });
+          } catch {
+            // ignore malformed
+          }
+        });
+      }
+
+      const finalize = async () => {
+        es.close();
+        eventSourceRef.current = null;
+        try {
+          const finalRes = await fetch(`/api/debates/${seed.id}`, { cache: "no-store" });
+          const finalPayload = (await finalRes.json()) as { debate?: DebateRecord };
+          if (finalPayload.debate) setDebate(finalPayload.debate);
+        } catch {
+          // ignore
+        }
+      };
+      es.addEventListener("complete", () => void finalize());
+      es.addEventListener("error", () => void finalize());
+      es.addEventListener("closed", () => {
+        es.close();
+        eventSourceRef.current = null;
+      });
+    } catch (caughtError) {
+      setSubmitError(
+        caughtError instanceof Error ? caughtError.message : "The pond is murky today. Try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function startOver() {
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
+    setDebate(null);
+    dispatch({ type: "reset" });
+    setSubmitError(null);
+  }
+
+  return (
+    <main className="mx-auto w-full max-w-[960px] px-4 py-6 sm:py-10">
+      <header className="flex items-center justify-between">
+        <div className="flex items-center gap-3 text-pond">
+          <Frog mood="idle" size={42} />
+          <span className="text-lg font-black tracking-tight">Froglings</span>
+          <span className="rounded-full bg-mint px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-pond">
+            Funner version
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          {live ? (
+            <button
+              type="button"
+              onClick={startOver}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/70 px-3 py-1.5 text-xs font-bold text-pond shadow-sm transition hover:bg-white"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              New question
+            </button>
+          ) : null}
+          <Link
+            href={"/" as Route}
+            className="text-xs font-semibold text-pond/60 transition hover:text-pond"
+          >
+            ← Grown-up version
+          </Link>
+        </div>
+      </header>
+
+      {!live ? (
+        <FroglingsHero
+          subject={subject}
+          onSubjectChange={setSubject}
+          isSubmitting={isSubmitting}
+          error={submitError}
+          onSubmit={runDebate}
+        />
+      ) : (
+        <FroglingsLive live={live} />
+      )}
+    </main>
+  );
+}
+
+// -------------------------------------------------------------------------
+// Question entry
+// -------------------------------------------------------------------------
+
+function FroglingsHero({
+  subject,
+  onSubjectChange,
+  isSubmitting,
+  error,
+  onSubmit
+}: {
+  subject: string;
+  onSubjectChange: (value: string) => void;
+  isSubmitting: boolean;
+  error: string | null;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <section className="mt-6 grid gap-8 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+      <div className="flex flex-col justify-center">
+        <h1
+          className="font-black leading-[0.95] text-pond"
+          style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)" }}
+        >
+          Two frogs.
+          <br />
+          One big question.
+        </h1>
+        <p className="mt-4 max-w-[480px] text-base leading-relaxed text-ink/80">
+          One pro frog and one con frog will debate your question. The judge frog picks the winner.
+          You get to watch the whole thing!
+        </p>
+        <div className="mt-5 flex items-center gap-3">
+          <div className="flex flex-col items-center">
+            <Frog mood="pro" size={64} />
+            <span className="mt-1 text-[11px] font-black uppercase tracking-wide text-pond">
+              Pro frog
+            </span>
+          </div>
+          <span className="text-sm font-black text-mud/60">vs.</span>
+          <div className="flex flex-col items-center">
+            <Frog mood="con" size={64} />
+            <span className="mt-1 text-[11px] font-black uppercase tracking-wide text-berry">
+              Con frog
+            </span>
+          </div>
+          <span className="text-sm font-black text-mud/60">+</span>
+          <div className="flex flex-col items-center">
+            <Frog mood="judge" size={64} />
+            <span className="mt-1 text-[11px] font-black uppercase tracking-wide text-[#5c4583]">
+              Judge frog
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <form
+        onSubmit={onSubmit}
+        className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily backdrop-blur"
+      >
+        <label htmlFor="subject" className="text-sm font-extrabold text-mud">
+          What should the frogs argue about?
+        </label>
+        <textarea
+          id="subject"
+          value={subject}
+          onChange={(event) => onSubjectChange(event.target.value)}
+          placeholder="Should...?"
+          className="mt-1.5 min-h-[100px] w-full resize-y rounded-xl border border-mud/20 bg-white/90 px-3.5 py-3 text-base leading-relaxed text-ink outline-none transition focus:border-leaf"
+        />
+
+        {error ? (
+          <div className="mt-4 rounded-xl border border-berry/40 bg-berry/10 px-3 py-2.5 text-sm text-berry">
+            {error}
+          </div>
+        ) : null}
+
+        <button
+          type="submit"
+          disabled={isSubmitting || subject.trim().length < 4}
+          className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-pond to-leafDark px-4 text-sm font-black text-white shadow-lily transition hover:opacity-95 disabled:cursor-not-allowed disabled:bg-mud/30 disabled:from-mud/30 disabled:to-mud/30 disabled:shadow-none"
+        >
+          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          Start the debate!
+        </button>
+
+        <div className="mt-5">
+          <div className="mb-2 text-[11px] font-extrabold uppercase tracking-wide text-mud/70">
+            Or pick a question
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {kidPrompts.map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => onSubjectChange(prompt)}
+                className="rounded-full border border-pond/15 bg-white/70 px-3 py-1.5 text-xs font-semibold text-pond transition hover:bg-mint"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+// -------------------------------------------------------------------------
+// Live view — kid-friendly stage banner, named frogs, round bubbles, verdict
+// -------------------------------------------------------------------------
+
+function FroglingsLive({ live }: { live: FroglingsLiveState }) {
+  return (
+    <div className="mt-6 space-y-5">
+      <QuestionBanner live={live} />
+      {live.status === "failed" ? (
+        <div className="rounded-xl border border-berry/40 bg-berry/10 px-4 py-3 text-sm text-berry">
+          {live.errorMessage ?? "The debate hopped off the lily pad."}
+        </div>
+      ) : null}
+      {live.teams ? <FrogIntros teams={live.teams} /> : null}
+      <Rounds live={live} />
+      <Verdict live={live} />
+    </div>
+  );
+}
+
+function QuestionBanner({ live }: { live: FroglingsLiveState }) {
+  return (
+    <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
+      <div className="text-[11px] font-extrabold uppercase tracking-wide text-mud/60">
+        Question
+      </div>
+      <div className="mt-1 text-lg leading-snug text-ink">{live.resolution ?? live.subject}</div>
+      <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-xs font-bold text-mud">
+        {live.status === "complete" || live.done ? null : (
+          <Loader2 className="h-3 w-3 animate-spin text-leaf" />
+        )}
+        {friendlyStage[live.status]}
+      </div>
+    </section>
+  );
+}
+
+function FrogIntros({ teams }: { teams: DebateTeam }) {
+  const pro = teams.pro[0];
+  const con = teams.con[0];
+  return (
+    <section className="grid gap-3 md:grid-cols-2">
+      <div className="flex items-center gap-3 rounded-2xl border border-leaf/30 bg-mint/40 p-3">
+        <Frog mood="pro" size={56} />
+        <div className="min-w-0">
+          <div className="text-[11px] font-black uppercase tracking-wide text-pond">Pro frog</div>
+          <div className="mt-0.5 text-sm font-bold text-ink truncate">{pro?.name ?? "—"}</div>
+          <div className="text-xs text-ink/60">Will say YES to the question</div>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 rounded-2xl border border-berry/30 bg-lily/40 p-3">
+        <Frog mood="con" size={56} />
+        <div className="min-w-0">
+          <div className="text-[11px] font-black uppercase tracking-wide text-berry">Con frog</div>
+          <div className="mt-0.5 text-sm font-bold text-ink truncate">{con?.name ?? "—"}</div>
+          <div className="text-xs text-ink/60">Will say NO to the question</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Rounds({ live }: { live: FroglingsLiveState }) {
+  // Render rounds in canonical debate order, skipping any that have no
+  // turns yet. judge_review is hidden in the funner UI — the verdict
+  // section below is where the judge's voice lives.
+  const order: DebateRound[] = ["opening", "cross_examination", "rebuttal", "closing"];
+  const grouped = order.map((round) => ({
+    round,
+    turns: live.turns.filter((turn) => turn.round === round)
+  }));
+  const anyRoundStarted = grouped.some((g) => g.turns.length > 0);
+
+  if (!anyRoundStarted) {
+    return (
+      <section className="rounded-2xl border border-dashed border-mud/25 bg-cream/40 p-6 text-center text-sm text-ink/65">
+        <span className="inline-flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin text-leaf" />
+          The frogs are warming up their voices…
+        </span>
+      </section>
+    );
+  }
+
+  return (
+    <section className="space-y-4">
+      {grouped.map(({ round, turns }) => {
+        if (turns.length === 0) return null;
+        const meta = friendlyRound[round];
+        const pro = turns.find((t) => t.side === "pro");
+        const con = turns.find((t) => t.side === "con");
+        return (
+          <article key={round} className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-sm">
+            <header>
+              <div className="text-sm font-black text-pond">{meta.title}</div>
+              <div className="mt-0.5 text-xs text-ink/65">{meta.blurb}</div>
+            </header>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              {pro ? <Bubble side="pro" content={pro.content} name={pro.agentName} /> : null}
+              {con ? <Bubble side="con" content={con.content} name={con.agentName} /> : null}
+            </div>
+          </article>
+        );
+      })}
+    </section>
+  );
+}
+
+function Bubble({
+  side,
+  name,
+  content
+}: {
+  side: "pro" | "con";
+  name: string;
+  content: string;
+}) {
+  const isPro = side === "pro";
+  return (
+    <div
+      className={`flex gap-3 rounded-2xl border px-4 py-3 ${
+        isPro ? "border-leaf/30 bg-mint/50" : "border-berry/30 bg-lily/40"
+      }`}
+    >
+      <div className="shrink-0">
+        <Frog mood={side} size={40} speaking />
+      </div>
+      <div className="min-w-0">
+        <div className="mb-1 text-xs font-black text-ink">{name}</div>
+        <p className="text-sm leading-relaxed text-ink/85">{content}</p>
+      </div>
+    </div>
+  );
+}
+
+function Verdict({ live }: { live: FroglingsLiveState }) {
+  if (!live.summary || !live.scorecard) {
+    if (live.status === "judging" || live.status === "debating") {
+      return (
+        <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
+          <div className="flex items-center gap-3 text-sm text-mud/70">
+            <Frog mood="judge" size={48} />
+            The judge frog is thinking about who made the better case…
+          </div>
+        </section>
+      );
+    }
+    return null;
+  }
+  const pct = Math.round(live.scorecard.confidence * 100);
+  return (
+    <section className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-4 sm:max-w-xl">
+          <div className="flex shrink-0 flex-col items-center gap-1">
+            <Frog mood="judge" size={64} />
+            <span className="rounded-full bg-[#9978b8]/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#5c4583]">
+              Judge
+            </span>
+          </div>
+          <div>
+            <h2 className="text-xl font-black leading-snug text-pond">{live.summary.headline}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink/85">{live.summary.recommendation}</p>
+          </div>
+        </div>
+        <div className="flex flex-col items-end">
+          <div className="text-[11px] font-bold uppercase tracking-wide text-mud/60">
+            How sure?
+          </div>
+          <div className="mt-1 text-2xl font-black tabular-nums text-pond">{pct}%</div>
+          <div className="mt-1 h-1.5 w-32 overflow-hidden rounded-full bg-mud/15">
+            <div className="h-full bg-leaf" style={{ width: `${pct}%` }} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

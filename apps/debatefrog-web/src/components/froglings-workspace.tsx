@@ -726,14 +726,7 @@ function Rounds({
   const anyRoundStarted = grouped.some((g) => g.turns.length > 0);
 
   if (!anyRoundStarted) {
-    return (
-      <section className="rounded-2xl border border-dashed border-mud/25 bg-cream/40 p-6 text-center text-sm text-ink/65">
-        <span className="inline-flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin text-leaf" />
-          The frogs are warming up their voices…
-        </span>
-      </section>
-    );
+    return null;
   }
 
   return (

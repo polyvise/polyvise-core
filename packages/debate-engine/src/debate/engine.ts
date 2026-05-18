@@ -142,6 +142,13 @@ class DebateWorkflowExecutor {
     let scoutsPlaceholder: PlaceholderInfo | null = null;
     const scoutResult = await runStep(trace, "scout", async () => {
       const fallback = { scouts: buildStanceScouts(framed, this.config) };
+      if (councilSize === "duo") {
+        return {
+          message: "Used deterministic duo scouts to avoid a startup LLM call.",
+          value: fallback.scouts
+        };
+      }
+
       const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "stance scout",

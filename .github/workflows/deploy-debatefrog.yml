@@ -51,9 +51,33 @@ jobs:
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v3
 
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
       - name: Deploy Debatefrog to Cloud Run
         env:
           POLYVISE_REPOSITORY: firestore
           POLYVISE_ENABLE_MOCK_LLM: "false"
           POLYVISE_EVIDENCE_PROVIDER: tavily
-        run: ./scripts/gcp-deploy.sh debatefrog
+          IMAGE: us-central1-docker.pkg.dev/websites-prod-496602/polyvise/debatefrog-web:${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg APP_WORKSPACE=@polyvise/debatefrog-web \
+            --build-arg APP_DIR=apps/debatefrog-web \
+            -t "$IMAGE" \
+            .
+          docker push "$IMAGE"
+          gcloud run deploy debatefrog-web \
+            --image "$IMAGE" \
+            --region "$GCP_REGION" \
+            --project "$GCP_PROJECT_ID" \
+            --platform managed \
+            --allow-unauthenticated \
+            --memory "${GCP_CLOUD_RUN_MEMORY:-1Gi}" \
+            --cpu "${GCP_CLOUD_RUN_CPU:-1}" \
+            --concurrency 20 \
+            --min-instances 0 \
+            --max-instances "${GCP_CLOUD_RUN_MAX_INSTANCES:-3}" \
+            --timeout 300 \
+            --set-env-vars "NEXT_PUBLIC_SITE_URL=https://debatefrog.com,POLYVISE_REPOSITORY=$POLYVISE_REPOSITORY,FIRESTORE_PROJECT_ID=$GCP_PROJECT_ID,POLYVISE_ENABLE_MOCK_LLM=$POLYVISE_ENABLE_MOCK_LLM,POLYVISE_EVIDENCE_PROVIDER=$POLYVISE_EVIDENCE_PROVIDER,POLYVISE_QUICK_MODEL=openai/gpt-4o-mini,POLYVISE_DEEP_MODEL=openai/gpt-4o-mini,POLYVISE_JUDGE_MODEL=openai/gpt-4o-mini,POLYVISE_LLM_TIMEOUT_MS=45000,POLYVISE_LLM_MAX_TOKENS=1000" \
+            --update-secrets "OPENROUTER_API_KEY=debatefrog-openrouter-api-key:latest,TAVILY_API_KEY=debatefrog-tavily-api-key:latest"

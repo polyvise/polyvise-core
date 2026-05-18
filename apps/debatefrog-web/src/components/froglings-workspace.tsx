@@ -853,6 +853,7 @@ function Verdict({
     return null;
   }
   const pct = Math.round(live.scorecard.confidence * 100);
+  const verdictCopy = froglingsVerdictCopy(live.scorecard);
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -864,8 +865,8 @@ function Verdict({
             </span>
           </div>
           <div>
-            <h2 className="text-xl font-black leading-snug text-pond">{live.summary.headline}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink/85">{live.summary.recommendation}</p>
+            <h2 className="text-xl font-black leading-snug text-pond">{verdictCopy.headline}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink/85">{verdictCopy.body}</p>
           </div>
         </div>
         <div className="flex flex-col items-end">
@@ -925,6 +926,8 @@ function stripSpeakerPrefix(content: string, agentName: string) {
 function simplifyForKids(content: string) {
   return content
     .replace(/\((?:claim|src)[^)]+\)/gi, "")
+    .replace(/^The YES side case .*? starts with the claim that\s*/i, "The YES frog says ")
+    .replace(/^The NO side case challenges the question by (?:asserting|saying) that\s*/i, "The NO frog says ")
     .replace(/\baffirmative\b/gi, "YES side")
     .replace(/\bnegative\b/gi, "NO side")
     .replace(/\basserts?\b/gi, "says")
@@ -934,6 +937,7 @@ function simplifyForKids(content: string) {
     .replace(/\bacademic achievement\b/gi, "school performance")
     .replace(/\blogistical challenges\b/gi, "planning problems")
     .replace(/\bresolution\b/gi, "question")
+    .replace(/\bstudies shows\b/gi, "studies show")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -944,4 +948,35 @@ function trimAtWord(content: string, maxLength: number) {
   const lastSpace = slice.lastIndexOf(" ");
   const trimmed = slice.slice(0, lastSpace > 180 ? lastSpace : maxLength).replace(/[,:;.-]+$/, "");
   return `${trimmed}.`;
+}
+
+function froglingsVerdictCopy(scorecard: Scorecard) {
+  switch (scorecard.recommendation) {
+    case "lean_yes":
+      return {
+        headline: "The judge gives this one to YES.",
+        body: "The YES frog made the stronger case, but the NO frog still raised some things to watch."
+      };
+    case "conditional_yes":
+      return {
+        headline: "The judge says: probably YES, with care.",
+        body: "The YES frog made the stronger case, but only if the plan has clear rules and checks along the way."
+      };
+    case "lean_no":
+      return {
+        headline: "The judge gives this one to NO.",
+        body: "The NO frog made the stronger case, though the YES frog had some good reasons too."
+      };
+    case "conditional_no":
+      return {
+        headline: "The judge says: probably NO, unless things change.",
+        body: "The NO frog made the stronger case for now. Better evidence or a safer plan could change the answer."
+      };
+    case "mixed":
+    default:
+      return {
+        headline: "The judge says this one is close.",
+        body: "Both frogs made good points. The best answer depends on which reasons matter most."
+      };
+  }
 }

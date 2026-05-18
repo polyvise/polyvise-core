@@ -6,6 +6,7 @@ export interface LlmRequest {
   prompt: string;
   schemaName: string;
   jsonSchema?: Record<string, unknown>;
+  fallback?: unknown;
 }
 
 export interface LlmProvider {
@@ -35,7 +36,7 @@ export class MockLlmProvider implements LlmProvider {
 
   async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
     return {
-      data: JSON.parse(request.prompt) as T,
+      data: (request.fallback ?? JSON.parse(request.prompt)) as T,
       snapshot: {
         id: `mock-${request.role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
         provider: "local",

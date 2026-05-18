@@ -143,7 +143,12 @@ class DebateWorkflowExecutor {
         "stance scout",
         "scoutOutput",
         fallback,
-        scoutOutputSchema
+        scoutOutputSchema,
+        buildGenerationPrompt({
+          task: "Create five debate agents with distinct lenses for this exact resolution.",
+          framed,
+          fallback
+        })
       );
       recordSnapshot(snapshot);
       scoutsPlaceholder = placeholder;
@@ -186,7 +191,14 @@ class DebateWorkflowExecutor {
         "claim builder",
         "claimOutput",
         fallback,
-        claimOutputSchema
+        claimOutputSchema,
+        buildGenerationPrompt({
+          task:
+            "Create topic-specific pro and con claims. Use the cited source ids where relevant. Do not copy generic pilot, rollback, or implementation language unless the resolution itself is about implementation.",
+          framed,
+          sources,
+          fallback
+        })
       );
       recordSnapshot(snapshot);
       claimsPlaceholder = placeholder;
@@ -230,7 +242,17 @@ class DebateWorkflowExecutor {
           roleForRound(round),
           "debateTurnOutput",
           { turns: roundFallback.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) },
-          debateTurnOutputSchema
+          debateTurnOutputSchema,
+          buildGenerationPrompt({
+            task:
+              "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.",
+            framed,
+            sources,
+            claims,
+            teams,
+            round,
+            fallback: { turns: roundFallback.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) }
+          })
         );
         recordSnapshot(snapshot);
         roundPlaceholder = placeholder;
@@ -253,13 +275,23 @@ class DebateWorkflowExecutor {
     this.emit({ kind: "stage", status: "judging" });
     let scorecardPlaceholder: PlaceholderInfo | null = null;
     const scorecard = await runStep(trace, "rebuttal", async () => {
-      const fallback = buildScorecard(claims, framed.topicKind);
+      const fallback = buildScorecard(claims, framed);
       const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
         "scorecard judge",
         "judgeScorecardOutput",
         fallback,
-        judgeScorecardOutputSchema
+        judgeScorecardOutputSchema,
+        buildGenerationPrompt({
+          task:
+            "Score the actual debate. Notes must mention the actual resolution tradeoffs, not generic pilot/rollback language unless directly relevant.",
+          framed,
+          sources,
+          claims,
+          teams,
+          turns: openingTurns,
+          fallback
+        })
       );
       recordSnapshot(snapshot);
       scorecardPlaceholder = placeholder;
@@ -281,7 +313,18 @@ class DebateWorkflowExecutor {
         "final summary",
         "finalSummaryOutput",
         fallback,
-        finalSummaryOutputSchema
+        finalSummaryOutputSchema,
+        buildGenerationPrompt({
+          task:
+            "Write the final verdict for this exact resolution. The headline, recommendation, uncertainties, and mind-changers must be specific to the subject and evidence.",
+          framed,
+          sources,
+          claims,
+          teams,
+          turns: openingTurns,
+          scorecard,
+          fallback
+        })
       );
       recordSnapshot(snapshot);
       summaryPlaceholder = placeholder;
@@ -373,7 +416,8 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
   role: string,
   schemaName: string,
   fallback: z.infer<TSchema>,
-  schema: TSchema
+  schema: TSchema,
+  prompt?: string
 ): Promise<{
   data: z.infer<TSchema>;
   snapshot: ModelSnapshot;
@@ -390,7 +434,8 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
     const result = await provider.generateStructured<unknown>({
       role,
       schemaName,
-      prompt: JSON.stringify(fallbackParse.data),
+      prompt: prompt ?? JSON.stringify(fallbackParse.data),
+      fallback: fallbackParse.data,
       jsonSchema: z.toJSONSchema(schema)
     });
     const parsed = schema.safeParse(result.data);
@@ -437,6 +482,83 @@ function mergeModelSnapshots(roster: ModelSnapshot[], generated: ModelSnapshot[]
   }
 
   return Array.from(snapshots.values());
+}
+
+function buildGenerationPrompt(input: {
+  task: string;
+  framed: FramedDebate;
+  sources?: EvidenceSource[];
+  claims?: Claim[];
+  teams?: DebateTeam;
+  turns?: RoundTurn[];
+  scorecard?: Scorecard;
+  round?: RoundTurn["round"];
+  fallback: unknown;
+}): string {
+  return JSON.stringify(
+    {
+      task: input.task,
+      rules: [
+        "Return only JSON matching the requested schema.",
+        "Make every visible sentence specific to the resolution and cited evidence.",
+        "Do not preserve deterministic fallback wording when it is generic.",
+        "Do not mention pilots, rollback triggers, implementation phases, local accountability, or stakeholder safeguards unless the resolution actually asks about an implementation decision."
+      ],
+      debate: {
+        subject: input.framed.subject,
+        context: input.framed.context,
+        resolution: input.framed.resolution,
+        topicKind: input.framed.topicKind,
+        highStakes: input.framed.highStakes
+      },
+      round: input.round,
+      sources: input.sources?.map((source) => ({
+        id: source.id,
+        title: source.title,
+        publisher: source.publisher,
+        snippet: source.snippet,
+        quality: source.quality,
+        retrievedVia: source.retrievedVia
+      })),
+      claims: input.claims?.map((claim) => ({
+        id: claim.id,
+        side: claim.side,
+        text: claim.text,
+        warrant: claim.warrant,
+        evidenceSourceIds: claim.evidenceSourceIds,
+        confidence: claim.confidence
+      })),
+      teams: input.teams
+        ? {
+            pro: input.teams.pro.map((agent) => ({
+              id: agent.id,
+              name: agent.name,
+              role: agent.role,
+              thesis: agent.thesis
+            })),
+            con: input.teams.con.map((agent) => ({
+              id: agent.id,
+              name: agent.name,
+              role: agent.role,
+              thesis: agent.thesis
+            })),
+            judge: input.teams.judge
+          }
+        : undefined,
+      turns: input.turns?.map((turn) => ({
+        round: turn.round,
+        agentName: turn.agentName,
+        side: turn.side,
+        content: turn.content,
+        claimIds: turn.claimIds,
+        sourceIds: turn.sourceIds
+      })),
+      scorecard: input.scorecard,
+      draftJsonToImprove: input.fallback
+    },
+    null,
+    2
+  );
 }
 
 function buildArtifactManifest(input: {
@@ -531,18 +653,18 @@ function buildStanceScouts(framed: FramedDebate, config: DebateRuntimeConfig): S
     strongestArguments:
       scout.side === "con"
         ? [
-            "The costs and implementation risks may arrive before benefits are measurable.",
-            "Stakeholders with less power may carry more downside than the headline summary implies.",
-            "A reversible pilot may be safer than a broad commitment."
+            `The resolution may overstate what the evidence proves about ${framed.subject}.`,
+            "Competing definitions, timeframes, or affected audiences may change the answer.",
+            "The strongest negative case should identify what the pro side is leaving out."
           ]
         : scout.side === "pro"
           ? [
-              "The resolution may create meaningful upside if implemented with constraints and measurement.",
-              "A staged approach can preserve learning while limiting irreversible exposure.",
-              "The alternative may have its own unpriced risks."
+              `The resolution may be defensible if the best evidence supports ${framed.subject}.`,
+              "The affirmative case should define the comparison standard and defend it consistently.",
+              "The alternative position may ignore important second-order or indirect effects."
             ]
           : [
-              "The decision turns on evidence quality, context fit, and reversibility.",
+              "The decision turns on evidence quality, definitions, and scope.",
               "Both sides need source-backed claims and explicit uncertainty.",
               "The synthesis should say what evidence would change the recommendation."
             ],
@@ -552,14 +674,14 @@ function buildStanceScouts(framed: FramedDebate, config: DebateRuntimeConfig): S
 
 function buildScoutThesis(side: "pro" | "con" | "neutral", lens: string, framed: FramedDebate): string {
   if (side === "pro") {
-    return `From a ${lens} lens, ${framed.resolution} is plausible if adopted with measurable guardrails.`;
+    return `From a ${lens} lens, ${framed.resolution} is plausible if the strongest evidence supports that framing.`;
   }
 
   if (side === "con") {
-    return `From a ${lens} lens, ${framed.resolution} may fail unless risks are narrowed before commitment.`;
+    return `From a ${lens} lens, ${framed.resolution} may fail if the comparison standard or evidence base favors the opposing case.`;
   }
 
-  return `From a ${lens} lens, the right answer depends on evidence strength, context, and reversibility.`;
+  return `From a ${lens} lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.`;
 }
 
 function buildDebateTeams(scouts: StanceScout[]): DebateTeam {
@@ -602,54 +724,55 @@ function buildDebateTeams(scouts: StanceScout[]): DebateTeam {
 function buildClaims(framed: FramedDebate, sources: EvidenceSource[]): Claim[] {
   const sourceIds = sources.length > 0 ? sources.map((source) => source.id) : ["src-unavailable"];
   const pick = (index: number) => [sourceIds[index % sourceIds.length]];
-  const proposal = framed.subject.replace(/[.?!]+$/, "");
+  const subject = framed.subject.replace(/[.?!]+$/, "");
+  const sourceTitle = (index: number) => sources[index % Math.max(sources.length, 1)]?.title ?? "the cited evidence";
 
   return [
     {
       id: makeId("claim"),
       side: "pro",
-      text: `The proposal, "${proposal}", could create meaningful upside if the rollout is incremental and measurable.`,
-      warrant: "A staged approach lets decision-makers capture learning while preserving the option to stop or revise.",
+      text: `The affirmative case for "${subject}" is strongest when the key standard is defined clearly and supported by multiple kinds of evidence.`,
+      warrant: `A source such as "${sourceTitle(0)}" can help establish the scope, mechanisms, or real-world reach behind the pro position.`,
       evidenceSourceIds: pick(0),
       confidence: 0.72
     },
     {
       id: makeId("claim"),
       side: "pro",
-      text: "The strongest pro case is not inevitability; it is disciplined experimentation with clear success metrics.",
-      warrant: "Decision quality improves when the pro side defines observable outcomes and time-boxed review points.",
+      text: "The pro side can win if it shows breadth of impact across the most relevant dimensions of the question.",
+      warrant: "A strong affirmative case should count both direct effects and important downstream consequences.",
       evidenceSourceIds: pick(1),
       confidence: 0.68
     },
     {
       id: makeId("claim"),
       side: "pro",
-      text: "Doing nothing may also carry opportunity cost, status-quo bias, and unmanaged externalities.",
-      warrant: "A fair comparison should evaluate the current path, not only the proposed change.",
+      text: "The affirmative should emphasize evidence that the resolution changes the practical or conceptual baseline more than the alternative.",
+      warrant: "Downstream effects can matter as much as immediate or obvious effects when judging a contested resolution.",
       evidenceSourceIds: pick(2),
       confidence: 0.64
     },
     {
       id: makeId("claim"),
       side: "con",
-      text: `The proposal, "${proposal}", could produce hidden costs that are hard to reverse after incentives and infrastructure adapt.`,
-      warrant: "The con case is strongest when adoption creates lock-in, stakeholder burden, or misleading early wins.",
+      text: `The negative case against "${subject}" is strongest if the opposing benchmark explains the evidence better.`,
+      warrant: `A source such as "${sourceTitle(3)}" can expose whether the pro side is overstating reach relative to the alternative.`,
       evidenceSourceIds: pick(3),
       confidence: 0.7
     },
     {
       id: makeId("claim"),
       side: "con",
-      text: "The evidence may not transfer cleanly to the user's context, especially if incentives or constraints differ.",
-      warrant: "General studies and broad analogies can overstate confidence when local conditions dominate outcomes.",
+      text: "The con side can win by separating surface-level appeal from durable, evidence-backed impact.",
+      warrant: "A position can be rhetorically attractive while a rival explanation or benchmark does more actual work.",
       evidenceSourceIds: pick(4),
       confidence: 0.66
     },
     {
       id: makeId("claim"),
       side: "con",
-      text: "A binary yes/no framing may obscure safer alternatives such as pilots, thresholds, or narrower scope.",
-      warrant: "Many contested decisions become better when reframed as sequencing and risk-budget questions.",
+      text: "The answer may change depending on which dimension of the question receives the most weight.",
+      warrant: "A precise verdict should name the dimension being judged rather than collapsing all forms of evidence into one score.",
       evidenceSourceIds: pick(5),
       confidence: 0.74
     }
@@ -739,6 +862,12 @@ function buildRoundTurns(
   const proClaims = claims.filter((claim) => claim.side === "pro");
   const conClaims = claims.filter((claim) => claim.side === "con");
   const sourceIds = sources.slice(0, 4).map((source) => source.id);
+  const proLead = proClaims[0]?.text ?? `The pro side supports ${framed.resolution}.`;
+  const proSecond = proClaims[1]?.text ?? proLead;
+  const conLead = conClaims[0]?.text ?? `The con side challenges ${framed.resolution}.`;
+  const conSecond = conClaims[1]?.text ?? conLead;
+  const proEvidence = sourceLabel(sources, proClaims[0]?.evidenceSourceIds[0]);
+  const conEvidence = sourceLabel(sources, conClaims[0]?.evidenceSourceIds[0]);
   const claimIdsAt = (list: Claim[], ...indexes: number[]): string[] =>
     indexes
       .map((index) => list[index])
@@ -767,63 +896,63 @@ function buildRoundTurns(
       "opening",
       teams.pro[0],
       "pro",
-      `${teams.pro[0].name}: The affirmative case for "${framed.resolution}" rests on disciplined experimentation. The upside is real only if success metrics, review dates, and rollback paths are named before action.`,
+      `${teams.pro[0].name}: The affirmative case for "${framed.resolution}" starts with this claim: ${proLead} The most relevant evidence comes from ${proEvidence}.`,
       proClaims.slice(0, 2).map((claim) => claim.id)
     ),
     turn(
       "opening",
       teams.con[0],
       "con",
-      `${teams.con[0].name}: The negative case is that a persuasive idea can still fail through lock-in, weak evidence transfer, and hidden stakeholder costs. The burden is on the pro side to show reversibility.`,
+      `${teams.con[0].name}: The negative case challenges the resolution by arguing: ${conLead} The con side anchors that challenge in ${conEvidence}.`,
       conClaims.slice(0, 2).map((claim) => claim.id)
     ),
     turn(
       "cross_examination",
       teams.pro[1],
       "pro",
-      `${teams.pro[1].name}: The con side should identify which risk would justify inaction rather than a limited pilot. If the concern is context fit, a measured trial may answer that question faster than delay.`,
+      `${teams.pro[1].name}: The con side needs to explain why "${conLead}" outweighs the affirmative evidence for "${proSecond}".`,
       claimIdsAt(proClaims, 1).concat(claimIdsAt(conClaims, 1))
     ),
     turn(
       "cross_examination",
       teams.con[1],
       "con",
-      `${teams.con[1].name}: The pro side should explain who bears downside during the trial and what threshold stops expansion. A pilot without a stop rule can become adoption by default.`,
+      `${teams.con[1].name}: The pro side needs to define its standard clearly; otherwise "${proLead}" may not be enough to prove the resolution.`,
       claimIdsAt(conClaims, 2).concat(claimIdsAt(proClaims, 0))
     ),
     turn(
       "rebuttal",
       teams.pro[0],
       "pro",
-      `${teams.pro[0].name}: The negative side is right about lock-in, but that argues for explicit constraints rather than rejecting the resolution outright. The current state also has costs that deserve measurement.`,
+      `${teams.pro[0].name}: The negative side raises a fair comparison problem, but the pro case still stands if breadth, depth, and downstream effects are weighted together.`,
       proClaims.map((claim) => claim.id)
     ),
     turn(
       "rebuttal",
       teams.con[0],
       "con",
-      `${teams.con[0].name}: The affirmative case improves once it becomes conditional, but that concession matters. The plain resolution should not be accepted without local evidence and accountability.`,
+      `${teams.con[0].name}: The affirmative case depends heavily on how the key standard is counted. If the rival benchmark explains more of the evidence, the resolution remains unproven.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
       "closing",
       teams.pro[1],
       "pro",
-      `${teams.pro[1].name}: Vote pro only in the narrower sense: proceed with a reversible, evidence-gathering implementation rather than a broad irreversible commitment.`,
+      `${teams.pro[1].name}: Vote pro if the evidence shows the affirmative side explains more of the relevant facts, consequences, and downstream effects.`,
       proClaims.map((claim) => claim.id)
     ),
     turn(
       "closing",
       teams.con[1],
       "con",
-      `${teams.con[1].name}: Vote con against overconfidence. The best path may be a smaller test, not full adoption of the resolution as stated.`,
+      `${teams.con[1].name}: Vote con if the stronger case belongs to the opposing benchmark once the evidence is measured by consistent criteria.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
       "judge_review",
       teams.judge,
       "neutral",
-      `${teams.judge.name}: Both sides converge on conditionality. The pro side wins on option value; the con side wins on governance and burden of proof.`,
+      `${teams.judge.name}: The verdict turns on the definition of the key standard. The pro side must prove breadth and downstream reach; the con side must show the rival benchmark remains deeper or more foundational.`,
       claims.map((claim) => claim.id)
     )
   ];
@@ -834,10 +963,15 @@ function buildRoundTurns(
   return turns.filter((item) => item.round === "judge_review" || activeRounds.has(item.round));
 }
 
-function buildScorecard(claims: Claim[], topicKind: TopicKind): Scorecard {
+function sourceLabel(sources: EvidenceSource[], id: string | undefined): string {
+  const source = sources.find((item) => item.id === id) ?? sources[0];
+  return source ? `${source.publisher}: ${source.title}` : "the available evidence";
+}
+
+function buildScorecard(claims: Claim[], framed: FramedDebate): Scorecard {
   const proConfidence = average(claims.filter((claim) => claim.side === "pro").map((claim) => claim.confidence));
   const conConfidence = average(claims.filter((claim) => claim.side === "con").map((claim) => claim.confidence));
-  const topicAdjustment = topicKind === "decision" || topicKind === "comparison" ? 0.2 : 0;
+  const topicAdjustment = framed.topicKind === "decision" || framed.topicKind === "comparison" ? 0.2 : 0;
   const proBase = Math.round((proConfidence * 10 + topicAdjustment) * 10) / 10;
   const conBase = Math.round(conConfidence * 10 * 10) / 10;
   const spread = proBase - conBase;
@@ -850,31 +984,31 @@ function buildScorecard(claims: Claim[], topicKind: TopicKind): Scorecard {
         name: "evidence",
         pro: proBase,
         con: conBase,
-        note: "Both sides have plausible evidence, but source transfer to the exact context remains a constraint."
+        note: `Both sides need evidence that directly speaks to ${framed.subject}.`
       },
       {
         name: "practicality",
         pro: Math.min(10, proBase + 0.7),
         con: Math.max(1, conBase - 0.2),
-        note: "The pro case strengthens if implementation can be staged and measured."
+        note: "The pro case strengthens when it defines the comparison standard and applies it consistently."
       },
       {
         name: "risk",
         pro: Math.max(1, proBase - 0.8),
         con: Math.min(10, conBase + 0.8),
-        note: "The con case is strongest around hidden costs, lock-in, and affected stakeholders."
+        note: "The con case is strongest when it exposes overbroad definitions or weak evidence transfer."
       },
       {
         name: "fairness",
         pro: Math.max(1, proBase - 0.2),
         con: Math.min(10, conBase + 0.3),
-        note: "Distributional impact should be reviewed before scaling."
+        note: "The judgment should not privilege a familiar or attractive framing over the strongest evidence without saying so."
       },
       {
         name: "reversibility",
         pro: Math.min(10, proBase + 0.5),
         con: Math.max(1, conBase - 0.4),
-        note: "A pilot, threshold, or sunset clause improves the recommendation."
+        note: "The verdict can change if the controlling metric changes."
       }
     ]
   };
@@ -887,19 +1021,19 @@ function buildSummary(framed: FramedDebate, claims: Claim[], scorecard: Scorecar
   const highStakesDisclaimer = framed.highStakes?.message;
 
   return {
-    headline: "Proceed conditionally, with explicit evidence thresholds and rollback rules.",
-    recommendation: `The verdict is a conditional yes rather than a blank-check approval. The strongest path is a staged decision: define the success metrics, limit the first commitment, and name the evidence that would stop or expand the plan.`,
+    headline: `The answer depends on how the key standard is measured for ${framed.subject}.`,
+    recommendation: `The verdict is ${scorecard.recommendation.replace("_", " ")}. The strongest answer should name the controlling standard, weigh the best pro and con evidence, and explain which dimensions matter most.`,
     strongestPro: proClaims.map((claim) => claim.text),
     strongestCon: conClaims.map((claim) => claim.text),
     unresolvedUncertainties: [
-      "Whether cited evidence transfers to the user's actual constraints and incentives.",
-      "Who bears downside during the first implementation phase.",
-      "Which measurable threshold would justify scaling, pausing, or reversing the decision."
+      "Which definition or standard should control the verdict.",
+      "Whether broad appeal should count as much as deeper expert or institutional support.",
+      "Whether the cited evidence compares both sides using the same standard."
     ],
     whatWouldChangeMind: [
-      "High-quality evidence showing poor outcomes in closely comparable contexts.",
-      "A credible implementation design with enforceable rollback triggers and stakeholder protections.",
-      "New cost, safety, or legal constraints that materially change the risk budget."
+      "Comparative citation, curriculum, or practice data that strongly favors one side.",
+      "Evidence that one side shaped later fields or public understanding more deeply than currently shown.",
+      "A clearer definition of the controlling standard that changes which evidence matters most."
     ],
     confidence,
     highStakesDisclaimer

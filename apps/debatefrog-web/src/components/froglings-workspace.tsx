@@ -19,7 +19,17 @@
 
 const INTRO_SEEN_KEY = "froglings:intro-seen";
 
-import { createContext, FormEvent, useContext, useEffect, useReducer, useRef, useState } from "react";
+import {
+  createContext,
+  FormEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState
+} from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { Loader2, RotateCcw, Send, Volume2, VolumeX } from "lucide-react";
@@ -541,23 +551,62 @@ function FroglingsHero({
 // -------------------------------------------------------------------------
 
 function FroglingsLive({ live }: { live: FroglingsLiveState }) {
+  const staged = useStagedFroglingsTurns(live);
+
   return (
     <div className="mt-6 space-y-5">
-      <QuestionBanner live={live} />
+      <QuestionBanner live={live} isCatchingUp={!staged.readyForVerdict} />
       {live.status === "failed" ? (
         <div className="rounded-xl border border-berry/40 bg-berry/10 px-4 py-3 text-sm text-berry">
           {live.errorMessage ?? "The debate hopped off the lily pad."}
         </div>
       ) : null}
       {live.teams ? <FrogIntros teams={live.teams} /> : null}
-      <CurrentRoundCallout live={live} />
-      <Rounds live={live} />
-      <Verdict live={live} />
+      <CurrentRoundCallout live={live} visibleTurns={staged.visibleTurns} />
+      <Rounds live={live} visibleTurns={staged.visibleTurns} onTurnComplete={staged.showNextTurn} />
+      <Verdict live={live} readyForVerdict={staged.readyForVerdict} />
     </div>
   );
 }
 
-function QuestionBanner({ live }: { live: FroglingsLiveState }) {
+function useStagedFroglingsTurns(live: FroglingsLiveState) {
+  const debateTurns = useMemo(() => orderedFroglingsTurns(live.turns), [live.turns]);
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    setVisibleCount(debateTurns.length > 0 ? 1 : 0);
+  }, [live.debateId]);
+
+  useEffect(() => {
+    setVisibleCount((count) => {
+      if (debateTurns.length === 0) return 0;
+      if (count <= 0) return 1;
+      return count;
+    });
+  }, [debateTurns.length]);
+
+  const showNextTurn = useCallback(() => {
+    window.setTimeout(() => {
+      setVisibleCount((count) => count + 1);
+    }, 450);
+  }, []);
+
+  const visibleTurns = debateTurns.slice(0, visibleCount);
+  const readyForVerdict = debateTurns.length === 0 || visibleTurns.length >= debateTurns.length;
+
+  return { visibleTurns, readyForVerdict, showNextTurn };
+}
+
+function QuestionBanner({
+  live,
+  isCatchingUp
+}: {
+  live: FroglingsLiveState;
+  isCatchingUp: boolean;
+}) {
+  const isActuallyDone = (live.status === "complete" || live.done) && !isCatchingUp;
+  const stageCopy = isCatchingUp ? "the frogs are taking turns" : friendlyStage[live.status];
+
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
       <div className="text-[11px] font-extrabold uppercase tracking-wide text-mud/60">
@@ -565,10 +614,10 @@ function QuestionBanner({ live }: { live: FroglingsLiveState }) {
       </div>
       <div className="mt-1 text-lg leading-snug text-ink">{live.resolution ?? live.subject}</div>
       <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-xs font-bold text-mud">
-        {live.status === "complete" || live.done ? null : (
+        {isActuallyDone ? null : (
           <Loader2 className="h-3 w-3 animate-spin text-leaf" />
         )}
-        {friendlyStage[live.status]}
+        {stageCopy}
       </div>
     </section>
   );
@@ -605,7 +654,13 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
  * and re-keys on round change so the hop-in animation replays each
  * time. Hidden once judging/complete take over.
  */
-function CurrentRoundCallout({ live }: { live: FroglingsLiveState }) {
+function CurrentRoundCallout({
+  live,
+  visibleTurns
+}: {
+  live: FroglingsLiveState;
+  visibleTurns: RoundTurn[];
+}) {
   // Treat only the four kid-facing debate rounds as "now playing"
   // candidates; judge_review/synthesis are handled by Verdict.
   const trackedRounds: DebateRound[] = [
@@ -615,7 +670,7 @@ function CurrentRoundCallout({ live }: { live: FroglingsLiveState }) {
     "closing"
   ];
 
-  const latestDebateRound = [...live.turns]
+  const latestDebateRound = [...visibleTurns]
     .reverse()
     .find((turn) => trackedRounds.includes(turn.round))?.round;
 
@@ -647,14 +702,23 @@ function CurrentRoundCallout({ live }: { live: FroglingsLiveState }) {
   );
 }
 
-function Rounds({ live }: { live: FroglingsLiveState }) {
+function Rounds({
+  live,
+  visibleTurns,
+  onTurnComplete
+}: {
+  live: FroglingsLiveState;
+  visibleTurns: RoundTurn[];
+  onTurnComplete: () => void;
+}) {
   // Render rounds in canonical debate order, skipping any that have no
   // turns yet. judge_review is hidden in the funner UI — the verdict
   // section below is where the judge's voice lives.
   const order: DebateRound[] = ["opening", "cross_examination", "rebuttal", "closing"];
+  const visibleTurnIds = new Set(visibleTurns.map((turn) => turn.id));
   const grouped = order.map((round) => ({
     round,
-    turns: live.turns.filter((turn) => turn.round === round)
+    turns: live.turns.filter((turn) => turn.round === round && visibleTurnIds.has(turn.id))
   }));
   const anyRoundStarted = grouped.some((g) => g.turns.length > 0);
 
@@ -683,8 +747,22 @@ function Rounds({ live }: { live: FroglingsLiveState }) {
               <div className="mt-0.5 text-xs text-ink/65">{meta.blurb}</div>
             </header>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              {pro ? <Bubble side="pro" content={pro.content} name={pro.agentName} /> : null}
-              {con ? <Bubble side="con" content={con.content} name={con.agentName} /> : null}
+              {pro ? (
+                <Bubble
+                  side="pro"
+                  content={froglingsBubbleText(pro)}
+                  name={pro.agentName}
+                  onDone={onTurnComplete}
+                />
+              ) : null}
+              {con ? (
+                <Bubble
+                  side="con"
+                  content={froglingsBubbleText(con)}
+                  name={con.agentName}
+                  onDone={onTurnComplete}
+                />
+              ) : null}
             </div>
           </article>
         );
@@ -696,11 +774,13 @@ function Rounds({ live }: { live: FroglingsLiveState }) {
 function Bubble({
   side,
   name,
-  content
+  content,
+  onDone
 }: {
   side: "pro" | "con";
   name: string;
   content: string;
+  onDone: () => void;
 }) {
   const isPro = side === "pro";
   // Tracks whether the typewriter is currently revealing characters. The
@@ -733,14 +813,22 @@ function Bubble({
       <div className="min-w-0">
         <div className="mb-1 text-xs font-black text-ink">{name}</div>
         <p className="text-sm leading-relaxed text-ink/85">
-          <SlowPrint text={content} onTypingChange={setTyping} />
+          <SlowPrint text={content} onTypingChange={setTyping} onComplete={onDone} />
         </p>
       </div>
     </div>
   );
 }
 
-function Verdict({ live }: { live: FroglingsLiveState }) {
+function Verdict({
+  live,
+  readyForVerdict
+}: {
+  live: FroglingsLiveState;
+  readyForVerdict: boolean;
+}) {
+  if (!readyForVerdict) return null;
+
   if (!live.summary || !live.scorecard) {
     if (live.status === "debating" || live.status === "judging") {
       return (
@@ -797,4 +885,63 @@ function Verdict({ live }: { live: FroglingsLiveState }) {
 function froglingsVerdictPendingCopy(status: DebateStatus): string {
   if (status === "judging") return "The judge frog is thinking about who made the better case...";
   return "The judge frog is listening until all four rounds are finished.";
+}
+
+function orderedFroglingsTurns(turns: RoundTurn[]) {
+  const roundOrder: DebateRound[] = ["opening", "cross_examination", "rebuttal", "closing"];
+  const sideOrder = { pro: 0, con: 1, neutral: 2 };
+  return [...turns]
+    .filter((turn) => roundOrder.includes(turn.round))
+    .sort((a, b) => {
+      const roundDiff = roundOrder.indexOf(a.round) - roundOrder.indexOf(b.round);
+      if (roundDiff !== 0) return roundDiff;
+      return sideOrder[a.side] - sideOrder[b.side];
+    });
+}
+
+function froglingsBubbleText(turn: RoundTurn) {
+  const text = simplifyForKids(stripSpeakerPrefix(turn.content, turn.agentName));
+  const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((sentence) => sentence.trim()) ?? [text];
+  const picked: string[] = [];
+
+  for (const sentence of sentences) {
+    if (!sentence) continue;
+    const next = [...picked, sentence].join(" ");
+    if (picked.length >= 2 || next.length > 300) break;
+    picked.push(sentence);
+  }
+
+  const compressed = picked.length > 0 ? picked.join(" ") : text;
+  return trimAtWord(compressed, 320);
+}
+
+function stripSpeakerPrefix(content: string, agentName: string) {
+  const escapedName = agentName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return content
+    .replace(new RegExp(`^${escapedName}:\\s*`, "i"), "")
+    .replace(/^\w[\w\s-]{0,40}:\s*/, "");
+}
+
+function simplifyForKids(content: string) {
+  return content
+    .replace(/\((?:claim|src)[^)]+\)/gi, "")
+    .replace(/\baffirmative\b/gi, "YES side")
+    .replace(/\bnegative\b/gi, "NO side")
+    .replace(/\basserts?\b/gi, "says")
+    .replace(/\bindicates?\b/gi, "shows")
+    .replace(/\bsubstantial\b/gi, "big")
+    .replace(/\bimplementation of\b/gi, "using")
+    .replace(/\bacademic achievement\b/gi, "school performance")
+    .replace(/\blogistical challenges\b/gi, "planning problems")
+    .replace(/\bresolution\b/gi, "question")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function trimAtWord(content: string, maxLength: number) {
+  if (content.length <= maxLength) return content;
+  const slice = content.slice(0, maxLength).trim();
+  const lastSpace = slice.lastIndexOf(" ");
+  const trimmed = slice.slice(0, lastSpace > 180 ? lastSpace : maxLength).replace(/[,:;.-]+$/, "");
+  return `${trimmed}.`;
 }

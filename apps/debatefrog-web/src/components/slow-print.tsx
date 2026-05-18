@@ -26,6 +26,8 @@ interface SlowPrintProps {
   tickMs?: number;
   /** Receives true while printing, false once complete (or on empty text). */
   onTypingChange?: (typing: boolean) => void;
+  /** Fires once when the current text has fully printed. */
+  onComplete?: () => void;
   className?: string;
 }
 
@@ -34,6 +36,7 @@ export function SlowPrint({
   charsPerTick = 1,
   tickMs = 28,
   onTypingChange,
+  onComplete,
   className
 }: SlowPrintProps) {
   const [shown, setShown] = useState("");
@@ -41,6 +44,8 @@ export function SlowPrint({
   // whenever the parent passes a new closure.
   const onTypingRef = useRef(onTypingChange);
   onTypingRef.current = onTypingChange;
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     if (!text) {
@@ -57,6 +62,7 @@ export function SlowPrint({
     if (reduced) {
       setShown(text);
       onTypingRef.current?.(false);
+      onCompleteRef.current?.();
       return;
     }
 
@@ -73,6 +79,7 @@ export function SlowPrint({
       if (cursor >= text.length) {
         window.clearInterval(interval);
         onTypingRef.current?.(false);
+        onCompleteRef.current?.();
       }
     }, tickMs);
 

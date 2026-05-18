@@ -345,10 +345,10 @@ export function FroglingsWorkspace() {
   return (
     <main className="mx-auto w-full max-w-[960px] px-4 py-6 sm:py-10">
       <header className="flex items-center justify-between">
-        <div className="flex items-center gap-3 text-pond">
+        <Link href={"/" as Route} className="flex items-center gap-3 text-pond">
           <FunFrog mood="idle" size={42} bob={false} />
-          <span className="text-lg font-black tracking-tight">Froglings</span>
-        </div>
+          <span className="text-lg font-black tracking-tight">DebateFrog</span>
+        </Link>
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -370,12 +370,6 @@ export function FroglingsWorkspace() {
               New question
             </button>
           ) : null}
-          <Link
-            href={"/grown-up" as Route}
-            className="text-xs font-semibold text-pond/60 transition hover:text-pond"
-          >
-            ← Grown-up version
-          </Link>
         </div>
       </header>
 
@@ -407,6 +401,12 @@ export function FroglingsWorkspace() {
         >
           Show intro again
         </button>
+        <Link
+          href={"/grown-up" as Route}
+          className="text-[11px] font-semibold text-pond/55 underline-offset-2 transition hover:text-pond hover:underline"
+        >
+          Grown-up version
+        </Link>
         <p className="text-[10px] text-pond/45">
           Frog sounds:{" "}
           <a

@@ -34,8 +34,24 @@ export function Frog({ mood = "idle", speaking = false, size = 72, ...rest }: Fr
       <ellipse cx="50" cy="64" rx="34" ry="26" fill={c.body} />
       {/* belly */}
       <ellipse cx="50" cy="70" rx="22" ry="15" fill={c.belly} />
+      {mood === "judge" ? (
+        <>
+          {/* robe and collar */}
+          <path d="M31 57 q19 13 38 0 v27 q-19 8 -38 0z" fill="#352641" opacity="0.88" />
+          <path d="M39 56 l11 12 l11 -12 l-6 25 h-10z" fill="#fffdf2" opacity="0.95" />
+          <path d="M50 68 v19" stroke="#5c4583" strokeWidth="2" strokeLinecap="round" opacity="0.75" />
+        </>
+      ) : null}
       {/* head */}
       <ellipse cx="50" cy="42" rx="32" ry="24" fill={c.body} />
+      {mood === "judge" ? (
+        <>
+          {/* small judge's wig */}
+          <path d="M31 26 q19 -15 38 0 q-5 6 -12 5 q-7 -4 -14 0 q-7 1 -12 -5z" fill="#fffdf2" />
+          <circle cx="31" cy="31" r="5" fill="#fffdf2" />
+          <circle cx="69" cy="31" r="5" fill="#fffdf2" />
+        </>
+      ) : null}
       {/* eye whites (poking up like lily pad) */}
       <circle cx="34" cy="24" r="10" fill={c.body} />
       <circle cx="66" cy="24" r="10" fill={c.body} />

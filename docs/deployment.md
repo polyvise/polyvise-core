@@ -45,12 +45,54 @@ export GCP_CLOUD_RUN_MAX_INSTANCES="5"
 export GCP_CLOUD_RUN_MEMORY="1Gi"
 export GCP_CLOUD_RUN_CPU="1"
 export POLYVISE_ENABLE_MOCK_LLM="false"
-export POLYVISE_EVIDENCE_PROVIDER="brave"
+export POLYVISE_EVIDENCE_PROVIDER="tavily"
 export POLYVISE_SITE_URL="https://polyvise.com"
 export DEBATEFROG_SITE_URL="https://debatefrog.com"
 ```
 
-Secrets such as `OPENROUTER_API_KEY`, `BRAVE_SEARCH_API_KEY`, and `DATABASE_URL` should be stored in Secret Manager and attached to Cloud Run with `--set-secrets` once production persistence and live providers are enabled. Do not pass provider keys through `--set-env-vars`.
+Secrets such as `OPENROUTER_API_KEY`, `TAVILY_API_KEY`, `BRAVE_SEARCH_API_KEY`, and `DATABASE_URL` should be stored in Secret Manager and attached to Cloud Run with `--set-secrets` once production persistence and live providers are enabled. Do not pass provider keys through `--set-env-vars`.
+
+## Firestore Persistence
+
+Firestore is the preferred low-cost GCP-native persistence path for the early app. When `POLYVISE_REPOSITORY=firestore`, the debate engine stores each full debate record in Firestore. Without that setting, local development and smoke deployments continue to use the in-memory repository.
+
+Enable Firestore once per project, then attach it to a service:
+
+```bash
+./scripts/gcp-enable-firestore.sh
+./scripts/gcp-use-firestore.sh debatefrog
+```
+
+Use `./scripts/gcp-use-firestore.sh polyvise` for the Polyvise service.
+
+## Tavily Search
+
+Add `TAVILY_API_KEY` to `local.ops.secrets.env`, then attach it to Cloud Run:
+
+```bash
+./scripts/gcp-set-tavily.sh debatefrog
+```
+
+Use `./scripts/gcp-set-tavily.sh polyvise` for the Polyvise service.
+
+## Postgres Persistence
+
+When `DATABASE_URL` is present, the debate engine uses the Postgres-backed repository. Without it, local development and smoke deployments continue to use the in-memory repository.
+
+Add the database URL to the ignored root ops file:
+
+```bash
+DATABASE_URL="postgres://..."
+```
+
+Then migrate the database and attach it to a Cloud Run service:
+
+```bash
+./scripts/db-migrate.sh
+./scripts/gcp-set-database.sh debatefrog
+```
+
+Use `./scripts/gcp-set-database.sh polyvise` for the Polyvise service.
 
 ## Platform Fit
 

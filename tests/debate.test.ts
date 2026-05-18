@@ -106,7 +106,10 @@ describe("hybrid council engine", () => {
       "team_builder",
       "evidence",
       "opening",
+      "opening",
       "cross_exam",
+      "rebuttal",
+      "judge_review",
       "rebuttal",
       "judge",
       "persist"

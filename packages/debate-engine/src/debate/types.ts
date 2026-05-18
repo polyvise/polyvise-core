@@ -128,7 +128,7 @@ export interface EvidenceSource {
   publishedAt?: string;
   snippet: string;
   quality: "primary" | "expert" | "methodology" | "context";
-  retrievedVia: "brave" | "mock";
+  retrievedVia: "brave" | "mock" | "tavily";
   status: "accepted" | "needs_review" | "rejected";
 }
 

@@ -5,7 +5,7 @@ import { listDebates, startDebate } from "@polyvise/debate-engine/debate/store";
 export async function GET() {
   return Response.json(
     {
-      debates: listDebates()
+      debates: await listDebates()
     },
     {
       headers: {
@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json();
-    const { debate } = startDebate(payload);
+    const { debate } = await startDebate(payload);
 
     return Response.json(
       {

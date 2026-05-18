@@ -14,6 +14,13 @@ type BraveWebResult = {
   age?: string;
 };
 
+type TavilySearchResult = {
+  title?: string;
+  url?: string;
+  content?: string;
+  published_date?: string;
+};
+
 export class BraveEvidenceProvider implements EvidenceProvider {
   name = "brave";
 
@@ -56,6 +63,55 @@ export class BraveEvidenceProvider implements EvidenceProvider {
   }
 }
 
+export class TavilyEvidenceProvider implements EvidenceProvider {
+  name = "tavily";
+
+  constructor(private readonly apiKey = process.env.TAVILY_API_KEY) {}
+
+  async search(subject: string, topicKind: TopicKind): Promise<EvidenceSource[]> {
+    if (!this.apiKey) {
+      return [];
+    }
+
+    const response = await fetch("https://api.tavily.com/search", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        query: `${subject} evidence analysis ${topicKind}`,
+        search_depth: "basic",
+        max_results: 8,
+        include_answer: false,
+        include_raw_content: false
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Tavily Search failed with ${response.status}`);
+    }
+
+    const payload = (await response.json()) as { results?: TavilySearchResult[] };
+
+    return (payload.results ?? [])
+      .filter((result): result is Required<Pick<TavilySearchResult, "title" | "url">> & TavilySearchResult =>
+        Boolean(result.title && result.url)
+      )
+      .map((result, index) => ({
+        id: `src-tavily-${index + 1}`,
+        title: result.title,
+        url: result.url,
+        publisher: new URL(result.url).hostname.replace(/^www\./, ""),
+        publishedAt: result.published_date,
+        snippet: result.content ?? "Search result selected as contextual evidence.",
+        quality: inferSourceQuality(result.url),
+        retrievedVia: "tavily",
+        status: "accepted"
+      }));
+  }
+}
+
 export class MockEvidenceProvider implements EvidenceProvider {
   name = "mock";
 
@@ -80,10 +136,10 @@ export async function collectEvidence(
     return new MockEvidenceProvider().search(subject, topicKind);
   }
 
-  const brave = new BraveEvidenceProvider();
+  const provider = preferredProvider === "tavily" ? new TavilyEvidenceProvider() : new BraveEvidenceProvider();
 
   try {
-    const live = await brave.search(subject, topicKind);
+    const live = await provider.search(subject, topicKind);
     if (live.length > 0) {
       return normalizeSources(live).slice(0, 8);
     }

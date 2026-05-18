@@ -5,7 +5,7 @@ import { startDebate } from "@polyvise/debate-engine/debate/store";
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json();
-    const { debate } = startDebate(payload);
+    const { debate } = await startDebate(payload);
 
     return Response.json(
       {

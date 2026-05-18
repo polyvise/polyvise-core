@@ -116,9 +116,9 @@ export interface StartDebateResult {
   completion: Promise<DebateRecord>;
 }
 
-export function startDebate(input: DebateRequest): StartDebateResult {
+export async function startDebate(input: DebateRequest): Promise<StartDebateResult> {
   const { record, request, config, framed } = buildSeedRecord(input);
-  repository.save(record);
+  await repository.save(record);
   const bus = getOrCreateBus(record.id);
 
   const completion = (async (): Promise<DebateRecord> => {
@@ -133,7 +133,7 @@ export function startDebate(input: DebateRequest): StartDebateResult {
         latestRun: run,
         updatedAt: new Date().toISOString()
       };
-      repository.save(completed);
+      await repository.save(completed);
       scheduleBusCleanup(record.id);
       return completed;
     } catch (error) {
@@ -144,7 +144,7 @@ export function startDebate(input: DebateRequest): StartDebateResult {
         status: "failed",
         updatedAt: new Date().toISOString()
       };
-      repository.save(failed);
+      await repository.save(failed);
       scheduleBusCleanup(record.id);
       throw error;
     }
@@ -157,7 +157,7 @@ export function startDebate(input: DebateRequest): StartDebateResult {
 }
 
 export async function createDebate(input: DebateRequest): Promise<DebateRecord> {
-  const { completion } = startDebate(input);
+  const { completion } = await startDebate(input);
   return completion;
 }
 
@@ -173,16 +173,16 @@ export function subscribeToDebate(
   return { unsubscribe, terminal: bus.isTerminal() };
 }
 
-export function getDebate(id: string): DebateRecord | null {
+export function getDebate(id: string): Promise<DebateRecord | null> {
   return repository.get(id);
 }
 
-export function listDebates(): DebateRecord[] {
+export function listDebates(): Promise<DebateRecord[]> {
   return repository.list();
 }
 
 export async function addFollowup(debateId: string, question: string): Promise<FollowupExchange | null> {
-  const debate = getDebate(debateId);
+  const debate = await getDebate(debateId);
   if (!debate?.latestRun) {
     return null;
   }
@@ -200,7 +200,7 @@ export async function addFollowup(debateId: string, question: string): Promise<F
     followups: [...debate.followups, exchange],
     updatedAt: new Date().toISOString()
   };
-  repository.save(updated);
+  await repository.save(updated);
 
   return exchange;
 }
@@ -240,7 +240,7 @@ function answerFollowupDeterministic(question: string, debate: DebateRecord): st
 
   if (lowered.includes("source") || lowered.includes("evidence")) {
     const sources = debate.latestRun?.sources.slice(0, 3).map((source) => `${source.publisher}: ${source.title}`);
-    return `The run leaned on these sources first: ${sources?.join("; ")}. Live Brave Search can replace development references when BRAVE_SEARCH_API_KEY is configured.`;
+    return `The run leaned on these sources first: ${sources?.join("; ")}. Live search can replace development references when BRAVE_SEARCH_API_KEY or TAVILY_API_KEY is configured.`;
   }
 
   return `Based on the completed debate, the answer is conditional: ${summary.recommendation}`;

@@ -167,11 +167,11 @@ class DebateWorkflowExecutor {
     this.emit({ kind: "stage", status: "researching" });
     const sources = await runStep(trace, "evidence", async () => {
       const collected = await collectEvidence(framed.subject, framed.topicKind, this.config.evidenceProvider);
-      const live = collected.some((source) => source.retrievedVia === "brave");
+      const liveProvider = collected.find((source) => source.retrievedVia !== "mock")?.retrievedVia;
       return {
-        status: live ? "ok" : "warning",
-        message: live
-          ? "Live Brave Search evidence was attached."
+        status: liveProvider ? "ok" : "warning",
+        message: liveProvider
+          ? `Live ${liveProvider} search evidence was attached.`
           : "Using deterministic development evidence because no live search provider returned sources.",
         value: collected
       };

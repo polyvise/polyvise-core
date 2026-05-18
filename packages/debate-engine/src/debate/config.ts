@@ -1,6 +1,6 @@
 import type { ModelSnapshot } from "./types";
 
-export type EvidenceProviderName = "brave" | "mock";
+export type EvidenceProviderName = "brave" | "mock" | "tavily";
 
 export interface DebateRuntimeConfig {
   quickModel: string;
@@ -21,9 +21,16 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
     maxRounds: coercePositiveInteger(env.POLYVISE_MAX_ROUNDS, 3),
     llmTimeoutMs: coercePositiveInteger(env.POLYVISE_LLM_TIMEOUT_MS, 45000),
     llmMaxTokens: coercePositiveInteger(env.POLYVISE_LLM_MAX_TOKENS, 1800),
-    evidenceProvider: env.POLYVISE_EVIDENCE_PROVIDER === "mock" ? "mock" : "brave",
+    evidenceProvider: coerceEvidenceProvider(env.POLYVISE_EVIDENCE_PROVIDER),
     enableMockLlm: env.POLYVISE_ENABLE_MOCK_LLM !== "false"
   };
+}
+
+function coerceEvidenceProvider(value: string | undefined): EvidenceProviderName {
+  if (value === "mock" || value === "tavily") {
+    return value;
+  }
+  return "brave";
 }
 
 export function modelRosterFromConfig(config: DebateRuntimeConfig): ModelSnapshot[] {

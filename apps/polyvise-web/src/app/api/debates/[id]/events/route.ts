@@ -9,7 +9,7 @@ type RouteContext = {
 
 export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
-  const debate = getDebate(id);
+  const debate = await getDebate(id);
 
   if (!debate) {
     return Response.json({ error: "Debate not found." }, { status: 404 });

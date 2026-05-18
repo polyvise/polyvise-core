@@ -171,3 +171,10 @@ export const productNotes = pgTable("product_notes", {
   note: text("note").notNull(),
   priority: varchar("priority", { length: 32 }).notNull()
 });
+
+export const debateRecords = pgTable("debate_records", {
+  id: varchar("id", { length: 48 }).primaryKey(),
+  record: jsonb("record").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+});

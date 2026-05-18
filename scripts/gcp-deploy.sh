@@ -31,7 +31,7 @@ case "$1" in
     APP_WORKSPACE="@polyvise/debatefrog-web"
     APP_DIR="apps/debatefrog-web"
     SITE_URL="${DEBATEFROG_SITE_URL:-https://debatefrog.com}"
-    LLM_MAX_TOKENS="${POLYVISE_LLM_MAX_TOKENS:-1000}"
+    LLM_MAX_TOKENS="${POLYVISE_LLM_MAX_TOKENS:-2200}"
     ;;
   *)
     echo "Usage: $0 polyvise|debatefrog" >&2

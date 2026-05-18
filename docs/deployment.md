@@ -31,6 +31,16 @@ export GCP_REGION="us-central1"
 
 The bootstrap script enables the required APIs and creates a Docker Artifact Registry repository named `polyvise` by default. The deploy script builds the selected workspace with Cloud Build, pushes the image to Artifact Registry, and deploys it to Cloud Run.
 
+## GitHub Deploys
+
+`main` deploys Debatefrog through `.github/workflows/deploy-debatefrog.yml`. The workflow uses GitHub OIDC with Google Cloud Workload Identity Federation instead of a long-lived JSON key. It runs tests and typechecks before deploying the Cloud Run service with `./scripts/gcp-deploy.sh debatefrog`.
+
+The Google Cloud trust is restricted to the `jaybrownlee/polyvise` repository on `refs/heads/main` and impersonates:
+
+```bash
+github-actions-deployer@websites-prod-496602.iam.gserviceaccount.com
+```
+
 Default deployment guardrails:
 
 - `min-instances=0` so low-traffic services can scale down.

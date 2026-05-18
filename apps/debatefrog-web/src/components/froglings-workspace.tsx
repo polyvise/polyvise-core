@@ -17,7 +17,7 @@ import { FormEvent, useEffect, useReducer, useRef, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import { Loader2, RotateCcw, Send } from "lucide-react";
-import { Frog } from "@/components/frog";
+import { FunFrog } from "@/components/fun-frog";
 import type {
   Claim,
   DebateLiveEvent,
@@ -265,7 +265,7 @@ export function FroglingsWorkspace() {
     <main className="mx-auto w-full max-w-[960px] px-4 py-6 sm:py-10">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-pond">
-          <Frog mood="idle" size={42} />
+          <FunFrog mood="idle" size={42} bob={false} />
           <span className="text-lg font-black tracking-tight">Froglings</span>
           <span className="rounded-full bg-mint px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-pond">
             Funner version
@@ -340,21 +340,21 @@ function FroglingsHero({
         </p>
         <div className="mt-5 flex items-center gap-3">
           <div className="flex flex-col items-center">
-            <Frog mood="pro" size={64} />
+            <FunFrog mood="pro" size={64} />
             <span className="mt-1 text-[11px] font-black uppercase tracking-wide text-pond">
               Pro frog
             </span>
           </div>
           <span className="text-sm font-black text-mud/60">vs.</span>
           <div className="flex flex-col items-center">
-            <Frog mood="con" size={64} />
+            <FunFrog mood="con" size={64} />
             <span className="mt-1 text-[11px] font-black uppercase tracking-wide text-berry">
               Con frog
             </span>
           </div>
           <span className="text-sm font-black text-mud/60">+</span>
           <div className="flex flex-col items-center">
-            <Frog mood="judge" size={64} />
+            <FunFrog mood="judge" size={64} />
             <span className="mt-1 text-[11px] font-black uppercase tracking-wide text-[#5c4583]">
               Judge frog
             </span>
@@ -457,7 +457,7 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
   return (
     <section className="grid gap-3 md:grid-cols-2">
       <div className="flex items-center gap-3 rounded-2xl border border-leaf/30 bg-mint/40 p-3">
-        <Frog mood="pro" size={56} />
+        <FunFrog mood="pro" size={56} hop />
         <div className="min-w-0">
           <div className="text-[11px] font-black uppercase tracking-wide text-pond">Pro frog</div>
           <div className="mt-0.5 text-sm font-bold text-ink truncate">{pro?.name ?? "—"}</div>
@@ -465,7 +465,7 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
         </div>
       </div>
       <div className="flex items-center gap-3 rounded-2xl border border-berry/30 bg-lily/40 p-3">
-        <Frog mood="con" size={56} />
+        <FunFrog mood="con" size={56} hop />
         <div className="min-w-0">
           <div className="text-[11px] font-black uppercase tracking-wide text-berry">Con frog</div>
           <div className="mt-0.5 text-sm font-bold text-ink truncate">{con?.name ?? "—"}</div>
@@ -539,7 +539,8 @@ function Bubble({
       }`}
     >
       <div className="shrink-0">
-        <Frog mood={side} size={40} speaking />
+        {/* Phase 5 will gate `speaking` on whether the typewriter is actively printing. */}
+        <FunFrog mood={side} size={40} speaking bob={false} />
       </div>
       <div className="min-w-0">
         <div className="mb-1 text-xs font-black text-ink">{name}</div>
@@ -555,7 +556,7 @@ function Verdict({ live }: { live: FroglingsLiveState }) {
       return (
         <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
           <div className="flex items-center gap-3 text-sm text-mud/70">
-            <Frog mood="judge" size={48} />
+            <FunFrog mood="judge" size={48} />
             The judge frog is thinking about who made the better case…
           </div>
         </section>
@@ -569,7 +570,7 @@ function Verdict({ live }: { live: FroglingsLiveState }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4 sm:max-w-xl">
           <div className="flex shrink-0 flex-col items-center gap-1">
-            <Frog mood="judge" size={64} />
+            <FunFrog mood="judge" size={64} hop />
             <span className="rounded-full bg-[#9978b8]/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#5c4583]">
               Judge
             </span>

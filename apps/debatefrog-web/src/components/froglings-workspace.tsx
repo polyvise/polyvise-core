@@ -365,8 +365,13 @@ export function FroglingsWorkspace() {
         </FrogSoundsContext.Provider>
       )}
 
-      {/* Tucked-away link so a kid (or parent) can re-open the explainer. */}
-      <footer className="mt-10 flex justify-center">
+      {/*
+        Tucked-away footer. The "Show intro again" link lets a kid or
+        parent re-open the explainer. The audio attribution link
+        satisfies the CC BY 4.0 requirement that credit travel with
+        the deployed work — see public/sounds/CREDITS.md.
+      */}
+      <footer className="mt-10 flex flex-col items-center gap-2">
         <button
           type="button"
           onClick={() => setShowIntro(true)}
@@ -374,6 +379,27 @@ export function FroglingsWorkspace() {
         >
           Show intro again
         </button>
+        <p className="text-[10px] text-pond/45">
+          Frog sounds:{" "}
+          <a
+            href="https://freesound.org/people/daveincamas/sounds/32834/"
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2 transition hover:text-pond"
+          >
+            daveincamas
+          </a>{" "}
+          on Freesound, used under{" "}
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-2 transition hover:text-pond"
+          >
+            CC BY 4.0
+          </a>
+          {" "}(trimmed).
+        </p>
       </footer>
 
       {showIntro ? <FroglingsIntro onDismiss={dismissIntro} /> : null}

@@ -22,4 +22,65 @@ export interface AudioClip {
  * when each frog starts speaking, avoiding the clip currently
  * playing on the other side.
  */
-export const audioClips: readonly AudioClip[] = [] as const;
+export const audioClips: readonly AudioClip[] = [
+  {
+    "id": "frog1",
+    "formats": {
+      "wav": {
+        "exists": true,
+        "hash": "fb3092ef80"
+      },
+      "ogg": {
+        "exists": false
+      },
+      "mp3": {
+        "exists": false
+      }
+    }
+  },
+  {
+    "id": "frog2",
+    "formats": {
+      "wav": {
+        "exists": true,
+        "hash": "480dac40aa"
+      },
+      "ogg": {
+        "exists": false
+      },
+      "mp3": {
+        "exists": false
+      }
+    }
+  },
+  {
+    "id": "frog3",
+    "formats": {
+      "wav": {
+        "exists": true,
+        "hash": "280d636e04"
+      },
+      "ogg": {
+        "exists": false
+      },
+      "mp3": {
+        "exists": false
+      }
+    }
+  },
+  {
+    "id": "frog4",
+    "formats": {
+      "wav": {
+        "exists": true,
+        "hash": "27254e3b8c"
+      },
+      "ogg": {
+        "exists": false
+      },
+      "mp3": {
+        "exists": false
+      }
+    }
+  }
+] as const;

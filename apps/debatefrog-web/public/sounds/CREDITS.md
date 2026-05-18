@@ -5,19 +5,38 @@ pro and the con frog randomly pick a clip from the pool when they
 start speaking. There is no per-side audio — every clip can play for
 either side.
 
+## Currently shipping
+
+All four clips in this folder are trimmed excerpts from a single
+field recording of Pacific Chorus Frogs by **daveincamas** on
+Freesound:
+
+| File         | Source                                                                                                   | License                                                                              | Author        |
+| ------------ | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------- |
+| `frog1.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
+| `frog2.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
+| `frog3.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
+| `frog4.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
+
+Original work:
+**"200703101950PacificChorusFrogsConfrontAirplane.wav"** by daveincamas
+on Freesound, 27 March 2007 — a 1:48 binaural stereo field recording
+of Pacific Chorus Frogs reacting to an approaching propeller airplane.
+Each of the four clips here is a short excerpt taken from that
+recording.
+
+CC BY 4.0 requires attribution. The deployed `/froglings` page shows
+a small "Sounds by daveincamas (CC BY)" link in the footer that
+points at the Freesound page, which together with this CREDITS.md
+satisfies the license. If you swap or remove these clips, also update
+the in-app attribution in `apps/debatefrog-web/src/components/froglings-workspace.tsx`.
+
 ## File layout
 
 Drop files in this folder named `frog<N>.<ext>` where `<N>` is any
 positive integer (e.g. `frog1`, `frog2`, ...) and `<ext>` is one of
 `wav`, `ogg`, or `mp3`. The build-time manifest script discovers
 them automatically.
-
-| File              | Notes                                                |
-| ----------------- | ---------------------------------------------------- |
-| `frog1.wav`       | One clip. WAV decodes everywhere natively.           |
-| `frog1.ogg`       | Same clip in OGG — optional, slightly smaller.       |
-| `frog1.mp3`       | Same clip in MP3 — optional fallback.                |
-| `frog2.wav` …     | Add as many `frog<N>.*` clips as you like.           |
 
 If a clip ships in multiple formats, the loader picks the first one
 the browser can play in this order: **wav → ogg → mp3**. You only
@@ -28,15 +47,15 @@ If no `frog<N>.*` files are present at all, the hook drops to a
 small Web Audio synthesizer that approximates a cartoon chirp /
 croak so the page works out of the box.
 
-## Why no `pro-*` / `con-*` files anymore
+## Random rotation, not per-side
 
-An earlier iteration of this folder used `pro-chirp.*` and
-`con-croak.*` — one fixed sound per side. The current model rotates
-randomly through the shared pool, which feels more lively. As a
-small refinement, when both frogs happen to be typing at the same
-moment, the picker avoids the clip already playing on the other
-side, so they don't sound identical. Each play also gets a tiny
-random pitch jitter (~±8%) for organic variation.
+An earlier iteration used `pro-chirp.*` and `con-croak.*` — one
+fixed sound per side. The current model rotates randomly through
+the shared pool, which feels more lively. As a small refinement,
+when both frogs happen to be typing at the same moment, the picker
+avoids the clip already playing on the other side, so they don't
+sound identical. Each play also gets a tiny random pitch jitter
+(~±8%) for organic variation.
 
 ## Cache busting — you don't have to think about this
 
@@ -54,24 +73,14 @@ hard-refresh needed. The script runs automatically as `predev` and
 - **WAV** is uncompressed PCM. Files are large per second but tiny
   in absolute terms for short loops (~100–300 KB per 1-second clip).
   Decodes natively everywhere, no codec questions, no quality loss.
-  This is the easy choice for a handful of short clips.
+  This is what's currently shipping.
 - **OGG (Vorbis)** is smaller at the same perceived quality (~10×
   smaller than WAV) and is supported by every evergreen browser plus
   Safari 18+. Worth transcoding to if you have many or longer clips.
 - **MP3** is universally supported. Useful as a fallback for the
   small handful of browsers that still don't decode OGG cleanly.
 
-## Recommended sources (CC0 / public domain)
-
-Search these on freesound.org and pick clips you like that are
-licensed CC0 / Public Domain (not just "Attribution"):
-
-- https://freesound.org/search/?q=frog+chirp&f=license:%22Creative+Commons+0%22
-- https://freesound.org/search/?q=tree+frog&f=license:%22Creative+Commons+0%22
-- https://freesound.org/search/?q=bullfrog+croak&f=license:%22Creative+Commons+0%22
-- https://freesound.org/search/?q=frog+ribbit&f=license:%22Creative+Commons+0%22
-
-## File spec
+## File spec (for replacement clips)
 
 - Length: 0.4–1.5 seconds — the hook loops the clip while a frog
   speaks, so anything longer is wasted bytes.
@@ -82,14 +91,16 @@ licensed CC0 / Public Domain (not just "Attribution"):
   for a short loop. MP3 128 kbps CBR is fine. WAV: 16-bit/44.1 kHz
   is more than enough.
 
-## Crediting
+## Recommended sources for future clips
 
-If a clip is CC0 you don't legally need to credit, but it's polite.
-Add a line below for any clip that ships with the repo.
+Search these on freesound.org and filter to CC0 / Public Domain
+(easier than CC BY for attribution-free use):
 
-| File            | Source URL | License | Author |
-| --------------- | ---------- | ------- | ------ |
-| frog1.*         | _(empty — currently synthesized)_ | _n/a_ | _n/a_ |
-| frog2.*         | _(empty — currently synthesized)_ | _n/a_ | _n/a_ |
-| frog3.*         | _(empty — currently synthesized)_ | _n/a_ | _n/a_ |
-| frog4.*         | _(empty — currently synthesized)_ | _n/a_ | _n/a_ |
+- https://freesound.org/search/?q=frog+chirp&f=license:%22Creative+Commons+0%22
+- https://freesound.org/search/?q=tree+frog&f=license:%22Creative+Commons+0%22
+- https://freesound.org/search/?q=bullfrog+croak&f=license:%22Creative+Commons+0%22
+- https://freesound.org/search/?q=frog+ribbit&f=license:%22Creative+Commons+0%22
+
+If you pick a CC BY clip instead, remember to add a row to the
+table at the top of this file AND update the in-app attribution
+in `froglings-workspace.tsx`.

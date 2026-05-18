@@ -7,18 +7,22 @@
  * a 1-on-1 debate (one pro frog, one con frog, one judge), and renders the
  * stream in a simpler, more playful layout.
  *
- * Phase 3 scope: bones only — kid-friendly prompts, plain-language stage
- * labels, single pro/con bubbles per round, simple verdict. Phases 4–7
- * add the FunFrog animation, slow-print typewriter, frog sounds, and the
- * educational scaffolding.
+ * Layered up across phases:
+ *  - Phase 3: bones — kid prompts, plain-language stage labels, single
+ *             pro/con bubbles per round, simple verdict.
+ *  - Phase 4: FunFrog animation (bob, blink, mouth chatter, hop).
+ *  - Phase 5: SlowPrint typewriter driving the mouth-chatter signal.
+ *  - Phase 6: useFrogSounds() chirp/croak audio + header mute toggle.
+ *  - Phase 7: educational intro + per-round explainer (not yet).
  */
 
-import { FormEvent, useEffect, useReducer, useRef, useState } from "react";
+import { createContext, FormEvent, useContext, useEffect, useReducer, useRef, useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { Loader2, RotateCcw, Send } from "lucide-react";
+import { Loader2, RotateCcw, Send, Volume2, VolumeX } from "lucide-react";
 import { FunFrog } from "@/components/fun-frog";
 import { SlowPrint } from "@/components/slow-print";
+import { useFrogSounds } from "@/components/use-frog-sounds";
 import type {
   Claim,
   DebateLiveEvent,
@@ -153,6 +157,18 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
 }
 
 // -------------------------------------------------------------------------
+// Tiny context so Bubble can trigger play/stop without prop-drilling.
+// -------------------------------------------------------------------------
+
+type FrogSoundsCtx = {
+  play: (side: "pro" | "con") => void;
+  stop: (side: "pro" | "con") => void;
+};
+
+const noopSounds: FrogSoundsCtx = { play: () => {}, stop: () => {} };
+const FrogSoundsContext = createContext<FrogSoundsCtx>(noopSounds);
+
+// -------------------------------------------------------------------------
 // Top-level workspace
 // -------------------------------------------------------------------------
 
@@ -163,6 +179,7 @@ export function FroglingsWorkspace() {
   const [live, dispatch] = useReducer(liveReducer, null);
   const [, setDebate] = useState<DebateRecord | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const sounds = useFrogSounds();
 
   useEffect(() => {
     return () => {
@@ -177,6 +194,9 @@ export function FroglingsWorkspace() {
     setSubmitError(null);
     setDebate(null);
     eventSourceRef.current?.close();
+    // The form submit is the user's first explicit interaction — that's
+    // our chance to unlock the AudioContext under browser autoplay rules.
+    void sounds.unlock();
 
     try {
       const response = await fetch("/api/debates", {
@@ -273,6 +293,16 @@ export function FroglingsWorkspace() {
           </span>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={sounds.toggleMute}
+            aria-pressed={sounds.muted}
+            aria-label={sounds.muted ? "Unmute frog sounds" : "Mute frog sounds"}
+            title={sounds.muted ? "Unmute frog sounds" : "Mute frog sounds"}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/70 text-pond shadow-sm transition hover:bg-white"
+          >
+            {sounds.muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </button>
           {live ? (
             <button
               type="button"
@@ -301,7 +331,9 @@ export function FroglingsWorkspace() {
           onSubmit={runDebate}
         />
       ) : (
-        <FroglingsLive live={live} />
+        <FrogSoundsContext.Provider value={{ play: sounds.play, stop: sounds.stop }}>
+          <FroglingsLive live={live} />
+        </FrogSoundsContext.Provider>
       )}
     </main>
   );
@@ -533,10 +565,24 @@ function Bubble({
   content: string;
 }) {
   const isPro = side === "pro";
-  // Tracks whether the typewriter is currently revealing characters; the
-  // FunFrog mouth chatters only while it is, and Phase 6 will gate audio
-  // playback on this same signal.
+  // Tracks whether the typewriter is currently revealing characters. The
+  // FunFrog mouth chatters only while it is, and the frog sounds context
+  // starts/stops a softly-looping chirp or croak for the same window.
   const [typing, setTyping] = useState(false);
+  const sounds = useContext(FrogSoundsContext);
+
+  // Drive audio off the typing flag. We start on rising edge, stop on
+  // falling edge, and also stop on unmount so a navigation or new debate
+  // doesn't leave a frog chirping in the background.
+  useEffect(() => {
+    if (typing) {
+      sounds.play(side);
+    } else {
+      sounds.stop(side);
+    }
+    return () => sounds.stop(side);
+  }, [typing, side, sounds]);
+
   return (
     <div
       className={`hop-in flex gap-3 rounded-2xl border px-4 py-3 ${

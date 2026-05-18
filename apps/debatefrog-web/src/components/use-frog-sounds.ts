@@ -3,79 +3,85 @@
 /**
  * useFrogSounds — owns Web Audio for the /froglings funner experience.
  *
+ * Audio model: a SHARED POOL of frog clips. Both the pro and the con
+ * frog randomly pick a clip from the pool when they start speaking, so
+ * the soundscape rotates instead of using one fixed sound per side.
+ * Sides still matter for gain/ducking/muting, just not for clip choice.
+ *
  * Design goals:
- *  - Browsers block audio until the first user gesture. The hook exposes
- *    an `unlock()` function which the caller fires on the user's first
- *    real interaction (the "Start the debate!" button click).
+ *  - Browsers block audio until the first user gesture. The hook
+ *    exposes an `unlock()` function which the caller fires on the
+ *    user's first real interaction (the "Start the debate!" button).
  *  - Mute state is persisted to localStorage so a parent/teacher can
  *    silence it once and have it stick across navigations and reloads.
- *  - Real CC0 files at /sounds/pro-chirp.{ogg,mp3} +
- *    /sounds/con-croak.{ogg,mp3} are preferred. .ogg is selected first
- *    when the browser reports support for it (smaller files, slightly
- *    higher quality at the same bitrate); .mp3 is the fallback for the
- *    handful of browsers that still don't decode .ogg cleanly. If
- *    neither is present, the hook drops to a procedural Web Audio synth
- *    so the page is never silent. See public/sounds/CREDITS.md.
- *  - Each real file is fetched with a `?v=<content-hash>` query
- *    parameter sourced from the build-time audio-manifest, so swapping
- *    a clip auto-busts the browser cache without manual versioning.
- *  - `play(side)` starts a softly-looping chirp/croak for that side and
- *    ducks any other side that's currently playing. `stop(side)` fades
- *    that side back to silence.
+ *  - Real files at /sounds/frog<N>.{wav,ogg,mp3} are preferred. The
+ *    loader picks the best format the browser can play for each clip
+ *    in this order: wav (universal), ogg (smaller, evergreen browsers
+ *    + Safari 18+), mp3 (universal fallback). If no real clips are
+ *    present, the hook drops to a procedural Web Audio synth so the
+ *    page is never silent. See public/sounds/CREDITS.md.
+ *  - Each real-file fetch carries `?v=<content-hash>` from the
+ *    build-time audio-manifest, so swapping a clip auto-busts the
+ *    browser cache without manual versioning.
+ *  - `play(side)` picks a random clip (preferring one that isn't
+ *    currently playing on the other side), starts it on the side's
+ *    gain channel, and ducks it on `stop(side)`.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  audioFileNames,
-  audioManifest,
-  type AudioFormat,
-  type AudioSide
+  audioClips,
+  type AudioClip,
+  type AudioFormat
 } from "@/lib/audio-manifest";
 
-type Side = AudioSide;
+type Side = "pro" | "con";
 
 const MUTE_STORAGE_KEY = "froglings:muted";
 
+// WAV first because (a) it's what the user is most likely to drop in
+// and (b) it decodes natively in every browser with no codec questions.
+// OGG next because it's smaller for users who do transcode. MP3 last as
+// a universal fallback for the handful of edge cases.
+const FORMAT_PRIORITY: AudioFormat[] = ["wav", "ogg", "mp3"];
 const MIME_FOR_FORMAT: Record<AudioFormat, string> = {
+  wav: "audio/wav",
   ogg: "audio/ogg",
   mp3: "audio/mpeg"
 };
 
 /**
- * Picks the best real-file URL for a side, or null if no real file
- * exists / the browser can't play any of them. Honors the build-time
- * manifest so we never 404 in steady state, and appends a content-hash
- * query string for automatic cache-busting.
- *
- * .ogg is tried before .mp3 because Ogg Vorbis is smaller at equivalent
- * quality and every evergreen browser plus Safari 18+ supports it.
+ * Picks the best playable URL for a clip, or null if none of its
+ * formats exist or the browser can't decode any of them.
  */
-function pickSourceUrl(side: Side): string | null {
+function pickSourceUrl(clip: AudioClip): string | null {
   if (typeof window === "undefined") return null;
-  const audioProbe = document.createElement("audio");
-  const formats: AudioFormat[] = ["ogg", "mp3"];
-  for (const fmt of formats) {
-    const entry = audioManifest[side][fmt];
+  const probe = document.createElement("audio");
+  for (const fmt of FORMAT_PRIORITY) {
+    const entry = clip.formats[fmt];
     if (!entry.exists) continue;
-    const support = audioProbe.canPlayType(MIME_FOR_FORMAT[fmt]);
-    // canPlayType returns "" / "maybe" / "probably". We accept anything
-    // non-empty so older Safari, which only ever returns "maybe" for
-    // Ogg, still works.
+    const support = probe.canPlayType(MIME_FOR_FORMAT[fmt]);
+    // canPlayType returns "" / "maybe" / "probably". Accept anything
+    // non-empty so older Safari (which only ever returns "maybe" for
+    // Ogg) still works.
     if (support === "") continue;
-    return `/sounds/${audioFileNames[side]}.${fmt}?v=${entry.hash}`;
+    return `/sounds/${clip.id}.${fmt}?v=${entry.hash}`;
   }
   return null;
 }
 
-interface SideAudio {
-  /** Decoded sample if a real file was loaded. */
-  buffer: AudioBuffer | null;
-  /** When the file failed to load we use the procedural synth instead. */
-  useSynth: boolean;
-  /** Per-side gain node so each side can fade independently. */
+interface LoadedClip {
+  id: string;
+  buffer: AudioBuffer;
+}
+
+interface SideChannel {
+  /** Per-side gain node so each side fades / mutes independently. */
   gain: GainNode;
   /** Active source for cleanup; null when not playing. */
   source: AudioBufferSourceNode | OscillatorNode | null;
+  /** Id of the clip currently playing, for cross-side de-duplication. */
+  currentClipId: string | null;
 }
 
 interface FrogSoundsApi {
@@ -87,7 +93,7 @@ interface FrogSoundsApi {
   toggleMute: () => void;
   /** Resume the AudioContext. Safe to call multiple times. */
   unlock: () => Promise<void>;
-  /** Start the loop for a side. No-op if muted or not yet unlocked. */
+  /** Start a randomly-picked loop for a side. No-op if muted or not unlocked. */
   play: (side: Side) => void;
   /** Fade and stop the loop for a side. */
   stop: (side: Side) => void;
@@ -96,7 +102,9 @@ interface FrogSoundsApi {
 export function useFrogSounds(): FrogSoundsApi {
   const ctxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
-  const sidesRef = useRef<Record<Side, SideAudio> | null>(null);
+  const channelsRef = useRef<Record<Side, SideChannel> | null>(null);
+  /** All real clips successfully fetched + decoded. May be empty. */
+  const poolRef = useRef<LoadedClip[]>([]);
   const [ready, setReady] = useState(false);
   const [muted, setMuted] = useState<boolean>(false);
 
@@ -111,8 +119,8 @@ export function useFrogSounds(): FrogSoundsApi {
     }
   }, []);
 
-  // When mute toggles, immediately reflect that on the master gain node
-  // if the context is already live.
+  // When mute toggles, immediately reflect that on the master gain
+  // node if the context is already live.
   useEffect(() => {
     const master = masterGainRef.current;
     const ctx = ctxRef.current;
@@ -138,7 +146,6 @@ export function useFrogSounds(): FrogSoundsApi {
   const unlock = useCallback(async () => {
     if (typeof window === "undefined") return;
     if (ctxRef.current) {
-      // Already created — just make sure it's running.
       if (ctxRef.current.state === "suspended") {
         await ctxRef.current.resume();
       }
@@ -147,44 +154,49 @@ export function useFrogSounds(): FrogSoundsApi {
     }
 
     const AudioCtor: typeof AudioContext | undefined =
-      window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!AudioCtor) return;
     const ctx = new AudioCtor();
     ctxRef.current = ctx;
 
-    // Master gain controls mute state; per-side gains layer on top.
+    // Master gain — gates the whole hook for mute.
     const master = ctx.createGain();
     master.gain.value = muted ? 0 : 1;
     master.connect(ctx.destination);
     masterGainRef.current = master;
 
-    // Try to fetch + decode each real file in parallel. Whichever ones
-    // are absent from the manifest (or 404 / fail to decode for any
-    // other reason) just flip useSynth=true for that side.
-    const loadSide = async (side: Side): Promise<SideAudio> => {
-      const sideGain = ctx.createGain();
-      sideGain.gain.value = 0;
-      sideGain.connect(master);
-
-      const url = pickSourceUrl(side);
-      if (!url) {
-        // No real file the browser can play. Drop straight to synth.
-        return { buffer: null, useSynth: true, gain: sideGain, source: null };
-      }
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const bytes = await response.arrayBuffer();
-        const buffer = await ctx.decodeAudioData(bytes.slice(0));
-        return { buffer, useSynth: false, gain: sideGain, source: null };
-      } catch {
-        return { buffer: null, useSynth: true, gain: sideGain, source: null };
-      }
+    // Per-side channels. Sides share the clip pool but each have their
+    // own gain so fades / mutes / ducking are independent.
+    const makeChannel = (): SideChannel => {
+      const gain = ctx.createGain();
+      gain.gain.value = 0;
+      gain.connect(master);
+      return { gain, source: null, currentClipId: null };
     };
+    channelsRef.current = { pro: makeChannel(), con: makeChannel() };
 
-    const [proSide, conSide] = await Promise.all([loadSide("pro"), loadSide("con")]);
-    sidesRef.current = { pro: proSide, con: conSide };
+    // Fetch + decode every clip in parallel. Any that 404 or fail to
+    // decode are silently skipped; if the whole pool ends up empty,
+    // play() falls through to the synth.
+    const pool: LoadedClip[] = (
+      await Promise.all(
+        audioClips.map(async (clip): Promise<LoadedClip | null> => {
+          const url = pickSourceUrl(clip);
+          if (!url) return null;
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const bytes = await response.arrayBuffer();
+            const buffer = await ctx.decodeAudioData(bytes.slice(0));
+            return { id: clip.id, buffer };
+          } catch {
+            return null;
+          }
+        })
+      )
+    ).filter((entry): entry is LoadedClip => entry !== null);
+    poolRef.current = pool;
 
     if (ctx.state === "suspended") await ctx.resume();
     setReady(true);
@@ -192,15 +204,13 @@ export function useFrogSounds(): FrogSoundsApi {
 
   const stop = useCallback((side: Side) => {
     const ctx = ctxRef.current;
-    const sides = sidesRef.current;
-    if (!ctx || !sides) return;
-    const entry = sides[side];
-    entry.gain.gain.cancelScheduledValues(ctx.currentTime);
-    entry.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.12);
-    if (entry.source) {
-      const src = entry.source;
-      // Schedule the source to stop just after the fade completes; it
-      // will be garbage-collected once it disconnects itself onended.
+    const channels = channelsRef.current;
+    if (!ctx || !channels) return;
+    const ch = channels[side];
+    ch.gain.gain.cancelScheduledValues(ctx.currentTime);
+    ch.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.12);
+    if (ch.source) {
+      const src = ch.source;
       try {
         src.stop(ctx.currentTime + 0.14);
       } catch {
@@ -213,47 +223,67 @@ export function useFrogSounds(): FrogSoundsApi {
           // ignore
         }
       };
-      entry.source = null;
+      ch.source = null;
     }
+    ch.currentClipId = null;
   }, []);
 
   const play = useCallback(
     (side: Side) => {
       const ctx = ctxRef.current;
-      const sides = sidesRef.current;
+      const channels = channelsRef.current;
       const master = masterGainRef.current;
-      if (!ctx || !sides || !master) return;
+      if (!ctx || !channels || !master) return;
       if (muted) return;
 
       // Stop any previous source for this side to avoid overlap.
       stop(side);
 
-      const entry = sides[side];
-      const targetGain = side === "pro" ? 0.32 : 0.4;
+      const ch = channels[side];
+      const otherSide: Side = side === "pro" ? "con" : "pro";
+      const otherCurrentId = channels[otherSide].currentClipId;
+      const targetGain = 0.36;
+      const pool = poolRef.current;
 
-      if (entry.buffer && !entry.useSynth) {
-        // Real CC0 file — loop it gently.
+      if (pool.length > 0) {
+        // Pick a random clip, preferring one not currently active on
+        // the other side so both sides don't sound identical when they
+        // happen to type at the same moment. If the pool has only one
+        // clip and it's the same as the other side, fall through and
+        // use it anyway — beats silence.
+        const candidates = pool.filter((clip) => clip.id !== otherCurrentId);
+        const choice =
+          candidates.length > 0
+            ? candidates[Math.floor(Math.random() * candidates.length)]
+            : pool[Math.floor(Math.random() * pool.length)];
+
         const src = ctx.createBufferSource();
-        src.buffer = entry.buffer;
+        src.buffer = choice.buffer;
         src.loop = true;
-        src.connect(entry.gain);
-        entry.gain.gain.cancelScheduledValues(ctx.currentTime);
-        entry.gain.gain.setValueAtTime(0, ctx.currentTime);
-        entry.gain.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.12);
+        // Tiny random pitch jitter (~±3 semitones in playbackRate
+        // terms) so successive plays of the same clip don't feel
+        // identical. Keeps each side recognizably "frog" but with
+        // organic variation.
+        const jitter = 0.92 + Math.random() * 0.16; // 0.92 – 1.08
+        src.playbackRate.value = jitter;
+        src.connect(ch.gain);
+        ch.gain.gain.cancelScheduledValues(ctx.currentTime);
+        ch.gain.gain.setValueAtTime(0, ctx.currentTime);
+        ch.gain.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.12);
         src.start();
-        entry.source = src;
+        ch.source = src;
+        ch.currentClipId = choice.id;
         return;
       }
 
-      // Synth fallback. Build a small cartoon chirp/croak using a single
-      // oscillator with a vibrato LFO and a slow gain wobble so it
-      // doesn't sound like a sine wave humming.
+      // Synth fallback — no real clips were loaded. Single oscillator +
+      // vibrato + tremolo, with a slight tone difference per side so
+      // simultaneous speaking still distinguishes them by ear.
       const osc = ctx.createOscillator();
       osc.type = side === "pro" ? "triangle" : "sawtooth";
       const baseHz = side === "pro" ? 520 : 110;
       osc.frequency.value = baseHz;
 
-      // Vibrato LFO modulates the pitch a bit so it sounds frog-ish.
       const lfo = ctx.createOscillator();
       lfo.type = "sine";
       lfo.frequency.value = side === "pro" ? 9 : 5.5;
@@ -262,24 +292,21 @@ export function useFrogSounds(): FrogSoundsApi {
       lfo.connect(lfoGain).connect(osc.frequency);
       lfo.start();
 
-      // Tremolo wobble on amplitude so it pulses like chirps/croaks
-      // rather than a steady tone.
       const tremolo = ctx.createOscillator();
       tremolo.type = "sine";
       tremolo.frequency.value = side === "pro" ? 6.5 : 3.2;
       const tremoloGain = ctx.createGain();
       tremoloGain.gain.value = 0.55;
-      tremolo.connect(tremoloGain).connect(entry.gain.gain);
+      tremolo.connect(tremoloGain).connect(ch.gain.gain);
       tremolo.start();
 
-      osc.connect(entry.gain);
-      entry.gain.gain.cancelScheduledValues(ctx.currentTime);
-      entry.gain.gain.setValueAtTime(0, ctx.currentTime);
-      entry.gain.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.12);
+      osc.connect(ch.gain);
+      ch.gain.gain.cancelScheduledValues(ctx.currentTime);
+      ch.gain.gain.setValueAtTime(0, ctx.currentTime);
+      ch.gain.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + 0.12);
       osc.start();
-      entry.source = osc;
-      // We don't track lfo/tremolo separately — they'll be disconnected
-      // when the osc.onended fires after stop() schedules osc.stop().
+      ch.source = osc;
+      ch.currentClipId = `synth:${side}`;
       osc.onended = () => {
         try {
           lfo.stop();
@@ -303,8 +330,9 @@ export function useFrogSounds(): FrogSoundsApi {
         // already closed
       }
       ctxRef.current = null;
-      sidesRef.current = null;
+      channelsRef.current = null;
       masterGainRef.current = null;
+      poolRef.current = [];
     };
   }, []);
 

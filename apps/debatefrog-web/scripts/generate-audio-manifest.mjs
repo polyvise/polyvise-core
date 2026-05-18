@@ -3,29 +3,32 @@
  * generate-audio-manifest.mjs — regenerates src/lib/audio-manifest.ts
  * from the contents of public/sounds/.
  *
- * Why: browsers cache static assets aggressively, so if you swap
- * pro-chirp.mp3 for a new clip the old one keeps playing until a hard
- * reload. By computing a SHA-1 of each file at build time and using it
- * as a `?v=<hash>` query parameter, the URL changes whenever the file
- * changes, and the browser fetches the new bytes automatically.
+ * Model: /froglings uses a SHARED POOL of frog sounds. Both the pro and
+ * the con frog randomly pick a clip from the pool when they start
+ * speaking, so a single debate can rotate through several voices
+ * instead of using one fixed sound per side.
+ *
+ * Looked-for files:
+ *   public/sounds/frog<N>.wav   (preferred — what the user has)
+ *   public/sounds/frog<N>.ogg   (optional — smaller, slightly higher quality)
+ *   public/sounds/frog<N>.mp3   (optional — universal fallback)
+ *
+ * <N> is any positive integer; the script discovers every `frog<N>.<ext>`
+ * file present, groups them by id, and lists the available formats with
+ * a SHA-1 content hash for cache-busting.
+ *
+ * Why cache-busting: browsers cache static assets aggressively. The
+ * useFrogSounds hook appends `?v=<hash>` from this manifest to every
+ * fetch, so swapping a clip on disk forces a fresh download with no
+ * hard-refresh dance.
  *
  * The script runs as `predev` and `prebuild` in this package's
- * package.json so the manifest is always fresh.
- *
- * Looked-for files (all optional):
- *   public/sounds/pro-chirp.mp3
- *   public/sounds/pro-chirp.ogg
- *   public/sounds/con-croak.mp3
- *   public/sounds/con-croak.ogg
- *
- * The hook (`use-frog-sounds.ts`) prefers .ogg when the browser
- * supports it (smaller files, slightly higher quality at the same
- * bitrate), falls back to .mp3 when present, and finally to a
- * procedural Web Audio synth when neither exists.
+ * package.json so the manifest is always fresh. Also exposed as
+ * `npm run audio:manifest` for manual regeneration.
  */
 
 import { createHash } from "node:crypto";
-import { readFile, stat, writeFile } from "node:fs/promises";
+import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -34,9 +37,8 @@ const appRoot = join(here, "..");
 const soundsDir = join(appRoot, "public", "sounds");
 const outFile = join(appRoot, "src", "lib", "audio-manifest.ts");
 
-const sides = /** @type {const} */ (["pro", "con"]);
-const baseName = { pro: "pro-chirp", con: "con-croak" };
-const formats = /** @type {const} */ (["mp3", "ogg"]);
+const formats = /** @type {const} */ (["wav", "ogg", "mp3"]);
+const CLIP_RE = /^frog(\d+)\.(wav|ogg|mp3)$/i;
 
 /**
  * @param {string} path
@@ -54,15 +56,39 @@ async function fileEntry(path) {
   }
 }
 
-async function main() {
-  /** @type {Record<string, Record<string, { exists: true; hash: string } | { exists: false }>>} */
-  const manifest = {};
-  for (const side of sides) {
-    manifest[side] = {};
-    for (const fmt of formats) {
-      const filename = `${baseName[side]}.${fmt}`;
-      manifest[side][fmt] = await fileEntry(join(soundsDir, filename));
+async function discoverClipIds() {
+  /** @type {Set<string>} */
+  const ids = new Set();
+  try {
+    const entries = await readdir(soundsDir);
+    for (const name of entries) {
+      const match = CLIP_RE.exec(name);
+      if (match) ids.add(`frog${match[1]}`);
     }
+  } catch {
+    // soundsDir may not exist on a brand-new checkout. That's fine —
+    // the manifest will just have an empty clips array and the hook
+    // will drop to the synth fallback.
+  }
+  return Array.from(ids).sort((a, b) => {
+    const an = Number(a.replace(/^frog/, ""));
+    const bn = Number(b.replace(/^frog/, ""));
+    return an - bn;
+  });
+}
+
+async function main() {
+  const ids = await discoverClipIds();
+
+  /** @type {{ id: string; formats: Record<string, { exists: true; hash: string } | { exists: false }> }[]} */
+  const clips = [];
+  for (const id of ids) {
+    /** @type {Record<string, { exists: true; hash: string } | { exists: false }>} */
+    const fmtEntries = {};
+    for (const fmt of formats) {
+      fmtEntries[fmt] = await fileEntry(join(soundsDir, `${id}.${fmt}`));
+    }
+    clips.push({ id, formats: fmtEntries });
   }
 
   const generated =
@@ -70,40 +96,48 @@ async function main() {
     "// Regenerated from apps/debatefrog-web/public/sounds/ by\n" +
     "// scripts/generate-audio-manifest.mjs on every predev / prebuild.\n" +
     "// See use-frog-sounds.ts for how this is consumed.\n\n" +
-    "export type AudioFormat = \"mp3\" | \"ogg\";\n\n" +
+    "export type AudioFormat = \"wav\" | \"ogg\" | \"mp3\";\n\n" +
     "export type AudioEntry =\n" +
     "  | { exists: true; hash: string }\n" +
     "  | { exists: false };\n\n" +
-    "export type AudioSide = \"pro\" | \"con\";\n\n" +
-    "export const audioFileNames: Record<AudioSide, string> = {\n" +
-    "  pro: \"pro-chirp\",\n" +
-    "  con: \"con-croak\"\n" +
-    "};\n\n" +
-    `export const audioManifest: Record<AudioSide, Record<AudioFormat, AudioEntry>> = ${JSON.stringify(
-      manifest,
+    "export interface AudioClip {\n" +
+    "  /** Stable file-id like 'frog1', 'frog2', ... */\n" +
+    "  id: string;\n" +
+    "  /** Per-format presence + content hash. */\n" +
+    "  formats: Record<AudioFormat, AudioEntry>;\n" +
+    "}\n\n" +
+    "/**\n" +
+    " * Shared pool of frog clips. Both pro and con frogs draw from this\n" +
+    " * pool — there is no per-side audio. The hook picks a random clip\n" +
+    " * when each frog starts speaking, avoiding the clip currently\n" +
+    " * playing on the other side.\n" +
+    " */\n" +
+    `export const audioClips: readonly AudioClip[] = ${JSON.stringify(
+      clips,
       null,
       2
     )} as const;\n`;
 
   await writeFile(outFile, generated, "utf8");
 
-  // Friendly summary at the bottom of console output so anyone running
-  // dev/build sees which files we found.
-  const summary = sides
-    .flatMap((side) =>
+  if (clips.length === 0) {
+    console.log(
+      "[audio-manifest] no frog<N>.{wav,ogg,mp3} files found — /froglings will use the synth fallback. " +
+        "See public/sounds/CREDITS.md for how to add clips."
+    );
+    return;
+  }
+  const summary = clips
+    .flatMap((clip) =>
       formats
-        .filter((fmt) => manifest[side][fmt].exists)
-        .map((fmt) => `  ✓ ${baseName[side]}.${fmt} (hash ${/** @type {any} */(manifest[side][fmt]).hash})`)
+        .filter((fmt) => clip.formats[fmt].exists)
+        .map(
+          (fmt) =>
+            `  ✓ ${clip.id}.${fmt} (hash ${/** @type {any} */ (clip.formats[fmt]).hash})`
+        )
     )
     .join("\n");
-  if (summary) {
-    console.log("[audio-manifest] picked up:\n" + summary);
-  } else {
-    console.log(
-      "[audio-manifest] no real audio files found — /froglings will use the synth fallback. " +
-        "See public/sounds/CREDITS.md for how to add CC0 clips."
-    );
-  }
+  console.log(`[audio-manifest] picked up ${clips.length} clip(s):\n${summary}`);
 }
 
 main().catch((err) => {

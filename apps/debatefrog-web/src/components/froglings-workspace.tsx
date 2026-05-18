@@ -374,7 +374,7 @@ export function FroglingsWorkspace() {
             </button>
           ) : null}
           <Link
-            href={"/" as Route}
+            href={"/grown-up" as Route}
             className="text-xs font-semibold text-pond/60 transition hover:text-pond"
           >
             ← Grown-up version

@@ -490,11 +490,11 @@ function PondHero({
           <Link
             // typed-routes generates the route map at build time; cast keeps
             // tsc happy in CI where .next/types may be stale.
-            href={"/froglings" as Route}
+            href={"/" as Route}
             className="inline-flex items-center gap-1 text-xs font-semibold text-pond/70 transition hover:text-pond"
           >
             <span aria-hidden="true">→</span>
-            <span>Try the funner version (for younger frogs)</span>
+            <span>Back to Froglings</span>
           </Link>
         </div>
       </form>

@@ -47,15 +47,15 @@ export function classifyTopic(subject: string, context = ""): TopicKind {
 }
 
 export function frameResolution(subject: string, topicKind: TopicKind): string {
-  const cleanSubject = subject.trim().replace(/\s+/g, " ").replace(/[.?!]+$/, "");
+  const cleanSubject = subject
+    .trim()
+    .replace(/^resolved:\s*/i, "")
+    .replace(/\s+/g, " ")
+    .replace(/[.?!]+$/, "");
   const lower = cleanSubject.toLowerCase();
 
-  if (lower.startsWith("resolved:")) {
-    return cleanSubject;
-  }
-
   if (lower.startsWith("should ")) {
-    return `Resolved: ${cleanSubject.charAt(0).toUpperCase()}${cleanSubject.slice(1)}.`;
+    return `${cleanSubject.charAt(0).toUpperCase()}${cleanSubject.slice(1)}?`;
   }
 
   if (topicKind === "comparison" && lower.startsWith("is ")) {
@@ -65,22 +65,22 @@ export function frameResolution(subject: string, topicKind: TopicKind): string {
         "$1 is $2 $3 than $4"
       )
       .replace(/^is\s+/i, "");
-    return `Resolved: ${declarative.charAt(0).toUpperCase()}${declarative.slice(1)}.`;
+    return `${declarative.charAt(0).toUpperCase()}${declarative.slice(1)}.`;
   }
 
   if (topicKind === "comparison") {
-    return `Resolved: The better choice is ${cleanSubject}.`;
+    return `The better choice is ${cleanSubject}.`;
   }
 
   if (topicKind === "empirical") {
-    return `Resolved: The available evidence supports the claim that ${cleanSubject}.`;
+    return `The available evidence supports the claim that ${cleanSubject}.`;
   }
 
   if (topicKind === "value") {
-    return `Resolved: ${cleanSubject} is defensible when judged against practical and ethical tradeoffs.`;
+    return `${cleanSubject} is defensible when judged against practical and ethical tradeoffs.`;
   }
 
-  return `Resolved: Decision-makers should pursue ${cleanSubject}.`;
+  return `Decision-makers should pursue ${cleanSubject}.`;
 }
 
 export function detectHighStakes(subject: string, context = ""): HighStakesNotice | null {

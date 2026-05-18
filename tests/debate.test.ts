@@ -14,8 +14,12 @@ describe("topic framing", () => {
 
   it("frames direct should questions as neutral resolutions", () => {
     expect(frameResolution("Should schools allow phones during the day?", "policy")).toBe(
-      "Resolved: Should schools allow phones during the day."
+      "Should schools allow phones during the day?"
     );
+  });
+
+  it("strips formal resolved prefixes from user-supplied questions", () => {
+    expect(frameResolution("Resolved: Should homework be banned?", "policy")).toBe("Should homework be banned?");
   });
 
   it("frames comparative is questions as direct comparison resolutions", () => {
@@ -23,7 +27,7 @@ describe("topic framing", () => {
 
     expect(classifyTopic(subject)).toBe("comparison");
     expect(frameResolution(subject, "comparison")).toBe(
-      "Resolved: Carl Jung's work is more influential than Sigmund Freud's."
+      "Carl Jung's work is more influential than Sigmund Freud's."
     );
   });
 

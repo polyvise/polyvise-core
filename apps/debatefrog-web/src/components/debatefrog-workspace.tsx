@@ -741,7 +741,9 @@ function RunHeader({ live }: { live: LiveState }) {
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily backdrop-blur">
       <div className="text-xs font-bold uppercase tracking-wide text-mud/60">Question</div>
-      <div className="mt-1 text-base leading-snug text-ink">{live.resolution ?? live.subject}</div>
+      <div className="mt-1 text-base leading-snug text-ink">
+        {stripResolvedPrefix(live.resolution ?? live.subject)}
+      </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {stageEntries.map((stage, index) => {
           const reached =
@@ -803,8 +805,12 @@ function Verdict({ live }: { live: LiveState }) {
             >
               {formatRecommendation(scorecard.recommendation)}
             </span>
-            <h2 className="mt-3 text-2xl font-black leading-snug text-pond">{summary.headline}</h2>
-            <p className="mt-2 text-base leading-relaxed text-ink/85">{summary.recommendation}</p>
+            <h2 className="mt-3 text-2xl font-black leading-snug text-pond">
+              {stripResolvedPrefix(summary.headline)}
+            </h2>
+            <p className="mt-2 text-base leading-relaxed text-ink/85">
+              {stripResolvedPrefix(summary.recommendation)}
+            </p>
           </div>
         </div>
         <div className="flex flex-col items-end">
@@ -987,7 +993,7 @@ function TurnBubble({ turn, index = 0 }: { turn: RoundTurn; index?: number }) {
             {turn.side}
           </span>
         </div>
-        <p className="text-sm leading-relaxed text-ink/85">{turn.content}</p>
+        <p className="text-sm leading-relaxed text-ink/85">{stripResolvedPrefix(turn.content)}</p>
       </div>
     </article>
   );
@@ -1051,8 +1057,8 @@ function ClaimCard({
       <ul className="mt-3 space-y-3">
         {claims.map((claim) => (
           <li key={claim.id} className="border-l-2 border-mud/15 pl-3">
-            <p className="text-sm font-bold leading-relaxed text-ink">{claim.text}</p>
-            <p className="mt-1 text-xs leading-relaxed text-ink/65">{claim.warrant}</p>
+            <p className="text-sm font-bold leading-relaxed text-ink">{stripResolvedPrefix(claim.text)}</p>
+            <p className="mt-1 text-xs leading-relaxed text-ink/65">{stripResolvedPrefix(claim.warrant)}</p>
           </li>
         ))}
       </ul>
@@ -1300,6 +1306,15 @@ function verdictPendingCopy(status: DebateStatus): string {
     default:
       return "The frogs are getting ready…";
   }
+}
+
+function stripResolvedPrefix(text: string): string {
+  return text
+    .replace(/(["“])Resolved:\s*([^"”]+?)(\.?)(["”])/gi, (_match, open: string, question: string, _period: string, close: string) => {
+      const cleaned = question.trim().replace(/[.!?]+$/, "");
+      return `${open}${/^should\b/i.test(cleaned) ? `${cleaned}?` : cleaned}${close}`;
+    })
+    .replace(/\bResolved:\s*/gi, "");
 }
 
 function groupTurns(turns: RoundTurn[]) {

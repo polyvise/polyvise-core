@@ -54,16 +54,16 @@ export function FroglingsIntro({ onDismiss }: FroglingsIntroProps) {
             <div className="flex flex-col items-center rounded-2xl border border-leaf/30 bg-mint/40 p-3 text-center">
               <FunFrog mood="pro" size={56} />
               <div className="mt-1 text-[11px] font-black uppercase tracking-wide text-pond">
-                Pro frog
+                YES frog
               </div>
-              <div className="text-xs text-ink/70">Says YES to the question.</div>
+              <div className="text-xs text-ink/70">Argues the YES side.</div>
             </div>
             <div className="flex flex-col items-center rounded-2xl border border-berry/30 bg-lily/40 p-3 text-center">
               <FunFrog mood="con" size={56} />
               <div className="mt-1 text-[11px] font-black uppercase tracking-wide text-berry">
-                Con frog
+                NO frog
               </div>
-              <div className="text-xs text-ink/70">Says NO to the question.</div>
+              <div className="text-xs text-ink/70">Argues the NO side.</div>
             </div>
             <div className="flex flex-col items-center rounded-2xl border border-[#9978b8]/30 bg-[#ece4f5]/60 p-3 text-center">
               <FunFrog mood="judge" size={56} />

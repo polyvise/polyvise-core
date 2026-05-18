@@ -763,8 +763,8 @@ function Verdict({ live }: { live: LiveState }) {
     return (
       <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
         <div className="flex items-center gap-3 text-sm text-mud/70">
-          <Frog mood="judge" size={48} />
-          The judge frog is still thinking…
+          <Frog mood={live.status === "judging" ? "judge" : "idle"} size={48} />
+          {verdictPendingCopy(live.status)}
         </div>
       </section>
     );
@@ -1267,6 +1267,24 @@ function stageLabel(status: DebateStatus): string {
       return "fell off";
     default:
       return status;
+  }
+}
+
+function verdictPendingCopy(status: DebateStatus): string {
+  switch (status) {
+    case "queued":
+    case "framing":
+      return "The frogs are framing the question…";
+    case "researching":
+      return "The frogs are gathering sources…";
+    case "debating":
+      return "The frogs are making their cases…";
+    case "judging":
+      return "The judge frog is weighing the arguments…";
+    case "failed":
+      return "The judge frog couldn't deliver a verdict.";
+    default:
+      return "The frogs are getting ready…";
   }
 }
 

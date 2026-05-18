@@ -22,9 +22,6 @@ jobs:
     env:
       GCP_PROJECT_ID: websites-prod-496602
       GCP_REGION: us-central1
-      POLYVISE_REPOSITORY: firestore
-      POLYVISE_ENABLE_MOCK_LLM: "false"
-      POLYVISE_EVIDENCE_PROVIDER: tavily
 
     steps:
       - name: Checkout
@@ -55,4 +52,8 @@ jobs:
         uses: google-github-actions/setup-gcloud@v3
 
       - name: Deploy Debatefrog to Cloud Run
+        env:
+          POLYVISE_REPOSITORY: firestore
+          POLYVISE_ENABLE_MOCK_LLM: "false"
+          POLYVISE_EVIDENCE_PROVIDER: tavily
         run: ./scripts/gcp-deploy.sh debatefrog

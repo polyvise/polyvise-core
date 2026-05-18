@@ -891,6 +891,7 @@ function buildRoundTurns(
   // In duo mode there is only a single pro agent and a single con agent;
   // collapse the "second voice" references onto the same agent so every
   // round still has both sides speaking.
+  const isDuo = teams.pro.length === 1 && teams.con.length === 1;
   const proA: DebateAgent = teams.pro[0];
   const proB: DebateAgent = teams.pro[1] ?? teams.pro[0];
   const conA: DebateAgent = teams.con[0];
@@ -986,7 +987,8 @@ function buildRoundTurns(
 
 
   const roundOrder: RoundTurn["round"][] = ["opening", "cross_examination", "rebuttal", "closing"];
-  const activeRounds = new Set(roundOrder.slice(0, Math.min(maxRounds, roundOrder.length)));
+  const activeRoundCount = isDuo ? roundOrder.length : Math.min(maxRounds, roundOrder.length);
+  const activeRounds = new Set(roundOrder.slice(0, activeRoundCount));
 
   return turns.filter((item) => item.round === "judge_review" || activeRounds.has(item.round));
 }

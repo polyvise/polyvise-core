@@ -211,6 +211,10 @@ export function FroglingsWorkspace() {
   const [, setDebate] = useState<DebateRecord | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
   const sounds = useFrogSounds();
+  const soundControls = useMemo(
+    () => ({ play: sounds.play, stop: sounds.stop }),
+    [sounds.play, sounds.stop]
+  );
   // Show the intro on first session only. We default to false on the
   // server (so the overlay never SSRs and flashes), then flip to true
   // after mount if localStorage says we haven't shown it yet.
@@ -381,7 +385,7 @@ export function FroglingsWorkspace() {
           onSubmit={runDebate}
         />
       ) : (
-        <FrogSoundsContext.Provider value={{ play: sounds.play, stop: sounds.stop }}>
+        <FrogSoundsContext.Provider value={soundControls}>
           <FroglingsLive live={live} />
         </FrogSoundsContext.Provider>
       )}
@@ -623,6 +627,27 @@ function QuestionBanner({
 function FrogIntros({ teams }: { teams: DebateTeam }) {
   const pro = teams.pro[0];
   const con = teams.con[0];
+  const sounds = useContext(FrogSoundsContext);
+  const hasPlayedIntroRef = useRef(false);
+
+  useEffect(() => {
+    if (hasPlayedIntroRef.current || !pro || !con) return;
+    hasPlayedIntroRef.current = true;
+
+    sounds.play("pro");
+    const timers = [
+      window.setTimeout(() => sounds.stop("pro"), 340),
+      window.setTimeout(() => sounds.play("con"), 460),
+      window.setTimeout(() => sounds.stop("con"), 820)
+    ];
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      sounds.stop("pro");
+      sounds.stop("con");
+    };
+  }, [pro, con, sounds]);
+
   return (
     <section className="grid gap-3 md:grid-cols-2">
       <div className="flex items-center gap-3 rounded-2xl border border-leaf/30 bg-mint/40 p-3">

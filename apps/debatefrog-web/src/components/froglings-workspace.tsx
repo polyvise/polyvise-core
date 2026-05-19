@@ -802,26 +802,49 @@ function Bubble({
   onDone: () => void;
 }) {
   const isPro = side === "pro";
+  const bubbleRef = useRef<HTMLDivElement>(null);
   // Tracks whether the typewriter is currently revealing characters. The
   // FunFrog mouth chatters only while it is, and the frog sounds context
   // starts/stops a softly-looping chirp or croak for the same window.
   const [typing, setTyping] = useState(false);
   const sounds = useContext(FrogSoundsContext);
 
-  // Drive audio off the typing flag. We start on rising edge, stop on
-  // falling edge, and also stop on unmount so a navigation or new debate
-  // doesn't leave a frog chirping in the background.
+  // Drive audio off the typing flag, but only during alternating
+  // speaking windows so the sounds have room to finish without looping
+  // continuously for the whole statement.
   useEffect(() => {
-    if (typing) {
-      sounds.play(side);
-    } else {
+    if (!typing) {
       sounds.stop(side);
+      return;
     }
-    return () => sounds.stop(side);
+
+    scrollActiveFrogIntoView(bubbleRef.current);
+    let stopTimer: number | null = null;
+    const soundMs = 900;
+    const repeatMs = 1800;
+
+    const chirp = () => {
+      sounds.play(side);
+      if (stopTimer !== null) window.clearTimeout(stopTimer);
+      stopTimer = window.setTimeout(() => {
+        sounds.stop(side);
+        stopTimer = null;
+      }, soundMs);
+    };
+
+    chirp();
+    const interval = window.setInterval(chirp, repeatMs);
+
+    return () => {
+      window.clearInterval(interval);
+      if (stopTimer !== null) window.clearTimeout(stopTimer);
+      sounds.stop(side);
+    };
   }, [typing, side, sounds]);
 
   return (
     <div
+      ref={bubbleRef}
       className={`hop-in flex gap-3 rounded-2xl border px-4 py-3 ${
         isPro ? "border-leaf/30 bg-mint/50" : "border-berry/30 bg-lily/40"
       }`}
@@ -848,11 +871,13 @@ function Verdict({
 }) {
   const sounds = useContext(FrogSoundsContext);
   const hasPlayedVerdictRef = useRef(false);
+  const verdictRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (hasPlayedVerdictRef.current || !readyForVerdict || !live.summary || !live.scorecard) return;
     hasPlayedVerdictRef.current = true;
 
+    scrollActiveFrogIntoView(verdictRef.current);
     sounds.play("judge");
     const timer = window.setTimeout(() => sounds.stop("judge"), 420);
 
@@ -890,7 +915,7 @@ function Verdict({
   const pct = Math.round(live.scorecard.confidence * 100);
   const verdictCopy = froglingsVerdictCopy(live.scorecard);
   return (
-    <section className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
+    <section ref={verdictRef} className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4 sm:max-w-xl">
           <div className="flex shrink-0 flex-col items-center gap-1">
@@ -916,6 +941,19 @@ function Verdict({
       </div>
     </section>
   );
+}
+
+function scrollActiveFrogIntoView(element: HTMLElement | null) {
+  if (!element || typeof window === "undefined") return;
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  window.requestAnimationFrame(() => {
+    element.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "center",
+      inline: "nearest"
+    });
+  });
 }
 
 function froglingsVerdictPendingCopy(status: DebateStatus): string {

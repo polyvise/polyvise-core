@@ -10,7 +10,7 @@
  * Behavior:
  *   - When `text` changes, the print resets and starts over.
  *   - `charsPerTick` controls speed (default 1).
- *   - `tickMs` controls tick cadence (default 28ms — roughly 35 chars/sec
+ *   - `tickMs` controls tick cadence (default 14ms — roughly 70 chars/sec
  *     at the default speed, which is fast enough to keep adults from
  *     getting impatient but slow enough that a 7-year-old can read along).
  *   - `onTypingChange` fires with `true` when printing begins and `false`
@@ -34,7 +34,7 @@ interface SlowPrintProps {
 export function SlowPrint({
   text,
   charsPerTick = 1,
-  tickMs = 28,
+  tickMs = 14,
   onTypingChange,
   onComplete,
   className

@@ -922,6 +922,10 @@ function stripSpeakerPrefix(content: string, agentName: string) {
 function simplifyForKids(content: string) {
   return content
     .replace(/\((?:claim|src)[^)]+\)/gi, "")
+    .replace(/\bYou says that\b/g, "You said that")
+    .replace(/\byou says that\b/g, "you said that")
+    .replace(/\bYou says\b/g, "You said")
+    .replace(/\byou says\b/g, "you said")
     .replace(/["“]Resolved:\s*([^"”]+?)\.?["”]/gi, (_match, question: string) => `"${froglingsQuestionText(question)}"`)
     .replace(/\bResolved:\s*/gi, "")
     .replace(/^The YES side case for ["“][^"”]+["”]\s+(?:is grounded in|starts with the claim that)\s*/i, "The YES frog says ")

@@ -273,7 +273,12 @@ class DebateWorkflowExecutor {
         roundPlaceholder = placeholder;
         return {
           message: `${data.turns.length} turns generated for ${round.replace("_", " ")}.`,
-          value: data.turns.map((turn) => ({ ...turn, id: makeId("turn"), createdAt: now() }))
+          value: data.turns.map((turn) => ({
+            ...turn,
+            content: polishDebateTurnContent(turn.content),
+            id: makeId("turn"),
+            createdAt: now()
+          }))
         };
       });
 
@@ -574,6 +579,18 @@ function buildGenerationPrompt(input: {
     null,
     2
   );
+}
+
+function polishDebateTurnContent(content: string): string {
+  return content
+    .replace(/\bYou says\b/g, "You said")
+    .replace(/\byou says\b/g, "you said")
+    .replace(/\bYou says that\b/g, "You said that")
+    .replace(/\byou says that\b/g, "you said that")
+    .replace(/\bYou say that\b/g, "You said that")
+    .replace(/\byou say that\b/g, "you said that")
+    .replace(/\bYou argues?\b/g, "You argued")
+    .replace(/\byou argues?\b/g, "you argued");
 }
 
 function buildArtifactManifest(input: {

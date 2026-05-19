@@ -3,9 +3,14 @@ import { runHybridCouncilDebate } from "@polyvise/debate-engine/debate/engine";
 import { debateRequestSchema } from "@polyvise/debate-engine/debate/schema";
 import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/debate-engine/debate/topic";
 import { loadDebateRuntimeConfig } from "@polyvise/debate-engine/debate/config";
-import { createDefaultLlmProvider, MockLlmProvider, OpenRouterLlmProvider } from "@polyvise/debate-engine/providers/llm";
+import {
+  createDefaultLlmProvider,
+  MockLlmProvider,
+  OpenRouterLlmProvider,
+  type LlmRequest
+} from "@polyvise/debate-engine/providers/llm";
 import { normalizeSources } from "@polyvise/debate-engine/providers/search";
-import type { EvidenceSource } from "@polyvise/debate-engine/debate/types";
+import type { EvidenceSource, ModelSnapshot } from "@polyvise/debate-engine/debate/types";
 
 describe("topic framing", () => {
   it("classifies personal and organizational decisions", () => {
@@ -172,5 +177,40 @@ describe("hybrid council engine", () => {
     });
     expect(run.teams.pro).toHaveLength(2);
     expect(run.teams.con).toHaveLength(2);
+  });
+
+  it("polishes common generated grammar glitches before storing turns", async () => {
+    class BadGrammarProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<{ turns?: Array<{ content: string }> }>(request);
+        if (request.schemaName !== "debateTurnOutput" || !Array.isArray(result.data.turns)) {
+          return result as { data: T; snapshot: ModelSnapshot };
+        }
+
+        return {
+          data: {
+            ...result.data,
+            turns: result.data.turns.map((turn) => ({
+              ...turn,
+              content: 'You says that "Longer recess helps kids"; however, what about school resources?'
+            }))
+          } as T,
+          snapshot: result.snapshot
+        };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_grammar_test",
+      {
+        subject: "Should schools have longer recess for kids?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new BadGrammarProvider() }
+    );
+
+    expect(run.turns.some((turn) => turn.content.includes("You says"))).toBe(false);
+    expect(run.turns.some((turn) => turn.content.includes("You said"))).toBe(true);
   });
 });

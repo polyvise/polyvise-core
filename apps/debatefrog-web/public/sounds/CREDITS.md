@@ -1,15 +1,13 @@
-# Frog sounds for /froglings
+# Frog sounds for DebateFrog
 
-The funner experience uses a **shared pool** of frog clips: both the
-pro and the con frog randomly pick a clip from the pool when they
-start speaking. There is no per-side audio — every clip can play for
-either side.
+DebateFrog uses a **shared pool** of frog clips for the YES and NO
+frogs. The judge frog prefers `frog5.wav` when it is present.
 
 ## Currently shipping
 
-All four clips in this folder are trimmed excerpts from a single
-field recording of Pacific Chorus Frogs by **daveincamas** on
-Freesound:
+The first four clips in this folder are trimmed excerpts from a
+single field recording of Pacific Chorus Frogs by **daveincamas** on
+Freesound. The fifth clip is a project-provided judge sound:
 
 | File         | Source                                                                                                   | License                                                                              | Author        |
 | ------------ | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------- |
@@ -17,19 +15,20 @@ Freesound:
 | `frog2.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
 | `frog3.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
 | `frog4.wav`  | [Freesound #32834](https://freesound.org/people/daveincamas/sounds/32834/) (trimmed excerpt, modified)   | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)                            | daveincamas   |
+| `frog5.wav`  | Project-provided judge frog clip                                                                        | Project-owned                                                                        | Jay Brownlee  |
 
 Original work:
 **"200703101950PacificChorusFrogsConfrontAirplane.wav"** by daveincamas
 on Freesound, 27 March 2007 — a 1:48 binaural stereo field recording
 of Pacific Chorus Frogs reacting to an approaching propeller airplane.
-Each of the four clips here is a short excerpt taken from that
-recording.
+Each of `frog1.wav` through `frog4.wav` is a short excerpt taken
+from that recording.
 
 CC BY 4.0 requires attribution. The deployed `/froglings` page shows
-a small "Sounds by daveincamas (CC BY)" link in the footer that
-points at the Freesound page, which together with this CREDITS.md
-satisfies the license. If you swap or remove these clips, also update
-the in-app attribution in `apps/debatefrog-web/src/components/froglings-workspace.tsx`.
+a small daveincamas / CC BY link in the footer that points at the
+Freesound page, which together with this CREDITS.md satisfies the
+license. If you swap or remove those clips, also update the in-app
+attribution in `apps/debatefrog-web/src/components/froglings-workspace.tsx`.
 
 ## File layout
 
@@ -47,15 +46,16 @@ If no `frog<N>.*` files are present at all, the hook drops to a
 small Web Audio synthesizer that approximates a cartoon chirp /
 croak so the page works out of the box.
 
-## Random rotation, not per-side
+## Random rotation plus judge cue
 
 An earlier iteration used `pro-chirp.*` and `con-croak.*` — one
 fixed sound per side. The current model rotates randomly through
-the shared pool, which feels more lively. As a small refinement,
-when both frogs happen to be typing at the same moment, the picker
-avoids the clip already playing on the other side, so they don't
-sound identical. Each play also gets a tiny random pitch jitter
-(~±8%) for organic variation.
+the shared pool for the YES and NO frogs, which feels more lively.
+The judge frog prefers `frog5.wav` for verdict moments. As a small
+refinement, when multiple frogs happen to be making sound at the same
+moment, the picker avoids clips already active on another channel.
+Each play also gets a tiny random pitch jitter (~±8%) for organic
+variation.
 
 ## Cache busting — you don't have to think about this
 

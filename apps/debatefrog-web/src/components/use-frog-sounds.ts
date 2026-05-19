@@ -3,10 +3,9 @@
 /**
  * useFrogSounds — owns Web Audio for the /froglings funner experience.
  *
- * Audio model: a SHARED POOL of frog clips. Both the pro and the con
- * frog randomly pick a clip from the pool when they start speaking, so
- * the soundscape rotates instead of using one fixed sound per side.
- * Sides still matter for gain/ducking/muting, just not for clip choice.
+ * Audio model: pro/con frogs randomly pick from a shared pool when
+ * speaking, while the judge prefers frog5 when it is present. Frog roles
+ * still matter for gain/ducking/muting.
  *
  * Design goals:
  *  - Browsers block audio until the first user gesture. The hook
@@ -23,9 +22,9 @@
  *  - Each real-file fetch carries `?v=<content-hash>` from the
  *    build-time audio-manifest, so swapping a clip auto-busts the
  *    browser cache without manual versioning.
- *  - `play(side)` picks a random clip (preferring one that isn't
- *    currently playing on the other side), starts it on the side's
- *    gain channel, and ducks it on `stop(side)`.
+ *  - `play(side)` picks a clip (preferring one that isn't currently
+ *    active on another channel), starts it on that role's gain channel,
+ *    and ducks it on `stop(side)`.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -35,7 +34,7 @@ import {
   type AudioFormat
 } from "@/lib/audio-manifest";
 
-type Side = "pro" | "con";
+type Side = "pro" | "con" | "judge";
 
 const MUTE_STORAGE_KEY = "froglings:muted";
 
@@ -174,7 +173,7 @@ export function useFrogSounds(): FrogSoundsApi {
       gain.connect(master);
       return { gain, source: null, currentClipId: null };
     };
-    channelsRef.current = { pro: makeChannel(), con: makeChannel() };
+    channelsRef.current = { pro: makeChannel(), con: makeChannel(), judge: makeChannel() };
 
     // Fetch + decode every clip in parallel. Any that 404 or fail to
     // decode are silently skipped; if the whole pool ends up empty,
@@ -240,22 +239,30 @@ export function useFrogSounds(): FrogSoundsApi {
       stop(side);
 
       const ch = channels[side];
-      const otherSide: Side = side === "pro" ? "con" : "pro";
-      const otherCurrentId = channels[otherSide].currentClipId;
+      const activeOtherClipIds = new Set(
+        Object.entries(channels)
+          .filter(([channelSide]) => channelSide !== side)
+          .map(([, channel]) => channel.currentClipId)
+          .filter((clipId): clipId is string => Boolean(clipId))
+      );
       const targetGain = 0.36;
       const pool = poolRef.current;
 
       if (pool.length > 0) {
-        // Pick a random clip, preferring one not currently active on
-        // the other side so both sides don't sound identical when they
-        // happen to type at the same moment. If the pool has only one
-        // clip and it's the same as the other side, fall through and
-        // use it anyway — beats silence.
-        const candidates = pool.filter((clip) => clip.id !== otherCurrentId);
+        // The judge gets the user's dedicated clip when available.
+        // The speaking frogs rotate through the rest of the pool, so
+        // frog5 stays recognizably tied to the verdict moment.
+        const judgeClip = pool.find((clip) => clip.id === "frog5");
+        const rolePool = side === "judge" || !judgeClip
+          ? pool
+          : pool.filter((clip) => clip.id !== judgeClip.id);
+        const candidates = rolePool.filter((clip) => !activeOtherClipIds.has(clip.id));
         const choice =
-          candidates.length > 0
-            ? candidates[Math.floor(Math.random() * candidates.length)]
-            : pool[Math.floor(Math.random() * pool.length)];
+          side === "judge" && judgeClip
+            ? judgeClip
+            : candidates.length > 0
+              ? candidates[Math.floor(Math.random() * candidates.length)]
+              : rolePool[Math.floor(Math.random() * rolePool.length)];
 
         const src = ctx.createBufferSource();
         src.buffer = choice.buffer;
@@ -277,24 +284,24 @@ export function useFrogSounds(): FrogSoundsApi {
       }
 
       // Synth fallback — no real clips were loaded. Single oscillator +
-      // vibrato + tremolo, with a slight tone difference per side so
+      // vibrato + tremolo, with a slight tone difference per frog so
       // simultaneous speaking still distinguishes them by ear.
       const osc = ctx.createOscillator();
-      osc.type = side === "pro" ? "triangle" : "sawtooth";
-      const baseHz = side === "pro" ? 520 : 110;
+      osc.type = side === "con" ? "sawtooth" : "triangle";
+      const baseHz = side === "pro" ? 520 : side === "con" ? 110 : 260;
       osc.frequency.value = baseHz;
 
       const lfo = ctx.createOscillator();
       lfo.type = "sine";
-      lfo.frequency.value = side === "pro" ? 9 : 5.5;
+      lfo.frequency.value = side === "pro" ? 9 : side === "con" ? 5.5 : 7;
       const lfoGain = ctx.createGain();
-      lfoGain.gain.value = side === "pro" ? 32 : 14;
+      lfoGain.gain.value = side === "pro" ? 32 : side === "con" ? 14 : 22;
       lfo.connect(lfoGain).connect(osc.frequency);
       lfo.start();
 
       const tremolo = ctx.createOscillator();
       tremolo.type = "sine";
-      tremolo.frequency.value = side === "pro" ? 6.5 : 3.2;
+      tremolo.frequency.value = side === "pro" ? 6.5 : side === "con" ? 3.2 : 4.8;
       const tremoloGain = ctx.createGain();
       tremoloGain.gain.value = 0.55;
       tremolo.connect(tremoloGain).connect(ch.gain.gain);

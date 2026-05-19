@@ -3,10 +3,8 @@
  * generate-audio-manifest.mjs — regenerates src/lib/audio-manifest.ts
  * from the contents of public/sounds/.
  *
- * Model: /froglings uses a SHARED POOL of frog sounds. Both the pro and
- * the con frog randomly pick a clip from the pool when they start
- * speaking, so a single debate can rotate through several voices
- * instead of using one fixed sound per side.
+ * Model: DebateFrog uses a shared pool of frog sounds for the YES and
+ * NO frogs while the judge prefers frog5 when it is present.
  *
  * Looked-for files:
  *   public/sounds/frog<N>.wav   (preferred — what the user has)
@@ -107,10 +105,9 @@ async function main() {
     "  formats: Record<AudioFormat, AudioEntry>;\n" +
     "}\n\n" +
     "/**\n" +
-    " * Shared pool of frog clips. Both pro and con frogs draw from this\n" +
-    " * pool — there is no per-side audio. The hook picks a random clip\n" +
-    " * when each frog starts speaking, avoiding the clip currently\n" +
-    " * playing on the other side.\n" +
+    " * Frog clips discovered from public/sounds/. YES and NO frogs draw\n" +
+    " * randomly from the shared pool, while the judge prefers frog5 when\n" +
+    " * it is present.\n" +
     " */\n" +
     `export const audioClips: readonly AudioClip[] = ${JSON.stringify(
       clips,

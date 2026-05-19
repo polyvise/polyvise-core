@@ -17,10 +17,9 @@ export interface AudioClip {
 }
 
 /**
- * Shared pool of frog clips. Both pro and con frogs draw from this
- * pool — there is no per-side audio. The hook picks a random clip
- * when each frog starts speaking, avoiding the clip currently
- * playing on the other side.
+ * Frog clips discovered from public/sounds/. YES and NO frogs draw
+ * randomly from the shared pool, while the judge prefers frog5 when
+ * it is present.
  */
 export const audioClips: readonly AudioClip[] = [
   {
@@ -74,6 +73,21 @@ export const audioClips: readonly AudioClip[] = [
       "wav": {
         "exists": true,
         "hash": "27254e3b8c"
+      },
+      "ogg": {
+        "exists": false
+      },
+      "mp3": {
+        "exists": false
+      }
+    }
+  },
+  {
+    "id": "frog5",
+    "formats": {
+      "wav": {
+        "exists": true,
+        "hash": "06e86bed04"
       },
       "ogg": {
         "exists": false

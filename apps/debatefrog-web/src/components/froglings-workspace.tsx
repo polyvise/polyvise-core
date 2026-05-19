@@ -192,8 +192,8 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
 // -------------------------------------------------------------------------
 
 type FrogSoundsCtx = {
-  play: (side: "pro" | "con") => void;
-  stop: (side: "pro" | "con") => void;
+  play: (side: "pro" | "con" | "judge") => void;
+  stop: (side: "pro" | "con" | "judge") => void;
 };
 
 const noopSounds: FrogSoundsCtx = { play: () => {}, stop: () => {} };
@@ -405,7 +405,7 @@ export function FroglingsWorkspace() {
           Show intro again
         </button>
         <p className="text-[10px] text-pond/45">
-          Frog sounds:{" "}
+          Some frog sounds:{" "}
           <a
             href="https://freesound.org/people/daveincamas/sounds/32834/"
             target="_blank"
@@ -846,6 +846,22 @@ function Verdict({
   live: FroglingsLiveState;
   readyForVerdict: boolean;
 }) {
+  const sounds = useContext(FrogSoundsContext);
+  const hasPlayedVerdictRef = useRef(false);
+
+  useEffect(() => {
+    if (hasPlayedVerdictRef.current || !readyForVerdict || !live.summary || !live.scorecard) return;
+    hasPlayedVerdictRef.current = true;
+
+    sounds.play("judge");
+    const timer = window.setTimeout(() => sounds.stop("judge"), 420);
+
+    return () => {
+      window.clearTimeout(timer);
+      sounds.stop("judge");
+    };
+  }, [readyForVerdict, live.summary, live.scorecard, sounds]);
+
   if (!readyForVerdict) return null;
 
   if (!live.summary || !live.scorecard) {

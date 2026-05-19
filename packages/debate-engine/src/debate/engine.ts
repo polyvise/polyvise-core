@@ -260,7 +260,9 @@ class DebateWorkflowExecutor {
           debateTurnOutputSchema,
           buildGenerationPrompt({
             task:
-              "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.",
+              councilSize === "duo"
+                ? "Write this kid-friendly debate round for the exact question. Keep the same agent ids, names, sides, round, claim ids, and source ids. Use YES side and NO side language only; do not use pro, con, affirmative, or negative language. Make the content short, topic-specific, and grounded in the claims and evidence."
+                : "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.",
             framed,
             sources,
             claims,

@@ -13,7 +13,7 @@
  *  - Phase 4: FunFrog animation (bob, blink, mouth chatter, hop).
  *  - Phase 5: SlowPrint typewriter driving the mouth-chatter signal.
  *  - Phase 6: useFrogSounds() chirp/croak audio + header mute toggle.
- *  - Phase 7: first-visit FroglingsIntro overlay (sessionStorage-gated)
+ *  - Phase 7: first-visit FroglingsIntro overlay (localStorage-gated)
  *             + per-round explainer banner on the live stage.
  */
 
@@ -59,7 +59,7 @@ const kidPrompts = [
 
 /**
  * Plain-language stage labels for younger readers. The engine emits the
- * same DebateStatus values as the grown-up app — we just rename them.
+ * same DebateStatus values as the engine — we just rename them.
  */
 const friendlyStage: Record<DebateStatus, string> = {
   queued: "the frogs are getting ready",
@@ -103,8 +103,7 @@ const friendlyRound: Record<DebateRound, { title: string; blurb: string }> = {
 };
 
 // -------------------------------------------------------------------------
-// Live state — a slim version of the grown-up app's reducer. We only keep
-// the fields the funner UI renders.
+// Live state — keep only the fields this UI renders.
 // -------------------------------------------------------------------------
 
 type FroglingsLiveState = {
@@ -205,7 +204,7 @@ const FrogSoundsContext = createContext<FrogSoundsCtx>(noopSounds);
 // -------------------------------------------------------------------------
 
 export function FroglingsWorkspace() {
-  const [subject, setSubject] = useState(kidPrompts[0]);
+  const [subject, setSubject] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [live, dispatch] = useReducer(liveReducer, null);
@@ -214,16 +213,16 @@ export function FroglingsWorkspace() {
   const sounds = useFrogSounds();
   // Show the intro on first session only. We default to false on the
   // server (so the overlay never SSRs and flashes), then flip to true
-  // after mount if sessionStorage says we haven't shown it yet.
+  // after mount if localStorage says we haven't shown it yet.
   const [showIntro, setShowIntro] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const seen = window.sessionStorage.getItem(INTRO_SEEN_KEY);
+      const seen = window.localStorage.getItem(INTRO_SEEN_KEY);
       if (seen !== "1") setShowIntro(true);
     } catch {
-      // sessionStorage may be unavailable; just skip the overlay.
+      // localStorage may be unavailable; just skip the overlay.
     }
   }, []);
 
@@ -231,7 +230,7 @@ export function FroglingsWorkspace() {
     setShowIntro(false);
     try {
       if (typeof window !== "undefined") {
-        window.sessionStorage.setItem(INTRO_SEEN_KEY, "1");
+        window.localStorage.setItem(INTRO_SEEN_KEY, "1");
       }
     } catch {
       // ignore
@@ -401,12 +400,6 @@ export function FroglingsWorkspace() {
         >
           Show intro again
         </button>
-        <Link
-          href={"/grown-up" as Route}
-          className="text-[11px] font-semibold text-pond/55 underline-offset-2 transition hover:text-pond hover:underline"
-        >
-          Grown-up version
-        </Link>
         <p className="text-[10px] text-pond/45">
           Frog sounds:{" "}
           <a
@@ -452,6 +445,9 @@ function FroglingsHero({
   error: string | null;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
+  const [isQuestionFocused, setIsQuestionFocused] = useState(false);
+  const exampleQuestion = kidPrompts[0];
+
   return (
     <section className="mt-6 grid gap-8 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <div className="flex flex-col justify-center">
@@ -502,7 +498,9 @@ function FroglingsHero({
           id="subject"
           value={subject}
           onChange={(event) => onSubjectChange(event.target.value)}
-          placeholder="Should...?"
+          onFocus={() => setIsQuestionFocused(true)}
+          onBlur={() => setIsQuestionFocused(false)}
+          placeholder={isQuestionFocused ? "" : exampleQuestion}
           className="mt-1.5 min-h-[100px] w-full resize-y rounded-xl border border-mud/20 bg-white/90 px-3.5 py-3 text-base leading-relaxed text-ink outline-none transition focus:border-leaf"
         />
 
@@ -932,8 +930,18 @@ function simplifyForKids(content: string) {
     .replace(/^The YES side case .*? starts with the claim that\s*/i, "The YES frog says ")
     .replace(/^The NO side case challenges the question by (?:asserting|saying|arguing)\s+that\s*/i, "The NO frog says ")
     .replace(/^The NO side case challenges the question by (?:asserting|saying|arguing):?\s*/i, "The NO frog says ")
+    .replace(/\bpro side's\b/gi, "YES side's")
+    .replace(/\bcon side's\b/gi, "NO side's")
+    .replace(/\bpro side\b/gi, "YES side")
+    .replace(/\bcon side\b/gi, "NO side")
+    .replace(/\bpro case\b/gi, "YES case")
+    .replace(/\bcon case\b/gi, "NO case")
+    .replace(/\bvote pro\b/gi, "vote YES")
+    .replace(/\bvote con\b/gi, "vote NO")
     .replace(/\baffirmative\b/gi, "YES side")
     .replace(/\bnegative\b/gi, "NO side")
+    .replace(/\bpro\b/gi, "YES")
+    .replace(/\bcon\b/gi, "NO")
     .replace(/\basserts?\b/gi, "says")
     .replace(/\bindicates?\b/gi, "shows")
     .replace(/\bsubstantial\b/gi, "big")

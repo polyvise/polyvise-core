@@ -2,7 +2,7 @@
 
 /**
  * FroglingsIntro — a small four-slide explainer that runs once per
- * browser session (gated by sessionStorage) before a kid sees the
+ * browser (gated by localStorage) before a kid sees the
  * question form. It teaches the basic shape of a debate so the
  * subsequent live view actually means something.
  *

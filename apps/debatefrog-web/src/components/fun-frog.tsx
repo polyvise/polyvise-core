@@ -1,12 +1,9 @@
 import type { SVGProps } from "react";
 
 /**
- * FunFrog — animated SVG frog used by the /froglings funner experience.
+ * FunFrog — animated SVG frog used by DebateFrog.
  *
- * Separate component from the plain `Frog` used on the main app so we can
- * iterate freely on animation without risking regressions to the grown-up
- * UI. Same `mood` prop and color palette as `Frog`, so callers can swap
- * one for the other in layouts. Adds:
+ * Adds:
  *
  *   - idle bob (vertical sway)
  *   - idle blink (eyes briefly snap shut every few seconds)

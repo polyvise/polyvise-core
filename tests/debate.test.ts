@@ -36,6 +36,13 @@ describe("topic framing", () => {
     );
   });
 
+  it("keeps direct evidence questions out of decision framing", () => {
+    const subject = "Is Trump a corrupt president?";
+
+    expect(classifyTopic(subject)).toBe("empirical");
+    expect(frameResolution(subject, "empirical")).toBe("Is Trump a corrupt president?");
+  });
+
   it("flags high-stakes topics", () => {
     expect(detectHighStakes("Should I change my medication dose?")?.category).toBe("medical");
     expect(detectHighStakes("Should I invest my retirement portfolio in a single stock?")?.category).toBe("financial");

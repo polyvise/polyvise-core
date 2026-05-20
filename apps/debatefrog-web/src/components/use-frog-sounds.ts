@@ -92,8 +92,8 @@ interface FrogSoundsApi {
   toggleMute: () => void;
   /** Resume the AudioContext. Safe to call multiple times. */
   unlock: () => Promise<void>;
-  /** Start a randomly-picked loop for a side. No-op if muted or not unlocked. */
-  play: (side: Side) => void;
+  /** Start a loop for a side. No-op if muted or not unlocked. */
+  play: (side: Side, options?: { random?: boolean }) => void;
   /** Fade and stop the loop for a side. */
   stop: (side: Side) => void;
 }
@@ -228,7 +228,7 @@ export function useFrogSounds(): FrogSoundsApi {
   }, []);
 
   const play = useCallback(
-    (side: Side) => {
+    (side: Side, options?: { random?: boolean }) => {
       const ctx = ctxRef.current;
       const channels = channelsRef.current;
       const master = masterGainRef.current;
@@ -249,16 +249,17 @@ export function useFrogSounds(): FrogSoundsApi {
       const pool = poolRef.current;
 
       if (pool.length > 0) {
-        // The judge gets the user's dedicated clip when available.
-        // The speaking frogs rotate through the rest of the pool, so
-        // frog5 stays recognizably tied to the verdict moment.
+        // The judge gets the user's dedicated clip when available,
+        // except for explicit random one-off cues. The speaking frogs
+        // rotate through the rest of the pool, so frog5 stays
+        // recognizably tied to the verdict moment.
         const judgeClip = pool.find((clip) => clip.id === "frog5");
-        const rolePool = side === "judge" || !judgeClip
+        const rolePool = options?.random || side === "judge" || !judgeClip
           ? pool
           : pool.filter((clip) => clip.id !== judgeClip.id);
         const candidates = rolePool.filter((clip) => !activeOtherClipIds.has(clip.id));
         const choice =
-          side === "judge" && judgeClip
+          side === "judge" && judgeClip && !options?.random
             ? judgeClip
             : candidates.length > 0
               ? candidates[Math.floor(Math.random() * candidates.length)]

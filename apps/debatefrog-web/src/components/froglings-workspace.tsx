@@ -45,6 +45,7 @@ import type {
   DebateStatus,
   DebateSummary,
   DebateTeam,
+  TopicKind,
   RoundTurn,
   Scorecard
 } from "@polyvise/debate-engine/debate/types";
@@ -111,6 +112,7 @@ type FroglingsLiveState = {
   subject: string;
   status: DebateStatus;
   resolution?: string;
+  topicKind?: TopicKind;
   teams: DebateTeam | null;
   claims: Claim[];
   turns: RoundTurn[];
@@ -150,6 +152,7 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       subject: action.debate.subject,
       status: action.debate.status,
       resolution: action.debate.resolution,
+      topicKind: action.debate.topicKind,
       teams: run.teams,
       claims: run.claims,
       turns: run.turns,
@@ -165,7 +168,7 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
     case "stage":
       return { ...state, status: event.status };
     case "framed":
-      return { ...state, resolution: event.resolution };
+      return { ...state, resolution: event.resolution, topicKind: event.topicKind };
     case "teams":
       return { ...state, teams: event.teams };
     case "claims":
@@ -192,11 +195,12 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
 // -------------------------------------------------------------------------
 
 type FrogSoundsCtx = {
-  play: (side: "pro" | "con" | "judge") => void;
+  ready: boolean;
+  play: (side: "pro" | "con" | "judge", options?: { random?: boolean }) => void;
   stop: (side: "pro" | "con" | "judge") => void;
 };
 
-const noopSounds: FrogSoundsCtx = { play: () => {}, stop: () => {} };
+const noopSounds: FrogSoundsCtx = { ready: false, play: () => {}, stop: () => {} };
 const FrogSoundsContext = createContext<FrogSoundsCtx>(noopSounds);
 
 // -------------------------------------------------------------------------
@@ -212,8 +216,8 @@ export function FroglingsWorkspace() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const sounds = useFrogSounds();
   const soundControls = useMemo(
-    () => ({ play: sounds.play, stop: sounds.stop }),
-    [sounds.play, sounds.stop]
+    () => ({ ready: sounds.ready, play: sounds.play, stop: sounds.stop }),
+    [sounds.ready, sounds.play, sounds.stop]
   );
   // Show the intro on first session only. We default to false on the
   // server (so the overlay never SSRs and flashes), then flip to true
@@ -554,7 +558,7 @@ function FroglingsLive({ live }: { live: FroglingsLiveState }) {
 
   return (
     <div className="mt-6 space-y-5">
-      <QuestionBanner live={live} isCatchingUp={!staged.readyForVerdict} />
+      <QuestionBanner live={live} staged={staged} />
       {live.status === "failed" ? (
         <div className="rounded-xl border border-berry/40 bg-berry/10 px-4 py-3 text-sm text-berry">
           {live.errorMessage ?? "The debate hopped off the lily pad."}
@@ -591,20 +595,32 @@ function useStagedFroglingsTurns(live: FroglingsLiveState) {
   }, []);
 
   const visibleTurns = debateTurns.slice(0, visibleCount);
-  const readyForVerdict = debateTurns.length === 0 || visibleTurns.length >= debateTurns.length;
+  const readyForVerdict =
+    debateTurns.length === 0
+      ? live.status === "judging" || live.status === "complete" || live.done
+      : visibleCount > debateTurns.length;
+  const isReplayingTurns = debateTurns.length > 0 && visibleCount < debateTurns.length;
+  const isFinishingLastTurn = debateTurns.length > 0 && visibleCount === debateTurns.length;
 
-  return { visibleTurns, readyForVerdict, showNextTurn };
+  return {
+    visibleTurns,
+    readyForVerdict,
+    showNextTurn,
+    hasTurns: debateTurns.length > 0,
+    isReplayingTurns,
+    isFinishingLastTurn
+  };
 }
 
 function QuestionBanner({
   live,
-  isCatchingUp
+  staged
 }: {
   live: FroglingsLiveState;
-  isCatchingUp: boolean;
+  staged: ReturnType<typeof useStagedFroglingsTurns>;
 }) {
-  const isActuallyDone = (live.status === "complete" || live.done) && !isCatchingUp;
-  const stageCopy = isCatchingUp ? "the frogs are taking turns" : friendlyStage[live.status];
+  const isActuallyDone = (live.status === "complete" || live.done) && staged.readyForVerdict;
+  const stageCopy = froglingsStageCopy(live, staged);
 
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
@@ -624,6 +640,19 @@ function QuestionBanner({
   );
 }
 
+function froglingsStageCopy(
+  live: FroglingsLiveState,
+  staged: ReturnType<typeof useStagedFroglingsTurns>
+) {
+  if (live.status === "debating") {
+    if (!staged.hasTurns) return "the frogs are getting their arguments ready";
+    if (staged.isReplayingTurns) return "the frogs are taking turns";
+    if (staged.isFinishingLastTurn) return "the last frog is finishing up";
+  }
+
+  return friendlyStage[live.status];
+}
+
 function FrogIntros({ teams }: { teams: DebateTeam }) {
   const pro = teams.pro[0];
   const con = teams.con[0];
@@ -631,7 +660,7 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
   const hasPlayedIntroRef = useRef(false);
 
   useEffect(() => {
-    if (hasPlayedIntroRef.current || !pro || !con) return;
+    if (hasPlayedIntroRef.current || !sounds.ready || !pro || !con) return;
     hasPlayedIntroRef.current = true;
 
     sounds.play("pro");
@@ -871,7 +900,25 @@ function Verdict({
 }) {
   const sounds = useContext(FrogSoundsContext);
   const hasPlayedVerdictRef = useRef(false);
+  const hasPlayedJudgeIntroRef = useRef(false);
   const verdictRef = useRef<HTMLElement>(null);
+  const pendingVerdictRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (hasPlayedJudgeIntroRef.current || !sounds.ready || !readyForVerdict) return;
+    if (live.summary || live.scorecard) return;
+    if (live.status !== "debating" && live.status !== "judging") return;
+    hasPlayedJudgeIntroRef.current = true;
+
+    scrollActiveFrogIntoView(pendingVerdictRef.current);
+    sounds.play("judge", { random: true });
+    const timer = window.setTimeout(() => sounds.stop("judge"), 520);
+
+    return () => {
+      window.clearTimeout(timer);
+      sounds.stop("judge");
+    };
+  }, [readyForVerdict, live.status, live.summary, live.scorecard, sounds]);
 
   useEffect(() => {
     if (hasPlayedVerdictRef.current || !readyForVerdict || !live.summary || !live.scorecard) return;
@@ -891,11 +938,25 @@ function Verdict({
 
   if (!live.summary || !live.scorecard) {
     if (live.status === "debating" || live.status === "judging") {
+      const isJudging = live.status === "judging";
       return (
-        <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
+        <section
+          ref={pendingVerdictRef}
+          className="hop-in rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily"
+        >
           <div className="flex items-center gap-3 text-sm text-mud/70">
-            <FunFrog mood="judge" size={48} bob={live.status === "debating"} />
-            {froglingsVerdictPendingCopy(live.status)}
+            <FunFrog mood="judge" size={48} bob speaking={isJudging} />
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 font-bold text-pond">
+                {isJudging ? <Loader2 className="h-3.5 w-3.5 animate-spin text-leaf" /> : null}
+                {froglingsVerdictPendingCopy(live.status)}
+              </div>
+              {isJudging ? (
+                <div className="mt-1 text-xs text-ink/60">
+                  The judge is checking both sides before picking a winner.
+                </div>
+              ) : null}
+            </div>
           </div>
         </section>
       );
@@ -913,7 +974,7 @@ function Verdict({
     return null;
   }
   const pct = Math.round(live.scorecard.confidence * 100);
-  const verdictCopy = froglingsVerdictCopy(live.scorecard);
+  const verdictCopy = froglingsVerdictCopy(live.scorecard, live.topicKind);
   return (
     <section ref={verdictRef} className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -1054,7 +1115,9 @@ function trimAtWord(content: string, maxLength: number) {
   return `${trimmed}.`;
 }
 
-function froglingsVerdictCopy(scorecard: Scorecard) {
+function froglingsVerdictCopy(scorecard: Scorecard, topicKind?: TopicKind) {
+  const topicCopy = froglingsVerdictTopicCopy(topicKind);
+
   switch (scorecard.recommendation) {
     case "lean_yes":
       return {
@@ -1063,8 +1126,8 @@ function froglingsVerdictCopy(scorecard: Scorecard) {
       };
     case "conditional_yes":
       return {
-        headline: "The judge says: probably YES, with care.",
-        body: "The YES frog made the stronger case, but only if the plan has clear rules and checks along the way."
+        headline: topicCopy.conditionalYesHeadline,
+        body: topicCopy.conditionalYesBody
       };
     case "lean_no":
       return {
@@ -1073,14 +1136,49 @@ function froglingsVerdictCopy(scorecard: Scorecard) {
       };
     case "conditional_no":
       return {
-        headline: "The judge says: probably NO, unless things change.",
-        body: "The NO frog made the stronger case for now. Better evidence or a safer plan could change the answer."
+        headline: topicCopy.conditionalNoHeadline,
+        body: topicCopy.conditionalNoBody
       };
     case "mixed":
     default:
       return {
         headline: "The judge says this one is close.",
         body: "Both frogs made good points. The best answer depends on which reasons matter most."
+      };
+  }
+}
+
+function froglingsVerdictTopicCopy(topicKind?: TopicKind) {
+  switch (topicKind) {
+    case "policy":
+    case "decision":
+      return {
+        conditionalYesHeadline: "The judge says: probably YES, with care.",
+        conditionalYesBody:
+          "The YES frog made the stronger case, but the idea would need clear rules and checks along the way.",
+        conditionalNoHeadline: "The judge says: probably NO, unless things change.",
+        conditionalNoBody:
+          "The NO frog made the stronger case for now. Better evidence or a safer plan could change the answer."
+      };
+    case "empirical":
+    case "comparison":
+      return {
+        conditionalYesHeadline: "The judge says: probably YES.",
+        conditionalYesBody:
+          "The YES frog made the stronger case from the evidence shown, though the answer is not completely certain.",
+        conditionalNoHeadline: "The judge says: probably NO.",
+        conditionalNoBody:
+          "The NO frog made the stronger case from the evidence shown, though the answer is not completely certain."
+      };
+    case "value":
+    default:
+      return {
+        conditionalYesHeadline: "The judge says: probably YES.",
+        conditionalYesBody:
+          "The YES frog made the stronger case, but the answer depends on which reasons matter most.",
+        conditionalNoHeadline: "The judge says: probably NO.",
+        conditionalNoBody:
+          "The NO frog made the stronger case, but the answer depends on which reasons matter most."
       };
   }
 }

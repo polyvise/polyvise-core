@@ -19,6 +19,7 @@ const decisionTerms = ["should i", "should we", "my company", "our team", "choos
 const comparisonTerms = [" vs ", " versus ", "compared with", "compare", "between"];
 const empiricalTerms = ["is it true", "does", "will", "can", "cause", "evidence", "effective"];
 const comparativeQuestionPattern = /\bis\b.+\b(more|less|better|worse|greater|stronger|weaker)\b.+\bthan\b/;
+const evidenceQuestionPattern = /^(is|are|was|were|do|does|did|has|have|had|can|could|will|would)\b/;
 
 export function classifyTopic(subject: string, context = ""): TopicKind {
   const text = `${subject} ${context}`.toLowerCase();
@@ -37,6 +38,10 @@ export function classifyTopic(subject: string, context = ""): TopicKind {
 
   if (valueTerms.some((term) => text.includes(term))) {
     return "value";
+  }
+
+  if (evidenceQuestionPattern.test(subject.trim().toLowerCase())) {
+    return "empirical";
   }
 
   if (empiricalTerms.some((term) => text.includes(term))) {
@@ -73,6 +78,9 @@ export function frameResolution(subject: string, topicKind: TopicKind): string {
   }
 
   if (topicKind === "empirical") {
+    if (/^(is|are|was|were|do|does|did|has|have|had|can|could|will|would)\b/i.test(cleanSubject)) {
+      return `${cleanSubject.charAt(0).toUpperCase()}${cleanSubject.slice(1)}?`;
+    }
     return `The available evidence supports the claim that ${cleanSubject}.`;
   }
 

@@ -417,7 +417,7 @@ class DebateWorkflowExecutor {
       summaryPlaceholder = placeholder;
       return {
         message: `Recommendation: ${scorecard.recommendation}.`,
-        value: normalizeSummary(data)
+        value: normalizeSummary(data, scorecard.confidence)
       };
     });
     this.emit({
@@ -727,9 +727,14 @@ function reconcileGeneratedTurns(
   return expectedTurns;
 }
 
-function normalizeSummary(summary: z.infer<typeof finalSummaryOutputSchema>): DebateRun["summary"] {
+function normalizeSummary(
+  summary: z.infer<typeof finalSummaryOutputSchema>,
+  fallbackConfidence: number
+): DebateRun["summary"] {
+  const confidence = summary.confidence ?? fallbackConfidence;
   return {
     ...summary,
+    confidence: confidence > 1 ? confidence / 100 : confidence,
     highStakesDisclaimer: summary.highStakesDisclaimer ?? undefined
   };
 }

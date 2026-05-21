@@ -372,4 +372,66 @@ describe("hybrid council engine", () => {
     expect(run.status).toBe("complete");
     expect(run.summary.highStakesDisclaimer).toBeUndefined();
   });
+
+  it("normalizes percentage confidence values from final summaries", async () => {
+    class PercentConfidenceSummaryProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<Record<string, unknown>>(request);
+        if (request.schemaName !== "finalSummaryOutput") {
+          return result as { data: T; snapshot: ModelSnapshot };
+        }
+
+        return {
+          data: {
+            ...result.data,
+            confidence: 72
+          } as T,
+          snapshot: result.snapshot
+        };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_percent_summary_test",
+      {
+        subject: "Should schools have longer recess for kids?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new PercentConfidenceSummaryProvider() }
+    );
+
+    expect(run.status).toBe("complete");
+    expect(run.summary.confidence).toBe(0.72);
+  });
+
+  it("uses the scorecard confidence when final summaries omit confidence", async () => {
+    class MissingConfidenceSummaryProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<Record<string, unknown>>(request);
+        if (request.schemaName !== "finalSummaryOutput") {
+          return result as { data: T; snapshot: ModelSnapshot };
+        }
+
+        const { confidence: _confidence, ...withoutConfidence } = result.data;
+        return {
+          data: withoutConfidence as T,
+          snapshot: result.snapshot
+        };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_missing_summary_confidence_test",
+      {
+        subject: "Should schools have longer recess for kids?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new MissingConfidenceSummaryProvider() }
+    );
+
+    expect(run.status).toBe("complete");
+    expect(run.summary.confidence).toBe(run.scorecard.confidence);
+  });
 });

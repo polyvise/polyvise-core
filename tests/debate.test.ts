@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { runHybridCouncilDebate } from "@polyvise/debate-engine/debate/engine";
 import { debateRequestSchema, feedbackRequestSchema } from "@polyvise/debate-engine/debate/schema";
 import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/debate-engine/debate/topic";
@@ -12,6 +12,10 @@ import {
 } from "@polyvise/debate-engine/providers/llm";
 import { normalizeSources } from "@polyvise/debate-engine/providers/search";
 import type { EvidenceSource, ModelSnapshot } from "@polyvise/debate-engine/debate/types";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("topic framing", () => {
   it("classifies personal and organizational decisions", () => {
@@ -104,6 +108,17 @@ describe("request schema", () => {
     expect(parsed.models?.yes).toBe("openai/gpt-4o-mini");
     expect(parsed.models?.no).toBe("anthropic/claude-3.5-haiku");
   });
+
+  it("accepts development-only live API preferences", () => {
+    const parsed = debateRequestSchema.parse({
+      subject: "Should schools have longer recess?",
+      devOptions: {
+        liveApis: true
+      }
+    });
+
+    expect(parsed.devOptions?.liveApis).toBe(true);
+  });
 });
 
 describe("feedback", () => {
@@ -145,6 +160,45 @@ describe("LLM provider selection", () => {
     expect(createDefaultLlmProvider(config)).toBeInstanceOf(OpenRouterLlmProvider);
   });
 
+  it("records OpenRouter attempt timings across retries", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ error: { message: "rate limited" } }), { status: 429 })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            choices: [{ message: { content: "{\"ok\":true}" } }],
+            usage: { prompt_tokens: 10, completion_tokens: 3, cost: 0.0001 }
+          }),
+          { status: 200 }
+        )
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const config = loadDebateRuntimeConfig({
+      POLYVISE_ENABLE_MOCK_LLM: "false",
+      POLYVISE_YES_MODEL: "openai/gpt-4o-mini",
+      POLYVISE_LLM_MAX_ATTEMPTS: "2",
+      POLYVISE_API_RETRY_BASE_DELAY_MS: "1"
+    });
+    const provider = new OpenRouterLlmProvider(config, "test-openrouter-key");
+    const result = await provider.generateStructured<{ ok: boolean }>({
+      role: "yes frog claim builder",
+      schemaName: "testSchema",
+      prompt: "{\"ok\":true}",
+      jsonSchema: { type: "object" }
+    });
+
+    expect(result.data).toEqual({ ok: true });
+    expect(result.snapshot.attempts?.map((attempt) => attempt.status)).toEqual(["failed", "ok"]);
+    expect(result.snapshot.attempts?.map((attempt) => attempt.mode)).toEqual(["json_schema", "json_schema"]);
+    expect(result.snapshot.latencyMs).toBeGreaterThanOrEqual(
+      result.snapshot.attempts?.reduce((total, attempt) => total + attempt.durationMs, 0) ?? 0
+    );
+  });
+
   it("builds curated model options from configured defaults", () => {
     const config = loadDebateRuntimeConfig({
       POLYVISE_YES_MODEL: "openai/gpt-4o-mini",
@@ -160,6 +214,30 @@ describe("LLM provider selection", () => {
       judge: "google/gemini-flash-1.5"
     });
     expect(modelOptions.options.map((option) => option.id)).toContain("anthropic/claude-3.5-haiku");
+  });
+
+  it("uses Debatefrog's default model lineup", () => {
+    const modelOptions = modelOptionsFromConfig(loadDebateRuntimeConfig({}));
+
+    expect(modelOptions.defaults).toEqual({
+      yes: "google/gemini-2.5-flash",
+      no: "google/gemini-2.5-flash",
+      judge: "openai/gpt-4o-mini"
+    });
+  });
+
+  it("keeps multiple selectable models when all role defaults match", () => {
+    const config = loadDebateRuntimeConfig({
+      POLYVISE_YES_MODEL: "openai/gpt-4o-mini",
+      POLYVISE_NO_MODEL: "openai/gpt-4o-mini",
+      POLYVISE_JUDGE_MODEL: "openai/gpt-4o-mini"
+    });
+    const optionIds = modelOptionsFromConfig(config).options.map((option) => option.id);
+
+    expect(optionIds).toContain("openai/gpt-4o-mini");
+    expect(optionIds).toContain("openai/gpt-4.1");
+    expect(optionIds).toContain("google/gemini-2.5-pro");
+    expect(optionIds.length).toBeGreaterThan(1);
   });
 });
 
@@ -256,6 +334,189 @@ describe("hybrid council engine", () => {
     });
 
     expect(["conditional_no", "lean_no"]).toContain(run.scorecard.recommendation);
+  });
+
+  it("does not give broad pets-at-school policies a confident YES without safeguards", async () => {
+    class OverconfidentPetsJudgeProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<Record<string, unknown>>(request);
+        if (request.schemaName === "claimOutput") {
+          const side = request.role.toLowerCase().includes("no frog") ? "con" : "pro";
+          return {
+            data: {
+              claims: [
+                side === "pro"
+                  ? {
+                      side: "pro",
+                      text: "Pets can provide emotional support and help students feel motivated in school.",
+                      warrant: "Feeling good can make learning more enjoyable.",
+                      evidenceSourceIds: [],
+                      confidence: 0.74
+                    }
+                  : {
+                      side: "con",
+                      text: "Broadly allowing pets in school creates allergy, hygiene, supervision, food-service, and distraction risks.",
+                      warrant: "Schools need rules that work for all students, not only students who like pets.",
+                      evidenceSourceIds: [],
+                      confidence: 0.82
+                    },
+                side === "pro"
+                  ? {
+                      side: "pro",
+                      text: "Pets can teach responsibility and make school feel happier.",
+                      warrant: "Students may engage more when school feels warm and fun.",
+                      evidenceSourceIds: [],
+                      confidence: 0.7
+                    }
+                  : {
+                      side: "con",
+                      text: "Pets at school can create fear, bites, liability, and unequal access for students with allergies or phobias.",
+                      warrant: "A school-wide rule has to work safely for every classroom and family.",
+                      evidenceSourceIds: [],
+                      confidence: 0.8
+                    }
+              ]
+            } as T,
+            snapshot: result.snapshot
+          };
+        }
+
+        if (request.schemaName === "judgeScorecardOutput") {
+          return {
+            data: {
+              recommendation: "lean_yes",
+              confidence: 0.7,
+              categories: [
+                { name: "evidence", pro: 7, con: 6, note: "Pets may help some students." },
+                { name: "practicality", pro: 7, con: 6, note: "Schools could try it." },
+                { name: "risk", pro: 7, con: 6, note: "Risks exist but benefits sound good." },
+                { name: "fairness", pro: 7, con: 6, note: "Many students like pets." },
+                { name: "reversibility", pro: 7, con: 6, note: "Rules could change." }
+              ]
+            } as T,
+            snapshot: result.snapshot
+          };
+        }
+
+        if (request.schemaName === "debateTurnOutput" && request.role.toLowerCase().includes("yes frog")) {
+          const turnResult = result as { data: { turns?: Array<{ content: string }> }; snapshot: ModelSnapshot };
+          if (Array.isArray(turnResult.data.turns)) {
+            return {
+              data: {
+                ...turnResult.data,
+                turns: turnResult.data.turns.map((turn) => ({
+                  ...turn,
+                  content:
+                    "Schools could implement safeguards similar to therapy dog programs, and pets can still help kids feel motivated."
+                }))
+              } as T,
+              snapshot: result.snapshot
+            };
+          }
+        }
+
+        return result as { data: T; snapshot: ModelSnapshot };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_pets_school_judge_test",
+      {
+        subject: "Should pets be allowed at school?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new OverconfidentPetsJudgeProvider() }
+    );
+
+    expect(run.scorecard.recommendation).toBe("conditional_no");
+    expect(run.scorecard.confidence).toBeLessThanOrEqual(0.6);
+    expect(run.scorecard.categories.find((category) => category.name === "risk")?.note).toContain(
+      "pets-at-school"
+    );
+  });
+
+  it("turns broad pets-at-school near-ties into a conditional NO when risks are unanswered", async () => {
+    class MixedPetsJudgeProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<Record<string, unknown>>(request);
+        if (request.schemaName === "claimOutput") {
+          const side = request.role.toLowerCase().includes("no frog") ? "con" : "pro";
+          return {
+            data: {
+              claims: [
+                side === "pro"
+                  ? {
+                      side: "pro",
+                      text: "Pets can make students feel happier and more motivated at school.",
+                      warrant: "Better feelings can support engagement.",
+                      evidenceSourceIds: [],
+                      confidence: 0.73
+                    }
+                  : {
+                      side: "con",
+                      text: "Pets at school create allergy, hygiene, supervision, food-service, liability, fear, and distraction risks.",
+                      warrant: "A broad school policy has to work safely for all classrooms.",
+                      evidenceSourceIds: [],
+                      confidence: 0.78
+                    }
+              ]
+            } as T,
+            snapshot: result.snapshot
+          };
+        }
+
+        if (request.schemaName === "judgeScorecardOutput") {
+          return {
+            data: {
+              recommendation: "mixed",
+              confidence: 0.64,
+              categories: [
+                { name: "evidence", pro: 7, con: 7, note: "Both sides have some evidence." },
+                { name: "practicality", pro: 7, con: 7, note: "Implementation is uncertain." },
+                { name: "risk", pro: 7, con: 7, note: "Risks are present." },
+                { name: "fairness", pro: 7, con: 7, note: "Students differ." },
+                { name: "reversibility", pro: 7, con: 7, note: "Rules could change." }
+              ]
+            } as T,
+            snapshot: result.snapshot
+          };
+        }
+
+        if (request.schemaName === "debateTurnOutput" && request.role.toLowerCase().includes("yes frog")) {
+          const turnResult = result as { data: { turns?: Array<{ content: string }> }; snapshot: ModelSnapshot };
+          if (Array.isArray(turnResult.data.turns)) {
+            return {
+              data: {
+                ...turnResult.data,
+                turns: turnResult.data.turns.map((turn) => ({
+                  ...turn,
+                  content:
+                    "Schools could implement safeguards similar to therapy dog programs, and pets can still help kids feel motivated."
+                }))
+              } as T,
+              snapshot: result.snapshot
+            };
+          }
+        }
+
+        return result as { data: T; snapshot: ModelSnapshot };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_pets_school_mixed_test",
+      {
+        subject: "Should pets be allowed at school?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new MixedPetsJudgeProvider() }
+    );
+
+    expect(run.scorecard.recommendation).toBe("conditional_no");
+    expect(run.scorecard.confidence).toBeGreaterThanOrEqual(0.62);
+    expect(run.scorecard.confidence).toBeLessThanOrEqual(0.66);
   });
 
   it("defaults to the quartet shape when councilSize is omitted", async () => {

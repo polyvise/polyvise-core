@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 debatefrog|debatefrog-beta|polyvise" >&2
+  echo "Usage: $0 debatefrog|debatefrog-preview|polyvise" >&2
   exit 1
 fi
 
@@ -32,16 +32,16 @@ case "$1" in
     SERVICE="${GCP_DEBATEFROG_SERVICE:-debatefrog-web}"
     SECRET="${GCP_DEBATEFROG_TAVILY_SECRET:-debatefrog-tavily-api-key}"
     ;;
-  debatefrog-beta)
-    SERVICE="${GCP_DEBATEFROG_BETA_SERVICE:-debatefrog-beta-web}"
-    SECRET="${GCP_DEBATEFROG_BETA_TAVILY_SECRET:-${GCP_DEBATEFROG_TAVILY_SECRET:-debatefrog-tavily-api-key}}"
+  debatefrog-preview)
+    SERVICE="${GCP_DEBATEFROG_PREVIEW_SERVICE:-debatefrog-preview-web}"
+    SECRET="${GCP_DEBATEFROG_PREVIEW_TAVILY_SECRET:-${GCP_DEBATEFROG_TAVILY_SECRET:-debatefrog-tavily-api-key}}"
     ;;
   polyvise)
     SERVICE="${GCP_POLYVISE_SERVICE:-polyvise-web}"
     SECRET="${GCP_POLYVISE_TAVILY_SECRET:-polyvise-tavily-api-key}"
     ;;
   *)
-    echo "Usage: $0 debatefrog|debatefrog-beta|polyvise" >&2
+    echo "Usage: $0 debatefrog|debatefrog-preview|polyvise" >&2
     exit 1
     ;;
 esac

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const isBetaDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "beta";
+const isPreviewDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "preview";
 
 export const metadata: Metadata = {
   title: "Debatefrog",
   description: "A playful debate interface powered by the Polyvise agent debate engine.",
-  robots: isBetaDeploy
+  robots: isPreviewDeploy
     ? {
         index: false,
         follow: false,

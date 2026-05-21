@@ -114,7 +114,20 @@ function buildSeedRecord(input: DebateRequest): {
     judgeModel: request.models?.judge?.trim() || baseConfig.judgeModel
   };
 
-  return { record, request, config, framed };
+  return { record, request, config: configWithDevOverrides(config, request), framed };
+}
+
+function configWithDevOverrides(config: DebateRuntimeConfig, request: DebateRequest): DebateRuntimeConfig {
+  if (process.env.NODE_ENV === "production" || !request.devOptions?.liveApis) {
+    return config;
+  }
+
+  return {
+    ...config,
+    evidenceProvider: "tavily",
+    enableMockLlm: false,
+    allowDeterministicFallbacks: false
+  };
 }
 
 export interface StartDebateResult {

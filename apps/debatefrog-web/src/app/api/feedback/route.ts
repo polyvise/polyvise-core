@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { submitFeedback } from "@polyvise/debate-engine/debate/store";
 
-const feedbackApp = process.env.POLYVISE_APP_CHANNEL === "beta" ? "debatefrog-beta" : "debatefrog";
+const feedbackApp = process.env.POLYVISE_APP_CHANNEL === "preview" ? "debatefrog-preview" : "debatefrog";
 
 export async function POST(request: NextRequest) {
   try {

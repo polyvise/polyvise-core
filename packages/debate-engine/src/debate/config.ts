@@ -19,15 +19,26 @@ export interface DebateRuntimeConfig {
   modelOptions: string[];
 }
 
+const DEFAULT_OPENROUTER_MODEL_OPTIONS = [
+  "openai/gpt-4o-mini",
+  "openai/gpt-4.1",
+  "openai/gpt-4o",
+  "google/gemini-2.5-flash",
+  "google/gemini-2.5-pro",
+  "anthropic/claude-3.5-haiku",
+  "anthropic/claude-3.5-sonnet"
+];
+
 export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): DebateRuntimeConfig {
   const isProduction = env.NODE_ENV === "production";
 
   return {
-    quickModel: env.POLYVISE_QUICK_MODEL || "gpt-4.1",
-    deepModel: env.POLYVISE_DEEP_MODEL || "claude-3.7-sonnet",
-    yesModel: env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "gpt-4.1",
-    noModel: env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "claude-3.7-sonnet",
-    judgeModel: env.POLYVISE_JUDGE_MODEL || "gemini-2.5-pro",
+    quickModel: env.POLYVISE_QUICK_MODEL || "google/gemini-2.5-flash",
+    deepModel: env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
+    yesModel: env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "google/gemini-2.5-flash",
+    noModel:
+      env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
+    judgeModel: env.POLYVISE_JUDGE_MODEL || "openai/gpt-4o-mini",
     maxRounds: coercePositiveInteger(env.POLYVISE_MAX_ROUNDS, 3),
     llmTimeoutMs: coercePositiveInteger(env.POLYVISE_LLM_TIMEOUT_MS, 45000),
     llmMaxTokens: coercePositiveInteger(env.POLYVISE_LLM_MAX_TOKENS, 1800),
@@ -38,9 +49,10 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
     allowDeterministicFallbacks:
       !isProduction && coerceBoolean(env.POLYVISE_ALLOW_DETERMINISTIC_FALLBACKS, true),
     modelOptions: coerceModelOptions(env.POLYVISE_OPENROUTER_MODEL_OPTIONS, [
-      env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "gpt-4.1",
-      env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "claude-3.7-sonnet",
-      env.POLYVISE_JUDGE_MODEL || "gemini-2.5-pro"
+      env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "google/gemini-2.5-flash",
+      env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
+      env.POLYVISE_JUDGE_MODEL || "openai/gpt-4o-mini",
+      ...DEFAULT_OPENROUTER_MODEL_OPTIONS
     ])
   };
 }
@@ -143,7 +155,8 @@ function labelForModel(id: string): string {
     .split("/")
     .pop()!
     .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .replace(/\bGpt\b/g, "GPT");
 }
 
 function inferProvider(model: string): ModelSnapshot["provider"] {

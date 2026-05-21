@@ -1,4 +1,4 @@
-import type { ModelSnapshot } from "../debate/types";
+import type { ModelCallAttempt, ModelSnapshot } from "../debate/types";
 import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "../debate/config";
 
 export interface LlmRequest {
@@ -83,19 +83,26 @@ export class OpenRouterLlmProvider implements LlmProvider {
   async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
     const model = this.modelForRole(request.role);
     const started = Date.now();
+    const attempts: ModelCallAttempt[] = [];
 
     if (!this.apiKey) {
       throw new Error("OPENROUTER_API_KEY is required when POLYVISE_ENABLE_MOCK_LLM=false.");
     }
 
     try {
-      return await this.completeStructuredWithRetry<T>(request, model, started, Boolean(request.jsonSchema));
+      return await this.completeStructuredWithRetry<T>(
+        request,
+        model,
+        started,
+        Boolean(request.jsonSchema),
+        attempts
+      );
     } catch (error) {
       if (!request.jsonSchema) {
         throw error;
       }
 
-      return this.completeStructuredWithRetry<T>(request, model, started, false);
+      return this.completeStructuredWithRetry<T>(request, model, started, false, attempts);
     }
   }
 
@@ -103,15 +110,38 @@ export class OpenRouterLlmProvider implements LlmProvider {
     request: LlmRequest,
     model: string,
     started: number,
-    useJsonSchema: boolean
+    useJsonSchema: boolean,
+    attempts: ModelCallAttempt[]
   ): Promise<{ data: T; snapshot: ModelSnapshot }> {
     let lastError: unknown;
+    const mode = useJsonSchema ? "json_schema" : "json_object";
 
     for (let attempt = 1; attempt <= this.config.llmMaxAttempts; attempt += 1) {
+      const attemptStarted = Date.now();
       try {
-        return await this.completeStructured<T>(request, model, started, useJsonSchema);
+        const result = await this.completeStructured<T>(request, model, started, useJsonSchema);
+        attempts.push({
+          attempt,
+          mode,
+          status: "ok",
+          durationMs: Date.now() - attemptStarted
+        });
+        return {
+          ...result,
+          snapshot: {
+            ...result.snapshot,
+            attempts: [...attempts]
+          }
+        };
       } catch (error) {
         lastError = error;
+        attempts.push({
+          attempt,
+          mode,
+          status: "failed",
+          durationMs: Date.now() - attemptStarted,
+          message: error instanceof Error ? error.message : "OpenRouter request failed."
+        });
         if (attempt >= this.config.llmMaxAttempts || !isRetriableOpenRouterError(error)) {
           break;
         }

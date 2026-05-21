@@ -30,7 +30,13 @@ export const debateRequestSchema = z.object({
   models: debateModelSelectionSchema,
   // Defaults to "quartet" so legacy callers keep the canonical 2+2+judge
   // shape. The /froglings UI sends "duo" for a 1-on-1 debate.
-  councilSize: z.enum(["duo", "quartet"]).default("quartet")
+  councilSize: z.enum(["duo", "quartet"]).default("quartet"),
+  devOptions: z
+    .object({
+      liveApis: z.boolean().optional()
+    })
+    .partial()
+    .optional()
 });
 
 export const followupRequestSchema = z.object({

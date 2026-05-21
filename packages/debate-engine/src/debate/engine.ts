@@ -370,7 +370,7 @@ class DebateWorkflowExecutor {
         this.config,
         buildGenerationPrompt({
           task:
-            "Score the actual debate. NO is a fully valid winning answer. Do not reward YES by default. Choose lean_yes, conditional_yes, conditional_no, or lean_no whenever one side is even modestly stronger; use mixed only for a genuine near tie or unusable evidence. Notes must mention the actual resolution tradeoffs, not generic pilot/rollback language unless directly relevant.",
+            "Score the actual debate. NO is a fully valid winning answer. Do not reward YES by default. Choose lean_yes, conditional_yes, conditional_no, or lean_no whenever one side is even modestly stronger; use mixed only for a genuine near tie or unusable evidence. Notes must mention the actual resolution tradeoffs, not generic pilot/rollback language unless directly relevant. For broad policies involving children, schools, voting, animals, health, safety, or legal accommodations, require the YES side to prove the policy is safe, fair, administrable, and meaningfully better than the status quo; benefits that merely sound nice should not outweigh concrete safety, hygiene, supervision, disruption, access, or legal risks.",
           framed,
           sources,
           claims,
@@ -383,7 +383,7 @@ class DebateWorkflowExecutor {
       scorecardPlaceholder = placeholder;
       return {
         message: `Judge scored the debate as ${data.recommendation}.`,
-        value: data
+        value: calibrateScorecardForPolicyBurden(data, framed, claims, openingTurns)
       };
     });
     this.emit({
@@ -403,7 +403,7 @@ class DebateWorkflowExecutor {
         this.config,
         buildGenerationPrompt({
           task:
-            "Write the final verdict for this exact resolution. Be willing to say NO when the NO side made the stronger case. Do not soften a NO result into uncertainty unless the scorecard is mixed. The headline, recommendation, uncertainties, and mind-changers must be specific to the subject and evidence.",
+            "Write the final verdict for this exact resolution. Be willing to say NO when the NO side made the stronger case. Do not soften a NO result into uncertainty unless the scorecard is mixed. The headline, recommendation, uncertainties, and mind-changers must be specific to the subject and evidence. For school, child, animal, safety, voting, legal, or accommodation policies, do not treat warm benefits as enough for YES unless the YES side addressed the concrete risks and implementation burdens.",
           framed,
           sources,
           claims,
@@ -607,7 +607,8 @@ function buildGenerationPrompt(input: {
         "Return only JSON matching the requested schema.",
         "Make every visible sentence specific to the resolution and cited evidence.",
         "Do not preserve deterministic fallback wording when it is generic.",
-        "Do not mention pilots, rollback triggers, implementation phases, local accountability, or stakeholder safeguards unless the resolution actually asks about an implementation decision."
+        "Do not mention pilots, rollback triggers, implementation phases, local accountability, or stakeholder safeguards unless the resolution actually asks about an implementation decision.",
+        ...judgePolicyRules(input.framed)
       ],
       debate: {
         subject: input.framed.subject,
@@ -664,6 +665,119 @@ function buildGenerationPrompt(input: {
     null,
     2
   );
+}
+
+function judgePolicyRules(framed: FramedDebate): string[] {
+  const normalized = `${framed.subject} ${framed.resolution} ${framed.context ?? ""}`.toLowerCase();
+  const schoolOrChildPolicy = /\b(school|student|students|kid|kids|child|children|classroom|teacher|teachers)\b/.test(
+    normalized
+  );
+  const safetyOrAnimalPolicy = /\b(pet|pets|animal|animals|dog|dogs|cat|cats|allerg|bite|hygiene|safety|service animal)\b/.test(
+    normalized
+  );
+  const civicChildPolicy = /\b(vote|voting|election|political|politics)\b/.test(normalized) && /\b(kid|kids|child|children|student|students)\b/.test(normalized);
+
+  if (!(schoolOrChildPolicy || civicChildPolicy || safetyOrAnimalPolicy)) {
+    return [];
+  }
+
+  const rules = [
+    "Judge child-facing institutional policies using a burden-of-proof standard: the side changing the status quo must show concrete benefits plus workable safeguards, not just appealing intentions.",
+    "Confidence above 0.65 requires that the winning side directly answered the strongest risks and implementation burdens with specific evidence or policy limits."
+  ];
+
+  if (schoolOrChildPolicy && safetyOrAnimalPolicy) {
+    rules.push(
+      "For pets or animals in schools, distinguish broad pet permission from narrowly governed service animals or therapy programs. Service-animal access is not evidence that ordinary pets should be broadly allowed.",
+      "For pets or animals in schools, weigh allergies, bites, fear/phobias, hygiene, food-service rules, distraction, supervision, liability, and unequal access. If YES only argues emotional support, motivation, or responsibility while NO raises these risks, prefer NO or at most a low-confidence conditional YES."
+    );
+  }
+
+  if (civicChildPolicy) {
+    rules.push(
+      "For children voting in political elections, require YES to answer maturity, coercion, civic knowledge, administration, and guardianship concerns before a confident YES is justified."
+    );
+  }
+
+  return rules;
+}
+
+function calibrateScorecardForPolicyBurden(
+  scorecard: Scorecard,
+  framed: FramedDebate,
+  claims: Claim[],
+  turns: RoundTurn[]
+): Scorecard {
+  if (!isSchoolPetsResolution(framed)) {
+    return scorecard;
+  }
+
+  const yesText = sideText("pro", claims, turns);
+  const noText = sideText("con", claims, turns);
+  const yesPolicyLimits = /\b(only|limited|limits?|designated|opt[- ]?out|permission|approved|service animals? only|therapy (dog|animal) program)\b/.test(
+    yesText
+  );
+  const yesConcreteControls = [
+    /\b(vaccin|health record|vet|screened|trained)\b/,
+    /\b(supervis|handler|adult|staff)\b/,
+    /\b(allergy plan|allerg(y|ies)|phobia|fear)\b/,
+    /\b(cleaning|hygiene protocol|sanit|food[- ]?service)\b/,
+    /\b(rule|rules|policy|liabil|insurance)\b/
+  ].filter((pattern) => pattern.test(yesText)).length;
+  const yesAddressedSafeguards = yesPolicyLimits && yesConcreteControls >= 2;
+  const noRaisedConcreteRisks = /\b(allerg|bite|hygiene|sanit|supervis|liabil|phobia|fear|disrupt|food|safety|service animal)\b/.test(
+    noText
+  );
+
+  if (!isYesRecommendation(scorecard.recommendation) && scorecard.recommendation !== "mixed") {
+    return scorecard;
+  }
+
+  if (yesAddressedSafeguards || (!noRaisedConcreteRisks && scorecard.recommendation !== "mixed")) {
+    return {
+      ...scorecard,
+      confidence: Math.min(scorecard.confidence, 0.62)
+    };
+  }
+
+  return {
+    ...scorecard,
+    recommendation: "conditional_no",
+    confidence:
+      scorecard.recommendation === "mixed"
+        ? Math.min(Math.max(scorecard.confidence, 0.62), 0.66)
+        : Math.min(scorecard.confidence, 0.6),
+    categories: scorecard.categories.map((category) => {
+      if (category.name === "risk" || category.name === "practicality") {
+        return {
+          ...category,
+          pro: Math.min(category.pro, category.con - 0.4),
+          con: Math.max(category.con, category.pro + 0.8),
+          note:
+            "For broad pets-at-school permission, generic learning or emotional-support benefits do not overcome unaddressed safety, allergy, hygiene, supervision, and disruption risks."
+        };
+      }
+      return category;
+    })
+  };
+}
+
+function isSchoolPetsResolution(framed: FramedDebate): boolean {
+  const normalized = `${framed.subject} ${framed.resolution}`.toLowerCase();
+  return /\b(school|classroom|student|students|kid|kids|child|children)\b/.test(normalized) && /\b(pet|pets|animal|animals|dog|dogs|cat|cats)\b/.test(normalized);
+}
+
+function isYesRecommendation(recommendation: Scorecard["recommendation"]): boolean {
+  return recommendation === "lean_yes" || recommendation === "conditional_yes";
+}
+
+function sideText(side: "pro" | "con", claims: Claim[], turns: RoundTurn[]): string {
+  return [
+    ...claims.filter((claim) => claim.side === side).map((claim) => `${claim.text} ${claim.warrant}`),
+    ...turns.filter((turn) => turn.side === side).map((turn) => turn.content)
+  ]
+    .join(" ")
+    .toLowerCase();
 }
 
 function polishDebateTurnContent(content: string): string {

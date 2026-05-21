@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 debatefrog|debatefrog-beta|polyvise" >&2
+  echo "Usage: $0 debatefrog|debatefrog-preview|polyvise" >&2
   exit 1
 fi
 
@@ -18,14 +18,14 @@ case "$1" in
   debatefrog)
     SERVICE="${GCP_DEBATEFROG_SERVICE:-debatefrog-web}"
     ;;
-  debatefrog-beta)
-    SERVICE="${GCP_DEBATEFROG_BETA_SERVICE:-debatefrog-beta-web}"
+  debatefrog-preview)
+    SERVICE="${GCP_DEBATEFROG_PREVIEW_SERVICE:-debatefrog-preview-web}"
     ;;
   polyvise)
     SERVICE="${GCP_POLYVISE_SERVICE:-polyvise-web}"
     ;;
   *)
-    echo "Usage: $0 debatefrog|debatefrog-beta|polyvise" >&2
+    echo "Usage: $0 debatefrog|debatefrog-preview|polyvise" >&2
     exit 1
     ;;
 esac

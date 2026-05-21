@@ -58,9 +58,9 @@ Copy `.env.example` to `.env.local` for non-secret local configuration.
 
 ```bash
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
-POLYVISE_QUICK_MODEL="gpt-4.1"
-POLYVISE_DEEP_MODEL="claude-3.7-sonnet"
-POLYVISE_JUDGE_MODEL="gemini-2.5-pro"
+POLYVISE_QUICK_MODEL="google/gemini-2.5-flash"
+POLYVISE_DEEP_MODEL="google/gemini-2.5-flash"
+POLYVISE_JUDGE_MODEL="openai/gpt-4o-mini"
 POLYVISE_MAX_ROUNDS="3"
 POLYVISE_LLM_TIMEOUT_MS="45000"
 POLYVISE_LLM_MAX_TOKENS="1400"
@@ -80,7 +80,9 @@ GOOGLE_GENERATIVE_AI_API_KEY=""
 OPENROUTER_API_KEY=""
 ```
 
-To attach Tavily Search to Cloud Run, add `TAVILY_API_KEY` to the ignored root `local.ops.secrets.env` file, then run:
+For local app runs, keep app runtime tokens such as `OPENROUTER_API_KEY` and `TAVILY_API_KEY` in the app-specific ignored file, for example `apps/debatefrog-web/local.secrets.env`. Keep deploy/admin tokens such as Cloudflare, GitHub, and Cloud Run setup values in the ignored root `local.ops.secrets.env` file so the app server does not receive unnecessary credentials.
+
+To attach Tavily Search to Cloud Run, add `TAVILY_API_KEY` to `local.ops.secrets.env` for the deploy helper, then run:
 
 ```bash
 ./scripts/gcp-set-tavily.sh debatefrog
@@ -88,7 +90,7 @@ To attach Tavily Search to Cloud Run, add `TAVILY_API_KEY` to the ignored root `
 
 Load secrets into your shell before starting the app, or configure the same keys in your deployment provider.
 
-For app-specific OpenRouter tokens, use:
+For app-specific runtime tokens, use:
 
 ```text
 apps/polyvise-web/local.secrets.env

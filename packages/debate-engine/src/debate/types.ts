@@ -47,6 +47,10 @@ export interface DebateModelSelection {
   judge?: string;
 }
 
+export interface DebateDevOptions {
+  liveApis?: boolean;
+}
+
 export interface DebateRequest {
   subject: string;
   context?: string;
@@ -59,6 +63,10 @@ export interface DebateRequest {
    * 1-on-1 debate suitable for the /froglings experience.
    */
   councilSize?: CouncilSize;
+  /**
+   * Development-only overrides. Ignored in production.
+   */
+  devOptions?: DebateDevOptions;
 }
 
 export interface DebateRecord {
@@ -222,6 +230,15 @@ export interface ModelSnapshot {
   completionTokens?: number;
   estimatedCostUsd?: number;
   failure?: string;
+  attempts?: ModelCallAttempt[];
+}
+
+export interface ModelCallAttempt {
+  attempt: number;
+  mode: "json_schema" | "json_object";
+  status: "ok" | "failed";
+  durationMs: number;
+  message?: string;
 }
 
 export interface RunArtifact {

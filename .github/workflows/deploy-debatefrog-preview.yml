@@ -1,4 +1,4 @@
-name: Deploy Debatefrog Beta
+name: Deploy Debatefrog Preview
 
 on:
   workflow_dispatch:
@@ -13,12 +13,12 @@ permissions:
   id-token: write
 
 concurrency:
-  group: deploy-debatefrog-beta
+  group: deploy-debatefrog-preview
   cancel-in-progress: false
 
 jobs:
   deploy:
-    name: Test and deploy beta
+    name: Test and deploy preview
     runs-on: ubuntu-latest
 
     env:
@@ -55,5 +55,5 @@ jobs:
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v3
 
-      - name: Deploy Debatefrog beta to Cloud Run
-        run: ./scripts/gcp-deploy.sh debatefrog-beta
+      - name: Deploy Debatefrog preview to Cloud Run
+        run: ./scripts/gcp-deploy.sh debatefrog-preview

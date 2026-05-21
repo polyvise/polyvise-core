@@ -18,9 +18,9 @@
  */
 
 const INTRO_SEEN_KEY = "froglings:intro-seen";
-const MODEL_SETTINGS_KEY = "froglings:model-settings";
+const MODEL_SETTINGS_KEY = "froglings:model-settings:v2";
 const USER_PREFERENCES_KEY = "froglings:user-preferences";
-const isBetaDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "beta";
+const isPreviewDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "preview";
 
 import {
   createContext,
@@ -37,7 +37,9 @@ import Link from "next/link";
 import type { Route } from "next";
 import {
   AlertTriangle,
+  BarChart3,
   CheckCircle2,
+  ChevronDown,
   Loader2,
   RotateCcw,
   Send,
@@ -60,7 +62,9 @@ import type {
   DebateStatus,
   DebateSummary,
   DebateTeam,
+  EvidenceSource,
   ModelSnapshot,
+  RunTraceEntry,
   TopicKind,
   RoundTurn,
   Scorecard,
@@ -100,12 +104,27 @@ type ModelOption = { id: string; label: string };
 type ModelOptionsResponse = {
   defaults: ModelSelections;
   options: ModelOption[];
+  dev?: {
+    liveApiToggleAvailable: boolean;
+    hasOpenRouterKey: boolean;
+    hasTavilyKey: boolean;
+  };
 };
 type UserPreferences = {
   openingSplash: boolean;
+  liveApisInDev: boolean;
 };
 const defaultUserPreferences: UserPreferences = {
-  openingSplash: true
+  openingSplash: true,
+  liveApisInDev: false
+};
+type ApiCallTiming = {
+  id: string;
+  label: string;
+  detail: string;
+  durationMs: number;
+  status?: "ok" | "failed";
+  children?: ApiCallTiming[];
 };
 
 /**
@@ -165,11 +184,14 @@ type FroglingsLiveState = {
   topicKind?: TopicKind;
   teams: DebateTeam | null;
   claims: Claim[];
+  sources: EvidenceSource[];
   turns: RoundTurn[];
   scorecard: Scorecard | null;
   summary: DebateSummary | null;
   errorMessage: string | null;
   backupReasons: string[];
+  modelSnapshots: ModelSnapshot[];
+  trace: RunTraceEntry[];
   done: boolean;
 };
 
@@ -188,11 +210,14 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       status: "queued",
       teams: null,
       claims: [],
+      sources: [],
       turns: [],
       scorecard: null,
       summary: null,
       errorMessage: null,
       backupReasons: [],
+      modelSnapshots: [],
+      trace: [],
       done: false
     };
   }
@@ -207,11 +232,14 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       topicKind: action.debate.topicKind,
       teams: run.teams,
       claims: run.claims,
+      sources: run.sources,
       turns: run.turns,
       scorecard: run.scorecard,
       summary: run.summary,
       errorMessage: null,
       backupReasons: backupReasonsFromRun(run),
+      modelSnapshots: run.modelSnapshots,
+      trace: run.trace,
       done: action.debate.status === "complete" || action.debate.status === "failed"
     };
   }
@@ -224,6 +252,8 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       return { ...state, resolution: event.resolution, topicKind: event.topicKind };
     case "teams":
       return { ...state, teams: event.teams };
+    case "sources":
+      return { ...state, sources: event.sources };
     case "claims":
       // In duo mode placeholder fallbacks would be a corner case; the
       // funner UI hides claims rather than showing fallback text.
@@ -249,7 +279,7 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
           reason: event.snapshot.failure ?? "The dev server used local backup model text."
         });
       }
-      return state;
+      return { ...state, modelSnapshots: upsertModelSnapshot(state.modelSnapshots, event.snapshot) };
     case "complete":
       return { ...state, status: "complete", done: true };
     case "error":
@@ -266,6 +296,12 @@ function addBackupReason(state: FroglingsLiveState, placeholder: PlaceholderInfo
   return { ...state, backupReasons: [...currentReasons, reason] };
 }
 
+function upsertModelSnapshot(snapshots: ModelSnapshot[], next: ModelSnapshot): ModelSnapshot[] {
+  const existingIndex = snapshots.findIndex((snapshot) => snapshot.id === next.id);
+  if (existingIndex === -1) return [...snapshots, next];
+  return snapshots.map((snapshot, index) => (index === existingIndex ? next : snapshot));
+}
+
 function backupReasonsFromRun(run: DebateRun): string[] {
   return run.modelSnapshots
     .filter(isBackupSnapshot)
@@ -280,6 +316,76 @@ function isBackupSnapshot(snapshot: ModelSnapshot): boolean {
     snapshot.id.startsWith("mock-") ||
     snapshot.model === "deterministic-template"
   );
+}
+
+function buildApiCallTimings(live: FroglingsLiveState | null): ApiCallTiming[] {
+  if (!live) return [];
+  const evidenceProvider = live.sources.find((source) => source.retrievedVia !== "mock")?.retrievedVia;
+
+  const evidenceCalls = evidenceProvider
+    ? live.trace
+        .filter((entry) => entry.step === "evidence" && typeof entry.durationMs === "number")
+        .map((entry, index) => ({
+          id: `${entry.id}-fact-search-${index}`,
+          label: "fact search",
+          detail: `${labelForEvidenceProvider(evidenceProvider)} evidence lookup`,
+          durationMs: entry.durationMs ?? 0
+        }))
+    : [];
+
+  const llmCalls = live.modelSnapshots
+    .filter((snapshot) => typeof snapshot.latencyMs === "number" && isRealLlmSnapshot(snapshot))
+    .map((snapshot) => ({
+      id: snapshot.id,
+      label: labelForApiSnapshot(snapshot),
+      detail: snapshot.role,
+      durationMs: snapshot.latencyMs ?? 0,
+      children: snapshot.attempts?.map((attempt) => ({
+        id: `${snapshot.id}-${attempt.mode}-${attempt.attempt}`,
+        label: `attempt ${attempt.attempt}: ${labelForAttemptMode(attempt.mode)}`,
+        detail: attempt.message ?? attempt.status,
+        durationMs: attempt.durationMs,
+        status: attempt.status
+      }))
+    }));
+
+  return [...evidenceCalls, ...llmCalls].filter((call, index, calls) => {
+    return calls.findIndex((candidate) => candidate.id === call.id) === index;
+  });
+}
+
+function isRealLlmSnapshot(snapshot: ModelSnapshot): boolean {
+  return !isBackupSnapshot(snapshot) && snapshot.provider !== "local";
+}
+
+function labelForEvidenceProvider(provider: EvidenceSource["retrievedVia"]): string {
+  if (provider === "tavily") return "Tavily";
+  if (provider === "brave") return "Brave";
+  return "Fact";
+}
+
+function labelForApiSnapshot(snapshot: ModelSnapshot): string {
+  return labelForModelId(snapshot.model);
+}
+
+function labelForAttemptMode(mode: "json_schema" | "json_object"): string {
+  return mode === "json_schema" ? "schema" : "json";
+}
+
+function labelForModelId(id: string): string {
+  return id
+    .split("/")
+    .pop()!
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase())
+    .replace(/\bGpt\b/g, "GPT");
+}
+
+function formatDuration(durationMs: number): string {
+  if (durationMs < 1000) {
+    return `${Math.round(durationMs)} ms`;
+  }
+  return `${(durationMs / 1000).toFixed(durationMs < 10000 ? 1 : 0)} s`;
 }
 
 // -------------------------------------------------------------------------
@@ -400,6 +506,13 @@ export function FroglingsWorkspace() {
           mode: "hybrid_council",
           evidence: "cited",
           models: modelSelections ?? undefined,
+          devOptions:
+            userPreferences.liveApisInDev &&
+            modelOptions?.dev?.liveApiToggleAvailable &&
+            modelOptions.dev.hasOpenRouterKey &&
+            modelOptions.dev.hasTavilyKey
+              ? { liveApis: true }
+              : undefined,
           // The whole point of the funner version: ask the engine for
           // the simpler 1-on-1 shape.
           councilSize: "duo"
@@ -489,9 +602,9 @@ export function FroglingsWorkspace() {
         <Link href={"/" as Route} className="flex items-center gap-3 text-pond">
           <FunFrog mood="idle" size={42} bob={false} />
           <span className="text-lg font-black tracking-tight">DebateFrog</span>
-          {isBetaDeploy ? (
+          {isPreviewDeploy ? (
             <span className="rounded-full border border-leaf/30 bg-mint/70 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-pond">
-              Beta
+              Preview
             </span>
           ) : null}
         </Link>
@@ -585,6 +698,7 @@ export function FroglingsWorkspace() {
       />
       <FroglingsControlPanel
         open={controlPanelOpen}
+        apiCalls={buildApiCallTimings(live)}
         modelOptions={modelOptions}
         modelOptionsError={modelOptionsError}
         selections={modelSelections}
@@ -731,6 +845,7 @@ function FeedbackModal({
 
 function FroglingsControlPanel({
   open,
+  apiCalls,
   modelOptions,
   modelOptionsError,
   selections,
@@ -742,6 +857,7 @@ function FroglingsControlPanel({
   onPreferencesChange
 }: {
   open: boolean;
+  apiCalls: ApiCallTiming[];
   modelOptions: ModelOptionsResponse | null;
   modelOptionsError: string | null;
   selections: ModelSelections | null;
@@ -752,16 +868,20 @@ function FroglingsControlPanel({
   onReset: () => void;
   onPreferencesChange: (next: UserPreferences) => void;
 }) {
+  const [apiCallsOpen, setApiCallsOpen] = useState(false);
   const roles: Array<{ key: ModelRole; label: string }> = [
     { key: "yes", label: "YES frog" },
     { key: "no", label: "NO frog" },
     { key: "judge", label: "Judge frog" }
   ];
+  const maxDurationMs = Math.max(...apiCalls.map((call) => call.durationMs), 1);
+  const devLiveApisAvailable = Boolean(modelOptions?.dev?.liveApiToggleAvailable);
+  const devLiveApisReady = Boolean(modelOptions?.dev?.hasOpenRouterKey && modelOptions?.dev?.hasTavilyKey);
 
   return (
     <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
       {open ? (
-        <section className="w-[min(calc(100vw-2rem),360px)] rounded-2xl border border-pond/15 bg-[#111a16]/95 p-4 text-white shadow-2xl backdrop-blur">
+        <section className="h-[min(calc(100vh-2rem),760px)] w-[min(calc(100vw-2rem),460px)] overflow-y-auto [scrollbar-gutter:stable] rounded-2xl border border-pond/15 bg-[#111a16]/95 p-4 text-white shadow-2xl backdrop-blur">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4 text-mint" />
@@ -795,6 +915,30 @@ function FroglingsControlPanel({
                 className="h-5 w-5 accent-mint"
               />
             </label>
+            {devLiveApisAvailable ? (
+              <label className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-white/[0.05] px-3 py-2">
+                <span>
+                  <span className="block text-xs font-bold text-white/85">Use live APIs in dev</span>
+                  <span className="mt-0.5 block text-[11px] leading-snug text-white/55">
+                    Run local debates through real OpenRouter and Tavily calls.
+                  </span>
+                  {!devLiveApisReady ? (
+                    <span className="mt-1 block text-[10px] font-bold text-berry">
+                      Add local OpenRouter and Tavily keys to enable this.
+                    </span>
+                  ) : null}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={preferences.liveApisInDev && devLiveApisReady}
+                  disabled={!devLiveApisReady}
+                  onChange={(event) => {
+                    onPreferencesChange({ ...preferences, liveApisInDev: event.target.checked });
+                  }}
+                  className="h-5 w-5 accent-mint disabled:opacity-40"
+                />
+              </label>
+            ) : null}
           </div>
 
           <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.06] p-3">
@@ -845,6 +989,62 @@ function FroglingsControlPanel({
               </div>
             )}
           </div>
+
+          <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.06] p-3">
+            <button
+              type="button"
+              onClick={() => setApiCallsOpen((value) => !value)}
+              className="flex w-full items-center justify-between gap-3 text-left"
+              aria-expanded={apiCallsOpen}
+            >
+              <span className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-mint" />
+                <span className="text-[11px] font-black uppercase tracking-wide text-mint">
+                  API calls
+                </span>
+              </span>
+              <ChevronDown
+                className={`h-4 w-4 text-white/60 transition ${apiCallsOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {apiCallsOpen ? (
+              <div className="mt-3 space-y-2">
+                {apiCalls.length > 0 ? (
+                  apiCalls.map((call) => {
+                    const widthPercent = Math.max(8, Math.round((call.durationMs / maxDurationMs) * 100));
+                    return (
+                      <div key={call.id} className="rounded-lg bg-white/[0.045] px-3 py-2">
+                        <ApiCallBar call={call} widthPercent={widthPercent} />
+                        {call.children?.length ? (
+                          <div className="mt-2 space-y-1.5 border-l border-white/10 pl-3">
+                            {call.children.map((child) => {
+                              const childWidthPercent = Math.max(
+                                8,
+                                Math.round((child.durationMs / Math.max(call.durationMs, 1)) * 100)
+                              );
+                              return (
+                                <ApiCallBar
+                                  key={child.id}
+                                  call={child}
+                                  widthPercent={childWidthPercent}
+                                  compact
+                                />
+                              );
+                            })}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="rounded-lg bg-white/[0.045] px-3 py-2 text-xs text-white/55">
+                    Start a debate to see call timings.
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
         </section>
       ) : null}
 
@@ -857,6 +1057,42 @@ function FroglingsControlPanel({
       >
         <Settings className="h-5 w-5" />
       </button>
+    </div>
+  );
+}
+
+function ApiCallBar({
+  call,
+  widthPercent,
+  compact = false
+}: {
+  call: ApiCallTiming;
+  widthPercent: number;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={`grid items-center gap-3 ${
+        compact ? "grid-cols-[minmax(110px,40%)_1fr]" : "grid-cols-[minmax(120px,42%)_1fr]"
+      }`}
+    >
+      <div className="min-w-0">
+        <div className={`truncate font-black text-white/85 ${compact ? "text-[10px]" : "text-[11px]"}`}>
+          {call.label}
+        </div>
+        <div className="truncate text-[10px] text-white/45">{call.detail}</div>
+      </div>
+      <div className="min-w-0">
+        <div className={`${compact ? "h-4" : "h-5"} rounded-full bg-[#0c140f] p-1`}>
+          <div
+            className={`h-full rounded-full ${call.status === "failed" ? "bg-berry" : "bg-mint"}`}
+            style={{ width: `${widthPercent}%` }}
+          />
+        </div>
+        <div className="mt-1 text-right text-[10px] font-bold text-white/55">
+          {formatDuration(call.durationMs)}
+        </div>
+      </div>
     </div>
   );
 }
@@ -901,7 +1137,11 @@ function readStoredUserPreferences(): UserPreferences {
       openingSplash:
         typeof parsed.openingSplash === "boolean"
           ? parsed.openingSplash
-          : defaultUserPreferences.openingSplash
+          : defaultUserPreferences.openingSplash,
+      liveApisInDev:
+        typeof parsed.liveApisInDev === "boolean"
+          ? parsed.liveApisInDev
+          : defaultUserPreferences.liveApisInDev
     };
   } catch {
     return defaultUserPreferences;

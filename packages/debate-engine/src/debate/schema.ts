@@ -112,7 +112,7 @@ export const finalSummaryOutputSchema = z.object({
   unresolvedUncertainties: z.array(z.string().min(1)).default([]),
   whatWouldChangeMind: z.array(z.string().min(1)).default([]),
   confidence: z.number().min(0).max(1),
-  highStakesDisclaimer: z.string().optional()
+  highStakesDisclaimer: z.string().nullable().optional()
 });
 
 export const followupOutputSchema = z.object({

@@ -300,4 +300,76 @@ describe("hybrid council engine", () => {
     expect(run.turns.some((turn) => turn.content.includes("You says"))).toBe(false);
     expect(run.turns.some((turn) => turn.content.includes("You said"))).toBe(true);
   });
+
+  it("does not accept a generated duo turn for the wrong frog side", async () => {
+    class WrongSideProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<{ turns?: Array<{ agentId: string; agentName: string; side: string; content: string }> }>(request);
+        if (request.schemaName !== "debateTurnOutput" || !request.role.toLowerCase().includes("no frog") || !Array.isArray(result.data.turns)) {
+          return result as { data: T; snapshot: ModelSnapshot };
+        }
+
+        return {
+          data: {
+            ...result.data,
+            turns: result.data.turns.map((turn) => ({
+              ...turn,
+              agentId: "wrong_yes_agent",
+              agentName: "Wrong Yes Frog",
+              side: "pro",
+              content: "I think YES even though this was the NO frog batch."
+            }))
+          } as T,
+          snapshot: result.snapshot
+        };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_wrong_side_test",
+      {
+        subject: "Should schools have longer recess for kids?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new WrongSideProvider() }
+    );
+
+    const openingTurns = run.turns.filter((turn) => turn.round === "opening");
+    expect(openingTurns.filter((turn) => turn.side === "pro")).toHaveLength(1);
+    expect(openingTurns.filter((turn) => turn.side === "con")).toHaveLength(1);
+    expect(openingTurns.some((turn) => turn.agentId === "wrong_yes_agent")).toBe(false);
+  });
+
+  it("normalizes nullable high-stakes disclaimers from final summaries", async () => {
+    class NullableSummaryProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<Record<string, unknown>>(request);
+        if (request.schemaName !== "finalSummaryOutput") {
+          return result as { data: T; snapshot: ModelSnapshot };
+        }
+
+        return {
+          data: {
+            ...result.data,
+            highStakesDisclaimer: null
+          } as T,
+          snapshot: result.snapshot
+        };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_nullable_summary_test",
+      {
+        subject: "Should schools have longer recess for kids?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new NullableSummaryProvider() }
+    );
+
+    expect(run.status).toBe("complete");
+    expect(run.summary.highStakesDisclaimer).toBeUndefined();
+  });
 });

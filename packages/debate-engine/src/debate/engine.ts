@@ -42,6 +42,7 @@ type FramedDebate = {
   topicKind: TopicKind;
   highStakes: HighStakesNotice | null;
 };
+type GeneratedRoundTurn = Omit<RoundTurn, "id" | "createdAt">;
 
 const stageCopy: Record<string, { label: string; detail: string }> = {
   queued: {
@@ -320,10 +321,7 @@ class DebateWorkflowExecutor {
             debateTurnOutputSchema,
             this.config,
             buildGenerationPrompt({
-              task:
-                councilSize === "duo"
-                  ? "Write this kid-friendly debate turn for the exact question. Keep the same agent id, name, side, round, claim ids, and source ids. Use YES side and NO side language only; do not use pro, con, affirmative, or negative language. Make the content short, topic-specific, and grounded in the claims and evidence."
-                  : "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.",
+              task: turnGenerationTask(councilSize, batch.turns),
               framed,
               sources,
               claims,
@@ -334,7 +332,8 @@ class DebateWorkflowExecutor {
           );
           recordSnapshot(snapshot);
           roundPlaceholder = roundPlaceholder ?? placeholder;
-          generatedTurns.push(...data.turns);
+          const batchTurns = reconcileGeneratedTurns(data.turns, batch.turns, this.config);
+          generatedTurns.push(...batchTurns);
         }
 
         return {
@@ -418,7 +417,7 @@ class DebateWorkflowExecutor {
       summaryPlaceholder = placeholder;
       return {
         message: `Recommendation: ${scorecard.recommendation}.`,
-        value: data
+        value: normalizeSummary(data)
       };
     });
     this.emit({
@@ -518,57 +517,66 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
   }
 
   const requestedModel = provider.modelForRole(role);
+  let lastReason = "Structured generation failed.";
+  let lastSnapshot: ModelSnapshot | null = null;
 
-  try {
-    const result = await provider.generateStructured<unknown>({
-      role,
-      schemaName,
-      prompt: prompt ?? JSON.stringify(fallbackParse.data),
-      fallback: fallbackParse.data,
-      jsonSchema: z.toJSONSchema(schema)
-    });
-    const parsed = schema.safeParse(result.data);
+  for (let attempt = 1; attempt <= config.llmMaxAttempts; attempt += 1) {
+    try {
+      const result = await provider.generateStructured<unknown>({
+        role,
+        schemaName,
+        prompt: prompt ?? JSON.stringify(fallbackParse.data),
+        fallback: fallbackParse.data,
+        jsonSchema: z.toJSONSchema(schema)
+      });
+      const parsed = schema.safeParse(result.data);
 
-    if (!parsed.success) {
-      const reason = `Structured output validation failed: ${parsed.error.message}`;
-      if (!config.allowDeterministicFallbacks) {
-        throw new Error(reason);
+      if (!parsed.success) {
+        lastReason = `Structured output validation failed: ${parsed.error.message}`;
+        lastSnapshot = {
+          ...result.snapshot,
+          failure: lastReason
+        };
+        if (attempt < config.llmMaxAttempts) continue;
+        break;
       }
 
       return {
-        data: fallbackParse.data,
-        snapshot: {
-          ...result.snapshot,
-          failure: reason
-        },
-        placeholder: { requestedModel: result.snapshot.model || requestedModel, reason }
+        data: parsed.data,
+        snapshot: result.snapshot,
+        placeholder: null
       };
+    } catch (error) {
+      lastReason = error instanceof Error ? error.message : "Structured generation failed.";
+      if (attempt < config.llmMaxAttempts) continue;
+      break;
     }
+  }
 
-    return {
-      data: parsed.data,
-      snapshot: result.snapshot,
-      placeholder: null
-    };
-  } catch (error) {
-    const reason = error instanceof Error ? error.message : "Structured generation failed.";
-    if (!config.allowDeterministicFallbacks) {
-      throw new Error(reason);
-    }
+  if (!config.allowDeterministicFallbacks) {
+    throw new Error(lastReason);
+  }
 
+  if (lastSnapshot) {
     return {
       data: fallbackParse.data,
-      snapshot: {
-        id: `fallback-${schemaName}`,
-        provider: "local",
-        model: requestedModel,
-        role,
-        configured: true,
-        failure: reason
-      },
-      placeholder: { requestedModel, reason }
+      snapshot: lastSnapshot,
+      placeholder: { requestedModel: lastSnapshot.model || requestedModel, reason: lastReason }
     };
   }
+
+  return {
+    data: fallbackParse.data,
+    snapshot: {
+      id: `fallback-${schemaName}`,
+      provider: "local",
+      model: requestedModel,
+      role,
+      configured: true,
+      failure: lastReason
+    },
+    placeholder: { requestedModel, reason: lastReason }
+  };
 }
 
 function mergeModelSnapshots(roster: ModelSnapshot[], generated: ModelSnapshot[]): ModelSnapshot[] {
@@ -668,6 +676,62 @@ function polishDebateTurnContent(content: string): string {
     .replace(/\byou say that\b/g, "you said that")
     .replace(/\bYou argues?\b/g, "You argued")
     .replace(/\byou argues?\b/g, "you argued");
+}
+
+function turnGenerationTask(councilSize: CouncilSize, expectedTurns: RoundTurn[]): string {
+  if (councilSize !== "duo") {
+    return "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.";
+  }
+
+  const expected = expectedTurns
+    .map((turn) => `${turn.agentName} must be side "${turn.side}" in round "${turn.round}"`)
+    .join("; ");
+
+  return `Write only the requested kid-friendly debate turn or turns for the exact question. ${expected}. Return exactly ${expectedTurns.length} turn(s), preserving each requested agent id, agent name, side, round, claim ids, and source ids. Use YES side and NO side language only; do not use pro, con, affirmative, or negative language in visible content. Make the content short, topic-specific, and grounded in the claims and evidence.`;
+}
+
+function reconcileGeneratedTurns(
+  generatedTurns: GeneratedRoundTurn[],
+  expectedTurns: GeneratedRoundTurn[],
+  config: DebateRuntimeConfig
+): GeneratedRoundTurn[] {
+  const reconciled = expectedTurns.map((expected) => {
+    const generated = generatedTurns.find(
+      (turn) =>
+        turn.round === expected.round &&
+        turn.side === expected.side &&
+        turn.agentId === expected.agentId
+    );
+
+    if (!generated) return null;
+
+    return {
+      ...generated,
+      round: expected.round,
+      side: expected.side,
+      agentId: expected.agentId,
+      agentName: expected.agentName,
+      claimIds: generated.claimIds.length > 0 ? generated.claimIds : expected.claimIds,
+      sourceIds: generated.sourceIds.length > 0 ? generated.sourceIds : expected.sourceIds
+    };
+  });
+
+  if (reconciled.every((turn): turn is GeneratedRoundTurn => Boolean(turn))) {
+    return reconciled;
+  }
+
+  if (!config.allowDeterministicFallbacks) {
+    throw new Error("Generated debate turn did not preserve the requested speaker, side, and round.");
+  }
+
+  return expectedTurns;
+}
+
+function normalizeSummary(summary: z.infer<typeof finalSummaryOutputSchema>): DebateRun["summary"] {
+  return {
+    ...summary,
+    highStakesDisclaimer: summary.highStakesDisclaimer ?? undefined
+  };
 }
 
 function buildArtifactManifest(input: {

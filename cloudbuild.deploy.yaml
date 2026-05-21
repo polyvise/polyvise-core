@@ -6,6 +6,10 @@ steps:
       - APP_WORKSPACE=${_APP_WORKSPACE}
       - --build-arg
       - APP_DIR=${_APP_DIR}
+      - --build-arg
+      - NEXT_PUBLIC_SITE_URL=${_NEXT_PUBLIC_SITE_URL}
+      - --build-arg
+      - NEXT_PUBLIC_DEPLOY_CHANNEL=${_NEXT_PUBLIC_DEPLOY_CHANNEL}
       - --tag
       - ${_IMAGE}
       - .

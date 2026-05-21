@@ -1,0 +1,59 @@
+name: Deploy Debatefrog Beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or SHA to deploy. Leave blank for the selected workflow ref."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-debatefrog-beta
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Test and deploy beta
+    runs-on: ubuntu-latest
+
+    env:
+      GCP_PROJECT_ID: websites-prod-496602
+      GCP_REGION: us-central1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/794701187875/locations/global/workloadIdentityPools/github-actions/providers/polyvise-main
+          service_account: github-actions-deployer@websites-prod-496602.iam.gserviceaccount.com
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Deploy Debatefrog beta to Cloud Run
+        run: ./scripts/gcp-deploy.sh debatefrog-beta

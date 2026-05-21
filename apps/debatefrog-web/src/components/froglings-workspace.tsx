@@ -20,6 +20,7 @@
 const INTRO_SEEN_KEY = "froglings:intro-seen";
 const MODEL_SETTINGS_KEY = "froglings:model-settings";
 const USER_PREFERENCES_KEY = "froglings:user-preferences";
+const isBetaDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "beta";
 
 import {
   createContext,
@@ -488,6 +489,11 @@ export function FroglingsWorkspace() {
         <Link href={"/" as Route} className="flex items-center gap-3 text-pond">
           <FunFrog mood="idle" size={42} bob={false} />
           <span className="text-lg font-black tracking-tight">DebateFrog</span>
+          {isBetaDeploy ? (
+            <span className="rounded-full border border-leaf/30 bg-mint/70 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-pond">
+              Beta
+            </span>
+          ) : null}
         </Link>
         <div className="flex items-center gap-3">
           <button

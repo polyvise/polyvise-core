@@ -1,5 +1,5 @@
 import type { EvidenceSource, TopicKind } from "../debate/types";
-import type { EvidenceProviderName } from "../debate/config";
+import { loadDebateRuntimeConfig, type DebateRuntimeConfig, type EvidenceProviderName } from "../debate/config";
 
 export interface EvidenceProvider {
   name: string;
@@ -40,7 +40,7 @@ export class BraveEvidenceProvider implements EvidenceProvider {
     });
 
     if (!response.ok) {
-      throw new Error(`Brave Search failed with ${response.status}`);
+      throw new EvidenceSearchError(`Brave Search failed with ${response.status}`, response.status);
     }
 
     const payload = (await response.json()) as { web?: { results?: BraveWebResult[] } };
@@ -89,7 +89,7 @@ export class TavilyEvidenceProvider implements EvidenceProvider {
     });
 
     if (!response.ok) {
-      throw new Error(`Tavily Search failed with ${response.status}`);
+      throw new EvidenceSearchError(`Tavily Search failed with ${response.status}`, response.status);
     }
 
     const payload = (await response.json()) as { results?: TavilySearchResult[] };
@@ -127,27 +127,126 @@ export class MockEvidenceProvider implements EvidenceProvider {
   }
 }
 
+export type EvidenceCollectionResult = {
+  sources: EvidenceSource[];
+  diagnostic?: string;
+};
+
 export async function collectEvidence(
   subject: string,
   topicKind: TopicKind,
-  preferredProvider: EvidenceProviderName = "brave"
+  configOrProvider: DebateRuntimeConfig | EvidenceProviderName = loadDebateRuntimeConfig()
 ): Promise<EvidenceSource[]> {
+  return (await collectEvidenceWithDiagnostics(subject, topicKind, configOrProvider)).sources;
+}
+
+export async function collectEvidenceWithDiagnostics(
+  subject: string,
+  topicKind: TopicKind,
+  configOrProvider: DebateRuntimeConfig | EvidenceProviderName = loadDebateRuntimeConfig()
+): Promise<EvidenceCollectionResult> {
+  const config =
+    typeof configOrProvider === "string"
+      ? { ...loadDebateRuntimeConfig(), evidenceProvider: configOrProvider }
+      : configOrProvider;
+  const preferredProvider = config.evidenceProvider;
+
   if (preferredProvider === "mock") {
-    return new MockEvidenceProvider().search(subject, topicKind);
+    if (!config.allowDeterministicFallbacks) {
+      throw new Error("Live evidence search is required.");
+    }
+    return {
+      sources: await new MockEvidenceProvider().search(subject, topicKind),
+      diagnostic: "Configured evidence provider is mock."
+    };
   }
 
   const provider = preferredProvider === "tavily" ? new TavilyEvidenceProvider() : new BraveEvidenceProvider();
+  const missingKey = missingEvidenceApiKey(preferredProvider);
+  let diagnostic = missingKey
+    ? `${provider.name} evidence search skipped because ${missingKey} is not configured.`
+    : undefined;
 
   try {
-    const live = await provider.search(subject, topicKind);
+    const live = await searchWithRetry(provider, subject, topicKind, config);
     if (live.length > 0) {
-      return normalizeSources(live).slice(0, 8);
+      return { sources: normalizeSources(live).slice(0, 8) };
     }
-  } catch {
+    diagnostic = `${provider.name} evidence search returned no usable sources.`;
+  } catch (error) {
+    if (!config.allowDeterministicFallbacks) {
+      throw error;
+    }
+    diagnostic = `${provider.name} evidence search failed: ${formatDiagnosticError(error)}`;
     // Fall through to deterministic references so local development remains reliable.
   }
 
-  return new MockEvidenceProvider().search(subject, topicKind);
+  if (!config.allowDeterministicFallbacks) {
+    throw new Error("Live evidence search did not return usable sources.");
+  }
+
+  return {
+    sources: await new MockEvidenceProvider().search(subject, topicKind),
+    diagnostic
+  };
+}
+
+async function searchWithRetry(
+  provider: EvidenceProvider,
+  subject: string,
+  topicKind: TopicKind,
+  config: DebateRuntimeConfig
+): Promise<EvidenceSource[]> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= config.llmMaxAttempts; attempt += 1) {
+    try {
+      return await provider.search(subject, topicKind);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= config.llmMaxAttempts || !isRetriableSearchError(error)) {
+        break;
+      }
+      await delay(config.apiRetryBaseDelayMs * attempt);
+    }
+  }
+
+  throw lastError;
+}
+
+class EvidenceSearchError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+  }
+}
+
+function isRetriableSearchError(error: unknown): boolean {
+  if (error instanceof EvidenceSearchError) {
+    return error.status === 408 || error.status === 409 || error.status === 429 || error.status >= 500;
+  }
+
+  return error instanceof TypeError || (error instanceof Error && error.name === "AbortError");
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function missingEvidenceApiKey(provider: EvidenceProviderName): string | null {
+  if (provider === "brave" && !process.env.BRAVE_SEARCH_API_KEY) {
+    return "BRAVE_SEARCH_API_KEY";
+  }
+  if (provider === "tavily" && !process.env.TAVILY_API_KEY) {
+    return "TAVILY_API_KEY";
+  }
+  return null;
+}
+
+function formatDiagnosticError(error: unknown): string {
+  return error instanceof Error ? error.message : "unknown provider error";
 }
 
 export function normalizeSources(sources: EvidenceSource[]): EvidenceSource[] {

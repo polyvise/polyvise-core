@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { runHybridCouncilDebate } from "@polyvise/debate-engine/debate/engine";
-import { debateRequestSchema } from "@polyvise/debate-engine/debate/schema";
+import { debateRequestSchema, feedbackRequestSchema } from "@polyvise/debate-engine/debate/schema";
 import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/debate-engine/debate/topic";
-import { loadDebateRuntimeConfig } from "@polyvise/debate-engine/debate/config";
+import { loadDebateRuntimeConfig, modelOptionsFromConfig } from "@polyvise/debate-engine/debate/config";
+import { listFeedback, submitFeedback } from "@polyvise/debate-engine/debate/store";
 import {
   createDefaultLlmProvider,
   MockLlmProvider,
@@ -89,6 +90,41 @@ describe("request schema", () => {
     expect(parsed.mode).toBe("hybrid_council");
     expect(parsed.evidence).toBe("cited");
   });
+
+  it("accepts role-specific model selections", () => {
+    const parsed = debateRequestSchema.parse({
+      subject: "Should schools have longer recess?",
+      models: {
+        yes: "openai/gpt-4o-mini",
+        no: "anthropic/claude-3.5-haiku",
+        judge: "google/gemini-flash-1.5"
+      }
+    });
+
+    expect(parsed.models?.yes).toBe("openai/gpt-4o-mini");
+    expect(parsed.models?.no).toBe("anthropic/claude-3.5-haiku");
+  });
+});
+
+describe("feedback", () => {
+  it("validates anonymous feedback text", () => {
+    expect(feedbackRequestSchema.safeParse({ message: "" }).success).toBe(false);
+    expect(feedbackRequestSchema.safeParse({ message: "x".repeat(2001) }).success).toBe(false);
+    expect(feedbackRequestSchema.safeParse({ message: "The frogs were charming." }).success).toBe(true);
+  });
+
+  it("saves anonymous feedback in the memory repository", async () => {
+    const feedback = await submitFeedback({
+      message: "The judge should explain close calls more clearly.",
+      debateId: "debate_feedback_test",
+      pagePath: "/",
+      userAgent: "vitest"
+    });
+    const allFeedback = await listFeedback();
+
+    expect(feedback.id).toMatch(/^feedback_/);
+    expect(allFeedback.some((item) => item.id === feedback.id && item.message === feedback.message)).toBe(true);
+  });
 });
 
 describe("LLM provider selection", () => {
@@ -107,6 +143,23 @@ describe("LLM provider selection", () => {
 
     expect(config.enableMockLlm).toBe(false);
     expect(createDefaultLlmProvider(config)).toBeInstanceOf(OpenRouterLlmProvider);
+  });
+
+  it("builds curated model options from configured defaults", () => {
+    const config = loadDebateRuntimeConfig({
+      POLYVISE_YES_MODEL: "openai/gpt-4o-mini",
+      POLYVISE_NO_MODEL: "anthropic/claude-3.5-haiku",
+      POLYVISE_JUDGE_MODEL: "google/gemini-flash-1.5",
+      POLYVISE_OPENROUTER_MODEL_OPTIONS: "openai/gpt-4o-mini,google/gemini-flash-1.5"
+    });
+    const modelOptions = modelOptionsFromConfig(config);
+
+    expect(modelOptions.defaults).toEqual({
+      yes: "openai/gpt-4o-mini",
+      no: "anthropic/claude-3.5-haiku",
+      judge: "google/gemini-flash-1.5"
+    });
+    expect(modelOptions.options.map((option) => option.id)).toContain("anthropic/claude-3.5-haiku");
   });
 });
 
@@ -176,6 +229,33 @@ describe("hybrid council engine", () => {
       expect(proTurn?.agentId).toBe(proAgentId);
       expect(conTurn?.agentId).toBe(conAgentId);
     }
+  });
+
+  it("uses role-specific models for duo debates", async () => {
+    const run = await runHybridCouncilDebate("debate_duo_models_test", {
+      subject: "Should schools have longer recess for kids?",
+      councilSize: "duo",
+      models: {
+        yes: "openai/yes-model",
+        no: "anthropic/no-model",
+        judge: "google/judge-model"
+      }
+    });
+
+    expect(run.teams.pro[0].model).toBe("openai/yes-model");
+    expect(run.teams.con[0].model).toBe("anthropic/no-model");
+    expect(run.teams.judge.model).toContain("google/judge-model");
+    expect(run.modelSnapshots.some((snapshot) => snapshot.id === "polyvise-yes" && snapshot.model === "openai/yes-model")).toBe(true);
+    expect(run.modelSnapshots.some((snapshot) => snapshot.id === "polyvise-no" && snapshot.model === "anthropic/no-model")).toBe(true);
+  });
+
+  it("can produce a NO fallback verdict instead of defaulting close calls to YES", async () => {
+    const run = await runHybridCouncilDebate("debate_no_verdict_test", {
+      subject: "Should kids be allowed to vote in a political election?",
+      councilSize: "duo"
+    });
+
+    expect(["conditional_no", "lean_no"]).toContain(run.scorecard.recommendation);
   });
 
   it("defaults to the quartet shape when councilSize is omitted", async () => {

@@ -1,17 +1,21 @@
 import { randomUUID } from "node:crypto";
 import { createDefaultLlmProvider } from "../providers/llm";
 import { loadDebateRuntimeConfig, type DebateRuntimeConfig } from "./config";
-import { debateRequestSchema, followupOutputSchema } from "./schema";
+import { debateRequestSchema, feedbackRequestSchema, followupOutputSchema } from "./schema";
 import { frameDebateRequest, productNotes, runHybridCouncilDebate } from "./engine";
-import { createDefaultDebateRepository } from "./repository";
+import { createDefaultDebateRepository, createDefaultFeedbackRepository } from "./repository";
 import type {
   DebateLiveEvent,
   DebateRecord,
   DebateRequest,
-  FollowupExchange
+  FollowupExchange,
+  UserFeedback
 } from "./types";
 
 const repository = createDefaultDebateRepository();
+const feedbackRepository = createDefaultFeedbackRepository();
+export const DEBATE_UNAVAILABLE_MESSAGE =
+  "The frogs couldn't start a debate right now. Please try again in a few minutes.";
 
 type Listener = (event: DebateLiveEvent) => void;
 
@@ -105,6 +109,8 @@ function buildSeedRecord(input: DebateRequest): {
     ...baseConfig,
     quickModel: request.models?.quick?.trim() || baseConfig.quickModel,
     deepModel: request.models?.deep?.trim() || baseConfig.deepModel,
+    yesModel: request.models?.yes?.trim() || request.models?.quick?.trim() || baseConfig.yesModel,
+    noModel: request.models?.no?.trim() || request.models?.deep?.trim() || baseConfig.noModel,
     judgeModel: request.models?.judge?.trim() || baseConfig.judgeModel
   };
 
@@ -137,8 +143,7 @@ export async function startDebate(input: DebateRequest): Promise<StartDebateResu
       scheduleBusCleanup(record.id);
       return completed;
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Debate run failed.";
-      bus.emit({ kind: "error", message });
+      bus.emit({ kind: "error", message: DEBATE_UNAVAILABLE_MESSAGE });
       const failed: DebateRecord = {
         ...record,
         status: "failed",
@@ -179,6 +184,34 @@ export function getDebate(id: string): Promise<DebateRecord | null> {
 
 export function listDebates(): Promise<DebateRecord[]> {
   return repository.list();
+}
+
+export async function submitFeedback(input: {
+  app?: string;
+  message: string;
+  debateId?: string;
+  pagePath?: string;
+  userAgent?: string;
+  metadata?: Record<string, unknown>;
+}): Promise<UserFeedback> {
+  const parsed = feedbackRequestSchema.parse(input);
+  const feedback: UserFeedback = {
+    id: `feedback_${randomUUID().slice(0, 12)}`,
+    app: input.app?.trim() || "debatefrog",
+    message: parsed.message,
+    debateId: parsed.debateId || undefined,
+    pagePath: parsed.pagePath || undefined,
+    userAgent: input.userAgent?.trim() || undefined,
+    metadata: input.metadata ?? {},
+    createdAt: new Date().toISOString()
+  };
+
+  await feedbackRepository.save(feedback);
+  return feedback;
+}
+
+export function listFeedback(): Promise<UserFeedback[]> {
+  return feedbackRepository.list();
 }
 
 export async function addFollowup(debateId: string, question: string): Promise<FollowupExchange | null> {

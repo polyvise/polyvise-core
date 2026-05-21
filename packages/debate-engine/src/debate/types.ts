@@ -40,6 +40,8 @@ export type DebateRound =
   | "synthesis";
 
 export interface DebateModelSelection {
+  yes?: string;
+  no?: string;
   quick?: string;
   deep?: string;
   judge?: string;
@@ -242,6 +244,17 @@ export interface FollowupExchange {
   id: string;
   question: string;
   answer: string;
+  createdAt: string;
+}
+
+export interface UserFeedback {
+  id: string;
+  app: string;
+  message: string;
+  debateId?: string;
+  pagePath?: string;
+  userAgent?: string;
+  metadata: Record<string, unknown>;
   createdAt: string;
 }
 

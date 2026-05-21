@@ -18,6 +18,8 @@
  */
 
 const INTRO_SEEN_KEY = "froglings:intro-seen";
+const MODEL_SETTINGS_KEY = "froglings:model-settings";
+const USER_PREFERENCES_KEY = "froglings:user-preferences";
 
 import {
   createContext,
@@ -32,7 +34,18 @@ import {
 } from "react";
 import Link from "next/link";
 import type { Route } from "next";
-import { Loader2, RotateCcw, Send, Volume2, VolumeX } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  RotateCcw,
+  Send,
+  Settings,
+  SlidersHorizontal,
+  Volume2,
+  VolumeX,
+  X
+} from "lucide-react";
 import { FunFrog } from "@/components/fun-frog";
 import { SlowPrint } from "@/components/slow-print";
 import { useFrogSounds } from "@/components/use-frog-sounds";
@@ -42,12 +55,15 @@ import type {
   DebateLiveEvent,
   DebateRecord,
   DebateRound,
+  DebateRun,
   DebateStatus,
   DebateSummary,
   DebateTeam,
+  ModelSnapshot,
   TopicKind,
   RoundTurn,
-  Scorecard
+  Scorecard,
+  PlaceholderInfo
 } from "@polyvise/debate-engine/debate/types";
 
 const kidPrompts = [
@@ -57,6 +73,26 @@ const kidPrompts = [
   "Should pets be allowed at school?",
   "Should homework be banned?"
 ];
+
+const START_SEQUENCE_MIN_MS = 5500;
+const DEBATE_UNAVAILABLE_MESSAGE =
+  "The frogs couldn't start a debate right now. Please try again in a few minutes.";
+const CLIENT_API_MAX_ATTEMPTS = 3;
+const CLIENT_API_RETRY_BASE_DELAY_MS = 500;
+
+type ModelRole = "yes" | "no" | "judge";
+type ModelSelections = Record<ModelRole, string>;
+type ModelOption = { id: string; label: string };
+type ModelOptionsResponse = {
+  defaults: ModelSelections;
+  options: ModelOption[];
+};
+type UserPreferences = {
+  openingSplash: boolean;
+};
+const defaultUserPreferences: UserPreferences = {
+  openingSplash: true
+};
 
 /**
  * Plain-language stage labels for younger readers. The engine emits the
@@ -68,7 +104,7 @@ const friendlyStage: Record<DebateStatus, string> = {
   researching: "the frogs are looking up facts",
   debating: "the frogs are arguing!",
   judging: "the judge frog is thinking",
-  complete: "all done!",
+  complete: "debate finished",
   failed: "uh oh — the frogs slipped off the lily pad",
   partial: "the frogs only got part way"
 };
@@ -119,6 +155,7 @@ type FroglingsLiveState = {
   scorecard: Scorecard | null;
   summary: DebateSummary | null;
   errorMessage: string | null;
+  backupReasons: string[];
   done: boolean;
 };
 
@@ -141,6 +178,7 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       scorecard: null,
       summary: null,
       errorMessage: null,
+      backupReasons: [],
       done: false
     };
   }
@@ -159,6 +197,7 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
       scorecard: run.scorecard,
       summary: run.summary,
       errorMessage: null,
+      backupReasons: backupReasonsFromRun(run),
       done: action.debate.status === "complete" || action.debate.status === "failed"
     };
   }
@@ -174,13 +213,29 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
     case "claims":
       // In duo mode placeholder fallbacks would be a corner case; the
       // funner UI hides claims rather than showing fallback text.
-      return { ...state, claims: event.placeholder ? state.claims : event.claims };
+      return event.placeholder
+        ? addBackupReason(state, event.placeholder)
+        : { ...state, claims: event.claims };
     case "turns":
-      return { ...state, turns: event.placeholder ? state.turns : [...state.turns, ...event.turns] };
+      return event.placeholder
+        ? addBackupReason(state, event.placeholder)
+        : { ...state, turns: [...state.turns, ...event.turns] };
     case "scorecard":
-      return { ...state, scorecard: event.placeholder ? null : event.scorecard };
+      return event.placeholder
+        ? addBackupReason(state, event.placeholder)
+        : { ...state, scorecard: event.scorecard };
     case "summary":
-      return { ...state, summary: event.placeholder ? null : event.summary };
+      return event.placeholder
+        ? addBackupReason(state, event.placeholder)
+        : { ...state, summary: event.summary };
+    case "model_snapshot":
+      if (isBackupSnapshot(event.snapshot)) {
+        return addBackupReason(state, {
+          requestedModel: event.snapshot.model,
+          reason: event.snapshot.failure ?? "The dev server used local backup model text."
+        });
+      }
+      return state;
     case "complete":
       return { ...state, status: "complete", done: true };
     case "error":
@@ -188,6 +243,29 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
     default:
       return state;
   }
+}
+
+function addBackupReason(state: FroglingsLiveState, placeholder: PlaceholderInfo): FroglingsLiveState {
+  const reason = `${placeholder.requestedModel}: ${placeholder.reason}`;
+  const currentReasons = state.backupReasons ?? [];
+  if (currentReasons.includes(reason)) return state;
+  return { ...state, backupReasons: [...currentReasons, reason] };
+}
+
+function backupReasonsFromRun(run: DebateRun): string[] {
+  return run.modelSnapshots
+    .filter(isBackupSnapshot)
+    .map((snapshot) => `${snapshot.model}: ${snapshot.failure ?? "The dev server used local backup model text."}`)
+    .filter((reason, index, reasons) => reasons.indexOf(reason) === index);
+}
+
+function isBackupSnapshot(snapshot: ModelSnapshot): boolean {
+  return (
+    Boolean(snapshot.failure) ||
+    snapshot.id.startsWith("fallback-") ||
+    snapshot.id.startsWith("mock-") ||
+    snapshot.model === "deterministic-template"
+  );
 }
 
 // -------------------------------------------------------------------------
@@ -213,6 +291,12 @@ export function FroglingsWorkspace() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [live, dispatch] = useReducer(liveReducer, null);
   const [, setDebate] = useState<DebateRecord | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [controlPanelOpen, setControlPanelOpen] = useState(false);
+  const [modelOptions, setModelOptions] = useState<ModelOptionsResponse | null>(null);
+  const [modelSelections, setModelSelections] = useState<ModelSelections | null>(null);
+  const [modelOptionsError, setModelOptionsError] = useState<string | null>(null);
+  const [userPreferences, setUserPreferences] = useState<UserPreferences>(defaultUserPreferences);
   const eventSourceRef = useRef<EventSource | null>(null);
   const sounds = useFrogSounds();
   const soundControls = useMemo(
@@ -232,6 +316,36 @@ export function FroglingsWorkspace() {
     } catch {
       // localStorage may be unavailable; just skip the overlay.
     }
+  }, []);
+
+  useEffect(() => {
+    setUserPreferences(readStoredUserPreferences());
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadModelOptions() {
+      try {
+        const response = await fetchWithRetry("/api/model-options", { cache: "no-store" });
+        const payload = (await response.json()) as ModelOptionsResponse;
+        if (cancelled) return;
+
+        const sanitized = sanitizeModelSelections(payload, readStoredModelSelections());
+        setModelOptions(payload);
+        setModelSelections(sanitized);
+        setModelOptionsError(null);
+      } catch {
+        if (cancelled) return;
+        setModelOptionsError("Model choices are unavailable right now.");
+      }
+    }
+
+    void loadModelOptions();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const dismissIntro = () => {
@@ -263,13 +377,14 @@ export function FroglingsWorkspace() {
     void sounds.unlock();
 
     try {
-      const response = await fetch("/api/debates", {
+      const response = await fetchWithRetry("/api/debates", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           subject,
           mode: "hybrid_council",
           evidence: "cited",
+          models: modelSelections ?? undefined,
           // The whole point of the funner version: ask the engine for
           // the simpler 1-on-1 shape.
           councilSize: "duo"
@@ -277,7 +392,7 @@ export function FroglingsWorkspace() {
       });
       const payload = (await response.json()) as { debate?: DebateRecord; error?: string };
       if (!response.ok || !payload.debate) {
-        throw new Error(payload.error ?? "The pond is murky today. Try again.");
+        throw new Error(payload.error ?? DEBATE_UNAVAILABLE_MESSAGE);
       }
 
       const seed = payload.debate;
@@ -316,7 +431,7 @@ export function FroglingsWorkspace() {
         es.close();
         eventSourceRef.current = null;
         try {
-          const finalRes = await fetch(`/api/debates/${seed.id}`, { cache: "no-store" });
+          const finalRes = await fetchWithRetry(`/api/debates/${seed.id}`, { cache: "no-store" });
           const finalPayload = (await finalRes.json()) as { debate?: DebateRecord };
           if (finalPayload.debate) {
             setDebate(finalPayload.debate);
@@ -327,14 +442,18 @@ export function FroglingsWorkspace() {
         }
       };
       es.addEventListener("complete", () => void finalize());
-      es.addEventListener("error", () => void finalize());
+      es.addEventListener("error", (streamEvent) => {
+        if (streamEvent instanceof MessageEvent) {
+          void finalize();
+        }
+      });
       es.addEventListener("closed", () => {
         es.close();
         eventSourceRef.current = null;
       });
     } catch (caughtError) {
       setSubmitError(
-        caughtError instanceof Error ? caughtError.message : "The pond is murky today. Try again."
+        caughtError instanceof Error ? caughtError.message : DEBATE_UNAVAILABLE_MESSAGE
       );
     } finally {
       setIsSubmitting(false);
@@ -390,7 +509,7 @@ export function FroglingsWorkspace() {
         />
       ) : (
         <FrogSoundsContext.Provider value={soundControls}>
-          <FroglingsLive live={live} />
+          <FroglingsLive live={live} preferences={userPreferences} />
         </FrogSoundsContext.Provider>
       )}
 
@@ -407,6 +526,13 @@ export function FroglingsWorkspace() {
           className="text-[11px] font-semibold text-pond/55 underline-offset-2 transition hover:text-pond hover:underline"
         >
           Show intro again
+        </button>
+        <button
+          type="button"
+          onClick={() => setFeedbackOpen(true)}
+          className="text-[11px] font-semibold text-pond/55 underline-offset-2 transition hover:text-pond hover:underline"
+        >
+          Send feedback
         </button>
         <p className="text-[10px] text-pond/45">
           Some frog sounds:{" "}
@@ -432,8 +558,343 @@ export function FroglingsWorkspace() {
       </footer>
 
       {showIntro ? <FroglingsIntro onDismiss={dismissIntro} /> : null}
+      <FeedbackModal
+        debateId={live?.debateId}
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+      />
+      <FroglingsControlPanel
+        open={controlPanelOpen}
+        modelOptions={modelOptions}
+        modelOptionsError={modelOptionsError}
+        selections={modelSelections}
+        preferences={userPreferences}
+        onToggle={() => setControlPanelOpen((value) => !value)}
+        onClose={() => setControlPanelOpen(false)}
+        onSelectionsChange={(next) => {
+          setModelSelections(next);
+          storeModelSelections(next);
+        }}
+        onReset={() => {
+          if (!modelOptions) return;
+          setModelSelections(modelOptions.defaults);
+          storeModelSelections(modelOptions.defaults);
+        }}
+        onPreferencesChange={(next) => {
+          setUserPreferences(next);
+          storeUserPreferences(next);
+        }}
+      />
     </main>
   );
+}
+
+function FeedbackModal({
+  debateId,
+  open,
+  onClose
+}: {
+  debateId?: string;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+
+  useEffect(() => {
+    if (!open) return;
+    setStatus("idle");
+  }, [open]);
+
+  if (!open) return null;
+
+  async function submitFeedback() {
+    if (message.trim().length === 0 || status === "submitting") return;
+    setStatus("submitting");
+
+    try {
+      const response = await fetchWithRetry("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          debateId,
+          pagePath: typeof window === "undefined" ? undefined : window.location.pathname
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to save feedback.");
+      }
+
+      setStatus("success");
+      setMessage("");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-pond/35 px-4 backdrop-blur-sm">
+      <section className="w-full max-w-[460px] rounded-2xl border border-mud/20 bg-panel p-5 shadow-lily">
+        {status === "success" ? (
+          <div className="text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-mint/70 text-pond">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+            <h2 className="mt-4 text-lg font-black text-pond">Thank you for your feedback.</h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-5 rounded-xl bg-pond px-5 py-2.5 text-sm font-black text-white transition hover:bg-leafDark"
+            >
+              Close
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-black text-pond">Send feedback</h2>
+                <p className="mt-1 text-sm leading-relaxed text-ink/65">
+                  Tell us what worked, what felt odd, or what the frogs should do better.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close feedback"
+                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/70 text-pond transition hover:bg-white"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              maxLength={2000}
+              className="mt-4 min-h-[140px] w-full resize-y rounded-xl border border-mud/20 bg-white/90 px-3.5 py-3 text-sm leading-relaxed text-ink outline-none transition focus:border-leaf"
+              placeholder="Type your feedback..."
+            />
+
+            {status === "error" ? (
+              <div className="mt-3 rounded-xl border border-berry/40 bg-berry/10 px-3 py-2 text-sm text-berry">
+                Feedback could not be saved right now.
+              </div>
+            ) : null}
+
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-xl bg-white/80 px-4 py-2 text-sm font-bold text-pond transition hover:bg-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void submitFeedback()}
+                disabled={message.trim().length === 0 || status === "submitting"}
+                className="inline-flex items-center gap-2 rounded-xl bg-pond px-4 py-2 text-sm font-black text-white transition hover:bg-leafDark disabled:cursor-not-allowed disabled:bg-mud/35"
+              >
+                {status === "submitting" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Submit
+              </button>
+            </div>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function FroglingsControlPanel({
+  open,
+  modelOptions,
+  modelOptionsError,
+  selections,
+  preferences,
+  onToggle,
+  onClose,
+  onSelectionsChange,
+  onReset,
+  onPreferencesChange
+}: {
+  open: boolean;
+  modelOptions: ModelOptionsResponse | null;
+  modelOptionsError: string | null;
+  selections: ModelSelections | null;
+  preferences: UserPreferences;
+  onToggle: () => void;
+  onClose: () => void;
+  onSelectionsChange: (next: ModelSelections) => void;
+  onReset: () => void;
+  onPreferencesChange: (next: UserPreferences) => void;
+}) {
+  const roles: Array<{ key: ModelRole; label: string }> = [
+    { key: "yes", label: "YES frog" },
+    { key: "no", label: "NO frog" },
+    { key: "judge", label: "Judge frog" }
+  ];
+
+  return (
+    <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
+      {open ? (
+        <section className="w-[min(calc(100vw-2rem),360px)] rounded-2xl border border-pond/15 bg-[#111a16]/95 p-4 text-white shadow-2xl backdrop-blur">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4 text-mint" />
+              <h2 className="text-sm font-black">Debate controls</h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close controls"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80 transition hover:bg-white/20"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.06] p-3">
+            <div className="text-[11px] font-black uppercase tracking-wide text-mint">Features</div>
+            <label className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-white/[0.05] px-3 py-2">
+              <span>
+                <span className="block text-xs font-bold text-white/85">Opening splash</span>
+                <span className="mt-0.5 block text-[11px] leading-snug text-white/55">
+                  Show the animated 3...2...1 screen before each debate.
+                </span>
+              </span>
+              <input
+                type="checkbox"
+                checked={preferences.openingSplash}
+                onChange={(event) => {
+                  onPreferencesChange({ ...preferences, openingSplash: event.target.checked });
+                }}
+                className="h-5 w-5 accent-mint"
+              />
+            </label>
+          </div>
+
+          <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.06] p-3">
+            <div className="text-[11px] font-black uppercase tracking-wide text-mint">Model choices</div>
+            <p className="mt-1 text-xs leading-relaxed text-white/65">
+              Pick which curated OpenRouter model speaks for each frog.
+            </p>
+
+            {modelOptionsError ? (
+              <div className="mt-3 rounded-lg border border-berry/50 bg-berry/20 px-3 py-2 text-xs text-white">
+                {modelOptionsError}
+              </div>
+            ) : null}
+
+            {modelOptions && selections ? (
+              <div className="mt-3 space-y-3">
+                {roles.map((role) => (
+                  <label key={role.key} className="block">
+                    <span className="text-xs font-bold text-white/75">{role.label}</span>
+                    <select
+                      value={selections[role.key]}
+                      onChange={(event) => {
+                        onSelectionsChange({ ...selections, [role.key]: event.target.value });
+                      }}
+                      className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-[#1c2a23] px-3 text-xs font-semibold text-white outline-none transition focus:border-mint"
+                    >
+                      {modelOptions.options.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={onReset}
+                  className="w-full rounded-lg bg-white/10 px-3 py-2 text-xs font-black text-white/80 transition hover:bg-white/15"
+                >
+                  Reset to defaults
+                </button>
+              </div>
+            ) : (
+              <div className="mt-3 flex items-center gap-2 text-xs text-white/70">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Loading model choices
+              </div>
+            )}
+          </div>
+        </section>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-label="Open Debatefrog controls"
+        aria-expanded={open}
+        className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-[#111a16] text-mint shadow-2xl transition hover:scale-105 hover:bg-[#17251d]"
+      >
+        <Settings className="h-5 w-5" />
+      </button>
+    </div>
+  );
+}
+
+function readStoredModelSelections(): Partial<ModelSelections> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(MODEL_SETTINGS_KEY);
+    return raw ? (JSON.parse(raw) as Partial<ModelSelections>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function storeModelSelections(selections: ModelSelections) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(MODEL_SETTINGS_KEY, JSON.stringify(selections));
+  } catch {
+    // ignore storage failures
+  }
+}
+
+function sanitizeModelSelections(
+  modelOptions: ModelOptionsResponse,
+  stored: Partial<ModelSelections>
+): ModelSelections {
+  const ids = new Set(modelOptions.options.map((option) => option.id));
+  return {
+    yes: stored.yes && ids.has(stored.yes) ? stored.yes : modelOptions.defaults.yes,
+    no: stored.no && ids.has(stored.no) ? stored.no : modelOptions.defaults.no,
+    judge: stored.judge && ids.has(stored.judge) ? stored.judge : modelOptions.defaults.judge
+  };
+}
+
+function readStoredUserPreferences(): UserPreferences {
+  if (typeof window === "undefined") return defaultUserPreferences;
+  try {
+    const raw = window.localStorage.getItem(USER_PREFERENCES_KEY);
+    const parsed = raw ? (JSON.parse(raw) as Partial<UserPreferences>) : {};
+    return {
+      openingSplash:
+        typeof parsed.openingSplash === "boolean"
+          ? parsed.openingSplash
+          : defaultUserPreferences.openingSplash
+    };
+  } catch {
+    return defaultUserPreferences;
+  }
+}
+
+function storeUserPreferences(preferences: UserPreferences) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(USER_PREFERENCES_KEY, JSON.stringify(preferences));
+  } catch {
+    // ignore storage failures
+  }
 }
 
 // -------------------------------------------------------------------------
@@ -460,10 +921,12 @@ function FroglingsHero({
     <section className="mt-6 grid gap-8 lg:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
       <div className="flex flex-col justify-center">
         <h1
-          className="font-black leading-[0.95] text-pond"
+          className="font-black leading-[1.12] text-pond"
           style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)" }}
         >
-          Two frogs.
+          Two sides.
+          <br />
+          One judge.
           <br />
           One big question.
         </h1>
@@ -553,23 +1016,69 @@ function FroglingsHero({
 // Live view — kid-friendly stage banner, named frogs, round bubbles, verdict
 // -------------------------------------------------------------------------
 
-function FroglingsLive({ live }: { live: FroglingsLiveState }) {
+function FroglingsLive({
+  live,
+  preferences
+}: {
+  live: FroglingsLiveState;
+  preferences: UserPreferences;
+}) {
   const staged = useStagedFroglingsTurns(live);
+  const showStartSequence = useStartSequenceVisibility(live, staged, preferences.openingSplash);
 
   return (
     <div className="mt-6 space-y-5">
-      <QuestionBanner live={live} staged={staged} />
+      <QuestionBanner live={live} staged={staged} showStartSequence={showStartSequence} />
       {live.status === "failed" ? (
         <div className="rounded-xl border border-berry/40 bg-berry/10 px-4 py-3 text-sm text-berry">
-          {live.errorMessage ?? "The debate hopped off the lily pad."}
+          {live.errorMessage ?? DEBATE_UNAVAILABLE_MESSAGE}
         </div>
       ) : null}
-      {live.teams ? <FrogIntros teams={live.teams} /> : null}
-      <CurrentRoundCallout live={live} visibleTurns={staged.visibleTurns} />
-      <Rounds live={live} visibleTurns={staged.visibleTurns} onTurnComplete={staged.showNextTurn} />
-      <Verdict live={live} readyForVerdict={staged.readyForVerdict} />
+      {(live.backupReasons ?? []).length > 0 ? <BackupAnswersNotice /> : null}
+      {showStartSequence ? <DebateStartSequence live={live} /> : null}
+      {live.teams && !showStartSequence ? <FrogIntros teams={live.teams} /> : null}
+      {!showStartSequence ? (
+        <>
+          <CurrentRoundCallout
+            live={live}
+            readyForVerdict={staged.readyForVerdict}
+            visibleTurns={staged.visibleTurns}
+          />
+          <Rounds live={live} visibleTurns={staged.visibleTurns} onTurnComplete={staged.showNextTurn} />
+          <Verdict live={live} readyForVerdict={staged.readyForVerdict} />
+        </>
+      ) : null}
     </div>
   );
+}
+
+function useStartSequenceVisibility(
+  live: FroglingsLiveState,
+  staged: ReturnType<typeof useStagedFroglingsTurns>,
+  enabled: boolean
+) {
+  const [minimumSequenceDone, setMinimumSequenceDone] = useState(false);
+
+  useEffect(() => {
+    setMinimumSequenceDone(false);
+    const timer = window.setTimeout(() => {
+      setMinimumSequenceDone(true);
+    }, START_SEQUENCE_MIN_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [live.debateId]);
+
+  if (!enabled || live.status === "failed" || live.status === "partial") {
+    return false;
+  }
+
+  if (!minimumSequenceDone) return true;
+
+  if (live.done || live.status === "complete" || live.status === "judging") {
+    return false;
+  }
+
+  return !staged.hasTurns;
 }
 
 function useStagedFroglingsTurns(live: FroglingsLiveState) {
@@ -612,15 +1121,50 @@ function useStagedFroglingsTurns(live: FroglingsLiveState) {
   };
 }
 
+async function fetchWithRetry(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= CLIENT_API_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(input, init);
+      if (!isRetriableClientResponse(response) || attempt >= CLIENT_API_MAX_ATTEMPTS) {
+        return response;
+      }
+      lastError = new Error(`Request failed with ${response.status}.`);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= CLIENT_API_MAX_ATTEMPTS) {
+        break;
+      }
+    }
+
+    await delay(CLIENT_API_RETRY_BASE_DELAY_MS * attempt);
+  }
+
+  throw lastError instanceof Error ? lastError : new Error(DEBATE_UNAVAILABLE_MESSAGE);
+}
+
+function isRetriableClientResponse(response: Response): boolean {
+  return response.status === 408 || response.status === 409 || response.status === 429 || response.status >= 500;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 function QuestionBanner({
   live,
-  staged
+  staged,
+  showStartSequence
 }: {
   live: FroglingsLiveState;
   staged: ReturnType<typeof useStagedFroglingsTurns>;
+  showStartSequence: boolean;
 }) {
   const isActuallyDone = (live.status === "complete" || live.done) && staged.readyForVerdict;
-  const stageCopy = froglingsStageCopy(live, staged);
+  const stageCopy = showStartSequence
+    ? froglingsStartSequenceStatusCopy(live)
+    : froglingsStageCopy(live, staged);
 
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
@@ -644,13 +1188,168 @@ function froglingsStageCopy(
   live: FroglingsLiveState,
   staged: ReturnType<typeof useStagedFroglingsTurns>
 ) {
-  if (live.status === "debating") {
-    if (!staged.hasTurns) return "the frogs are getting their arguments ready";
+  if (staged.hasTurns && !staged.readyForVerdict) {
     if (staged.isReplayingTurns) return "the frogs are taking turns";
     if (staged.isFinishingLastTurn) return "the last frog is finishing up";
   }
 
+  if (live.status === "debating" && !staged.hasTurns) {
+    return "the frogs are getting their arguments ready";
+  }
+
+  if (live.status === "complete" && (live.backupReasons ?? []).length > 0) {
+    return "finished with backup answers";
+  }
+
   return friendlyStage[live.status];
+}
+
+function BackupAnswersNotice() {
+  return (
+    <section className="flex items-start gap-3 rounded-2xl border border-mud/20 bg-cream/80 p-4 text-sm text-mud shadow-sm">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-berry" aria-hidden="true" />
+      <div>
+        <div className="font-black text-pond">Backup answers are showing.</div>
+        <p className="mt-1 leading-relaxed text-ink/70">
+          The live model or search setup did not answer in this dev run, so Debatefrog used local
+          backup notes. The debate can still play through, but these answers are less specific.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function froglingsStartSequenceStatusCopy(live: FroglingsLiveState) {
+  if (live.status === "researching" || live.teams) {
+    return "the frogs are taking their places";
+  }
+
+  if (live.status === "debating" || live.turns.length > 0 || live.done) {
+    return "opening croak in 3... 2... 1...";
+  }
+
+  return "the lily pad stage is lighting up";
+}
+
+const startSequenceSteps = [
+  "Light the lily pad",
+  "Seat the frogs",
+  "Open the debate"
+] as const;
+
+function DebateStartSequence({ live }: { live: FroglingsLiveState }) {
+  const sounds = useContext(FrogSoundsContext);
+  const hasPlayedCueRef = useRef(false);
+  const sequenceRef = useRef<HTMLElement>(null);
+  const activeStep = startSequenceStepIndex(live);
+  const copy = startSequenceCopy(live);
+
+  useEffect(() => {
+    scrollActiveFrogIntoView(sequenceRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (hasPlayedCueRef.current || !sounds.ready) return;
+    hasPlayedCueRef.current = true;
+
+    sounds.play("pro", { random: true });
+    const timers = [
+      window.setTimeout(() => sounds.stop("pro"), 280),
+      window.setTimeout(() => sounds.play("con", { random: true }), 420),
+      window.setTimeout(() => sounds.stop("con"), 720),
+      window.setTimeout(() => sounds.play("judge", { random: true }), 920),
+      window.setTimeout(() => sounds.stop("judge"), 1260)
+    ];
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      sounds.stop("pro");
+      sounds.stop("con");
+      sounds.stop("judge");
+    };
+  }, [sounds]);
+
+  return (
+    <section
+      ref={sequenceRef}
+      className="start-sequence hop-in overflow-hidden rounded-2xl border border-pond/15 bg-panel/95 p-5 shadow-lily"
+      aria-live="polite"
+    >
+      <div className="grid gap-5 md:grid-cols-[minmax(260px,0.9fr)_minmax(0,1fr)] md:items-center">
+        <div className="start-stage" aria-hidden="true">
+          <div className="start-stage-light" />
+          <div className="start-water-line start-water-line-one" />
+          <div className="start-water-line start-water-line-two" />
+          <div className="start-water-line start-water-line-three" />
+          <div className="start-lily-pad">
+            <span className="start-lily-mark start-lily-mark-left" />
+            <span className="start-lily-mark start-lily-mark-right" />
+          </div>
+          <div className="start-countdown">
+            <span>3</span>
+            <span>2</span>
+            <span>1</span>
+          </div>
+          <div className="start-frog start-frog-pro">
+            <FunFrog mood="pro" size={64} />
+          </div>
+          <div className="start-frog start-frog-con">
+            <FunFrog mood="con" size={64} />
+          </div>
+          <div className="start-frog start-frog-judge">
+            <FunFrog mood="judge" size={58} bob={false} />
+          </div>
+        </div>
+
+        <div className="min-w-0">
+          <div className="inline-flex items-center gap-2 rounded-full bg-mint/70 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-pond">
+            <span className="h-2 w-2 rounded-full bg-leaf" />
+            Debate starting
+          </div>
+          <h2 className="mt-3 text-2xl font-black leading-tight text-pond">{copy.title}</h2>
+          <p className="mt-2 max-w-[520px] text-sm leading-relaxed text-ink/75">{copy.body}</p>
+          <ol className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="Start sequence progress">
+            {startSequenceSteps.map((step, index) => (
+              <li
+                key={step}
+                className={`start-sequence-step ${index <= activeStep ? "is-active" : ""}`}
+              >
+                <span className="start-sequence-step-dot" aria-hidden="true" />
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function startSequenceStepIndex(live: FroglingsLiveState) {
+  if (live.status === "debating" || live.turns.length > 0 || live.done) return 2;
+  if (live.status === "researching" || live.teams) return 1;
+  return 0;
+}
+
+function startSequenceCopy(live: FroglingsLiveState) {
+  if (live.status === "debating" || live.turns.length > 0 || live.done) {
+    return {
+      title: "Opening croak in 3... 2... 1...",
+      body: "The frogs have their notes and the judge is watching. The first round is about to hop in."
+    };
+  }
+
+  if (live.status === "researching") {
+    return {
+      title: "The frogs are collecting facts.",
+      body: "YES frog and NO frog are taking their places while the judge checks the question."
+    };
+  }
+
+  return {
+    title: "The lily pad stage is lighting up.",
+    body: "The debate is warming up, the question is getting framed, and the frogs are almost ready."
+  };
 }
 
 function FrogIntros({ teams }: { teams: DebateTeam }) {
@@ -711,9 +1410,11 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
  */
 function CurrentRoundCallout({
   live,
+  readyForVerdict,
   visibleTurns
 }: {
   live: FroglingsLiveState;
+  readyForVerdict: boolean;
   visibleTurns: RoundTurn[];
 }) {
   // Treat only the four kid-facing debate rounds as "now playing"
@@ -730,7 +1431,7 @@ function CurrentRoundCallout({
     .find((turn) => trackedRounds.includes(turn.round))?.round;
 
   if (!latestDebateRound) return null;
-  if (live.status === "judging" || live.status === "complete") return null;
+  if (readyForVerdict && (live.status === "judging" || live.status === "complete")) return null;
 
   const meta = friendlyRound[latestDebateRound];
   const index = trackedRounds.indexOf(latestDebateRound);
@@ -1066,10 +1767,10 @@ function simplifyForKids(content: string) {
     .replace(/\byou says\b/g, "you said")
     .replace(/["“]Resolved:\s*([^"”]+?)\.?["”]/gi, (_match, question: string) => `"${froglingsQuestionText(question)}"`)
     .replace(/\bResolved:\s*/gi, "")
-    .replace(/^The YES side case for ["“][^"”]+["”]\s+(?:is grounded in|starts with the claim that)\s*/i, "The YES frog says ")
-    .replace(/^The YES side case .*? starts with the claim that\s*/i, "The YES frog says ")
-    .replace(/^The NO side case challenges the question by (?:asserting|saying|arguing)\s+that\s*/i, "The NO frog says ")
-    .replace(/^The NO side case challenges the question by (?:asserting|saying|arguing):?\s*/i, "The NO frog says ")
+    .replace(/^The (?:YES side|affirmative) case for ["“][^"”]+["”]\s+(?:is grounded in|starts with (?:this claim|the claim that):?)\s*/i, "The YES frog says ")
+    .replace(/^The (?:YES side|affirmative) case .*? starts with (?:this claim|the claim that):?\s*/i, "The YES frog says ")
+    .replace(/^The (?:NO side|negative) case (?:against ["“][^"”]+["”]\s+)?(?:challenges the question by )?(?:asserting|saying|arguing):?\s*(?:that\s*)?/i, "The NO frog says ")
+    .replace(/^The (?:NO side|negative) case challenges the question by (?:asserting|saying|arguing):?\s*/i, "The NO frog says ")
     .replace(/\bpro side's\b/gi, "YES side's")
     .replace(/\bcon side's\b/gi, "NO side's")
     .replace(/\bpro side\b/gi, "YES side")
@@ -1080,6 +1781,8 @@ function simplifyForKids(content: string) {
     .replace(/\bvote con\b/gi, "vote NO")
     .replace(/\baffirmative\b/gi, "YES side")
     .replace(/\bnegative\b/gi, "NO side")
+    .replace(/\bYES side side\b/gi, "YES side")
+    .replace(/\bNO side side\b/gi, "NO side")
     .replace(/\bpro\b/gi, "YES")
     .replace(/\bcon\b/gi, "NO")
     .replace(/\basserts?\b/gi, "says")

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { ZodError } from "zod";
-import { startDebate } from "@polyvise/debate-engine/debate/store";
+import { DEBATE_UNAVAILABLE_MESSAGE, startDebate } from "@polyvise/debate-engine/debate/store";
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     return Response.json(
       {
-        error: error instanceof Error ? error.message : "Unable to start the debate."
+        error: DEBATE_UNAVAILABLE_MESSAGE
       },
       {
         status: 500

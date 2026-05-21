@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { collectEvidence } from "../providers/search";
+import { collectEvidenceWithDiagnostics } from "../providers/search";
 import { createDefaultLlmProvider, type LlmProvider } from "../providers/llm";
 import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "./config";
 import {
@@ -96,7 +96,19 @@ export async function runHybridCouncilDebate(
   framed = frameDebateRequest(request),
   options: DebateExecutionOptions = {}
 ): Promise<DebateRun> {
-  return new DebateWorkflowExecutor(options).run(debateId, request, framed);
+  const config = options.config ?? configForRequest(loadDebateRuntimeConfig(), request);
+  return new DebateWorkflowExecutor({ ...options, config }).run(debateId, request, framed);
+}
+
+function configForRequest(config: DebateRuntimeConfig, request: DebateRequest): DebateRuntimeConfig {
+  return {
+    ...config,
+    quickModel: request.models?.quick?.trim() || config.quickModel,
+    deepModel: request.models?.deep?.trim() || config.deepModel,
+    yesModel: request.models?.yes?.trim() || request.models?.quick?.trim() || config.yesModel,
+    noModel: request.models?.no?.trim() || request.models?.deep?.trim() || config.noModel,
+    judgeModel: request.models?.judge?.trim() || config.judgeModel
+  };
 }
 
 class DebateWorkflowExecutor {
@@ -155,6 +167,7 @@ class DebateWorkflowExecutor {
         "scoutOutput",
         fallback,
         scoutOutputSchema,
+        this.config,
         buildGenerationPrompt({
           task: "Create five debate agents with distinct lenses for this exact resolution.",
           framed,
@@ -186,13 +199,17 @@ class DebateWorkflowExecutor {
     pushEvent(events, debateId, runId, "researching");
     this.emit({ kind: "stage", status: "researching" });
     const sources = await runStep(trace, "evidence", async () => {
-      const collected = await collectEvidence(framed.subject, framed.topicKind, this.config.evidenceProvider);
+      const { sources: collected, diagnostic } = await collectEvidenceWithDiagnostics(
+        framed.subject,
+        framed.topicKind,
+        this.config
+      );
       const liveProvider = collected.find((source) => source.retrievedVia !== "mock")?.retrievedVia;
       return {
         status: liveProvider ? "ok" : "warning",
         message: liveProvider
           ? `Live ${liveProvider} search evidence was attached.`
-          : "Using deterministic development evidence because no live search provider returned sources.",
+          : `Using deterministic development evidence. ${diagnostic ?? "No live search provider returned sources."}`,
         value: collected
       };
     });
@@ -201,25 +218,48 @@ class DebateWorkflowExecutor {
     let claimsPlaceholder: PlaceholderInfo | null = null;
     const claimOutput = await runStep(trace, "opening", async () => {
       const fallback = { claims: buildClaims(framed, sources).map(({ id: _id, ...claim }) => claim) };
-      const { data, snapshot, placeholder } = await generateStructured(
-        this.provider,
-        "claim builder",
-        "claimOutput",
-        fallback,
-        claimOutputSchema,
-        buildGenerationPrompt({
-          task:
-            "Create topic-specific pro and con claims. Use the cited source ids where relevant. Do not copy generic pilot, rollback, or implementation language unless the resolution itself is about implementation.",
-          framed,
-          sources,
-          fallback
-        })
-      );
-      recordSnapshot(snapshot);
-      claimsPlaceholder = placeholder;
+      const generatedClaims = [];
+
+      const claimBatches =
+        councilSize === "duo"
+          ? [
+              { side: "pro" as const, role: "yes frog claim builder" },
+              { side: "con" as const, role: "no frog claim builder" }
+            ]
+          : [{ side: null, role: "claim builder" }];
+
+      for (const batch of claimBatches) {
+        const batchFallback =
+          batch.side === null
+            ? fallback
+            : { claims: fallback.claims.filter((claim) => claim.side === batch.side) };
+        const { data, snapshot, placeholder } = await generateStructured(
+          this.provider,
+          batch.role,
+          "claimOutput",
+          batchFallback,
+          claimOutputSchema,
+          this.config,
+          buildGenerationPrompt({
+            task:
+              batch.side === "pro"
+                ? "Create topic-specific YES-side claims. Use the cited source ids where relevant. Do not write NO-side claims."
+                : batch.side === "con"
+                  ? "Create topic-specific NO-side claims. Use the cited source ids where relevant. Do not write YES-side claims."
+                  : "Create topic-specific pro and con claims. Use the cited source ids where relevant. Do not copy generic pilot, rollback, or implementation language unless the resolution itself is about implementation.",
+            framed,
+            sources,
+            fallback: batchFallback
+          })
+        );
+        recordSnapshot(snapshot);
+        claimsPlaceholder = claimsPlaceholder ?? placeholder;
+        generatedClaims.push(...data.claims);
+      }
+
       return {
-        message: `${data.claims.length} source-linked claims generated.`,
-        value: data.claims.map((claim) => ({ ...claim, id: makeId("claim") }))
+        message: `${generatedClaims.length} source-linked claims generated.`,
+        value: generatedClaims.map((claim) => ({ ...claim, id: makeId("claim") }))
       };
     });
     const claims = claimOutput;
@@ -252,30 +292,54 @@ class DebateWorkflowExecutor {
 
       let roundPlaceholder: PlaceholderInfo | null = null;
       const turnsForRound = await runStep(trace, traceStepForRound(round), async () => {
-        const { data, snapshot, placeholder } = await generateStructured(
-          this.provider,
-          roleForRound(round),
-          "debateTurnOutput",
-          { turns: roundFallback.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) },
-          debateTurnOutputSchema,
-          buildGenerationPrompt({
-            task:
-              councilSize === "duo"
-                ? "Write this kid-friendly debate round for the exact question. Keep the same agent ids, names, sides, round, claim ids, and source ids. Use YES side and NO side language only; do not use pro, con, affirmative, or negative language. Make the content short, topic-specific, and grounded in the claims and evidence."
-                : "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.",
-            framed,
-            sources,
-            claims,
-            teams,
-            round,
-            fallback: { turns: roundFallback.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn) }
-          })
-        );
-        recordSnapshot(snapshot);
-        roundPlaceholder = placeholder;
+        const generatedTurns = [];
+        const turnBatches =
+          councilSize === "duo" && round !== "judge_review"
+            ? [
+                {
+                  role: `yes frog ${roleForRound(round)}`,
+                  turns: roundFallback.filter((turn) => turn.side === "pro")
+                },
+                {
+                  role: `no frog ${roleForRound(round)}`,
+                  turns: roundFallback.filter((turn) => turn.side === "con")
+                }
+              ]
+            : [{ role: roleForRound(round), turns: roundFallback }];
+
+        for (const batch of turnBatches) {
+          if (batch.turns.length === 0) continue;
+          const batchFallback = {
+            turns: batch.turns.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn)
+          };
+          const { data, snapshot, placeholder } = await generateStructured(
+            this.provider,
+            batch.role,
+            "debateTurnOutput",
+            batchFallback,
+            debateTurnOutputSchema,
+            this.config,
+            buildGenerationPrompt({
+              task:
+                councilSize === "duo"
+                  ? "Write this kid-friendly debate turn for the exact question. Keep the same agent id, name, side, round, claim ids, and source ids. Use YES side and NO side language only; do not use pro, con, affirmative, or negative language. Make the content short, topic-specific, and grounded in the claims and evidence."
+                  : "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content substantive, topic-specific, and grounded in the claims and evidence.",
+              framed,
+              sources,
+              claims,
+              teams,
+              round,
+              fallback: batchFallback
+            })
+          );
+          recordSnapshot(snapshot);
+          roundPlaceholder = roundPlaceholder ?? placeholder;
+          generatedTurns.push(...data.turns);
+        }
+
         return {
-          message: `${data.turns.length} turns generated for ${round.replace("_", " ")}.`,
-          value: data.turns.map((turn) => ({
+          message: `${generatedTurns.length} turns generated for ${round.replace("_", " ")}.`,
+          value: generatedTurns.map((turn) => ({
             ...turn,
             content: polishDebateTurnContent(turn.content),
             id: makeId("turn"),
@@ -304,9 +368,10 @@ class DebateWorkflowExecutor {
         "judgeScorecardOutput",
         fallback,
         judgeScorecardOutputSchema,
+        this.config,
         buildGenerationPrompt({
           task:
-            "Score the actual debate. Notes must mention the actual resolution tradeoffs, not generic pilot/rollback language unless directly relevant.",
+            "Score the actual debate. NO is a fully valid winning answer. Do not reward YES by default. Choose lean_yes, conditional_yes, conditional_no, or lean_no whenever one side is even modestly stronger; use mixed only for a genuine near tie or unusable evidence. Notes must mention the actual resolution tradeoffs, not generic pilot/rollback language unless directly relevant.",
           framed,
           sources,
           claims,
@@ -336,9 +401,10 @@ class DebateWorkflowExecutor {
         "finalSummaryOutput",
         fallback,
         finalSummaryOutputSchema,
+        this.config,
         buildGenerationPrompt({
           task:
-            "Write the final verdict for this exact resolution. The headline, recommendation, uncertainties, and mind-changers must be specific to the subject and evidence.",
+            "Write the final verdict for this exact resolution. Be willing to say NO when the NO side made the stronger case. Do not soften a NO result into uncertainty unless the scorecard is mixed. The headline, recommendation, uncertainties, and mind-changers must be specific to the subject and evidence.",
           framed,
           sources,
           claims,
@@ -439,6 +505,7 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
   schemaName: string,
   fallback: z.infer<TSchema>,
   schema: TSchema,
+  config: DebateRuntimeConfig,
   prompt?: string
 ): Promise<{
   data: z.infer<TSchema>;
@@ -464,6 +531,10 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
 
     if (!parsed.success) {
       const reason = `Structured output validation failed: ${parsed.error.message}`;
+      if (!config.allowDeterministicFallbacks) {
+        throw new Error(reason);
+      }
+
       return {
         data: fallbackParse.data,
         snapshot: {
@@ -481,6 +552,10 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
     };
   } catch (error) {
     const reason = error instanceof Error ? error.message : "Structured generation failed.";
+    if (!config.allowDeterministicFallbacks) {
+      throw new Error(reason);
+    }
+
     return {
       data: fallbackParse.data,
       snapshot: {
@@ -643,13 +718,13 @@ function buildStanceScouts(framed: FramedDebate, config: DebateRuntimeConfig): S
   const base = [
     {
       name: "Strategic Optimist",
-      model: config.quickModel,
+      model: config.yesModel,
       lens: "upside, option value, and second-order gains",
       side: "pro" as const
     },
     {
       name: "Risk Skeptic",
-      model: config.deepModel,
+      model: config.noModel,
       lens: "failure modes, hidden costs, and reversibility",
       side: "con" as const
     },
@@ -661,13 +736,13 @@ function buildStanceScouts(framed: FramedDebate, config: DebateRuntimeConfig): S
     },
     {
       name: "Implementation Pragmatist",
-      model: config.quickModel,
+      model: config.yesModel,
       lens: "execution design, sequencing, and measurable checkpoints",
       side: "pro" as const
     },
     {
       name: "Equity Auditor",
-      model: config.deepModel,
+      model: config.noModel,
       lens: "distributional impact, incentives, and affected stakeholders",
       side: "con" as const
     }
@@ -689,12 +764,12 @@ function buildStanceScouts(framed: FramedDebate, config: DebateRuntimeConfig): S
         ? [
             `The resolution may overstate what the evidence proves about ${framed.subject}.`,
             "Competing definitions, timeframes, or affected audiences may change the answer.",
-            "The strongest negative case should identify what the pro side is leaving out."
+            "The NO side should identify what the YES side is leaving out."
           ]
         : scout.side === "pro"
           ? [
               `The resolution may be defensible if the best evidence supports ${framed.subject}.`,
-              "The affirmative case should define the comparison standard and defend it consistently.",
+              "The YES side should define the comparison standard and defend it consistently.",
               "The alternative position may ignore important second-order or indirect effects."
             ]
           : [
@@ -772,47 +847,48 @@ function buildClaims(framed: FramedDebate, sources: EvidenceSource[]): Claim[] {
   const pick = (index: number) => [sourceIds[index % sourceIds.length]];
   const subject = framed.subject.replace(/[.?!]+$/, "");
   const sourceTitle = (index: number) => sources[index % Math.max(sources.length, 1)]?.title ?? "the cited evidence";
+  const civicAgeQuestion = /\b(kids|children|minors)\b/i.test(subject) && /\b(vote|voting|election)\b/i.test(subject);
 
   return [
     {
       id: makeId("claim"),
       side: "pro",
-      text: `The affirmative case for "${subject}" is strongest when the key standard is defined clearly and supported by multiple kinds of evidence.`,
-      warrant: `A source such as "${sourceTitle(0)}" can help establish the scope, mechanisms, or real-world reach behind the pro position.`,
+      text: `The YES frog can win if it clearly explains what would make "${subject}" a good idea and backs that up with more than one kind of evidence.`,
+      warrant: `A source such as "${sourceTitle(0)}" can help show the scope, mechanisms, or real-world reach behind the YES position.`,
       evidenceSourceIds: pick(0),
-      confidence: 0.72
+      confidence: civicAgeQuestion ? 0.58 : 0.72
     },
     {
       id: makeId("claim"),
       side: "pro",
-      text: "The pro side can win if it shows breadth of impact across the most relevant dimensions of the question.",
-      warrant: "A strong affirmative case should count both direct effects and important downstream consequences.",
+      text: "The YES frog can win if the benefits reach enough students and matter enough to justify the change.",
+      warrant: "A strong YES case should count both direct effects and important downstream consequences.",
       evidenceSourceIds: pick(1),
-      confidence: 0.68
+      confidence: civicAgeQuestion ? 0.56 : 0.68
     },
     {
       id: makeId("claim"),
       side: "pro",
-      text: "The affirmative should emphasize evidence that the resolution changes the practical or conceptual baseline more than the alternative.",
+      text: "The YES frog should point to evidence that the change would improve the school day more than keeping things as they are.",
       warrant: "Downstream effects can matter as much as immediate or obvious effects when judging a contested resolution.",
       evidenceSourceIds: pick(2),
-      confidence: 0.64
+      confidence: civicAgeQuestion ? 0.54 : 0.64
     },
     {
       id: makeId("claim"),
       side: "con",
-      text: `The negative case against "${subject}" is strongest if the opposing benchmark explains the evidence better.`,
-      warrant: `A source such as "${sourceTitle(3)}" can expose whether the pro side is overstating reach relative to the alternative.`,
+      text: `The NO frog can win if the evidence does not show that "${subject}" would work better than the current approach.`,
+      warrant: `A source such as "${sourceTitle(3)}" can expose whether the YES side is overstating reach relative to the alternative.`,
       evidenceSourceIds: pick(3),
-      confidence: 0.7
+      confidence: civicAgeQuestion ? 0.82 : 0.7
     },
     {
       id: makeId("claim"),
       side: "con",
-      text: "The con side can win by separating surface-level appeal from durable, evidence-backed impact.",
+      text: "The NO frog can win by separating what sounds appealing from what is actually proven to help.",
       warrant: "A position can be rhetorically attractive while a rival explanation or benchmark does more actual work.",
       evidenceSourceIds: pick(4),
-      confidence: 0.66
+      confidence: civicAgeQuestion ? 0.78 : 0.66
     },
     {
       id: makeId("claim"),
@@ -820,7 +896,7 @@ function buildClaims(framed: FramedDebate, sources: EvidenceSource[]): Claim[] {
       text: "The answer may change depending on which dimension of the question receives the most weight.",
       warrant: "A precise verdict should name the dimension being judged rather than collapsing all forms of evidence into one score.",
       evidenceSourceIds: pick(5),
-      confidence: 0.74
+      confidence: civicAgeQuestion ? 0.8 : 0.74
     }
   ];
 }
@@ -950,63 +1026,63 @@ function buildRoundTurns(
       "opening",
       proA,
       "pro",
-      `${proA.name}: The affirmative case for "${framed.resolution}" starts with this claim: ${proLead} The most relevant evidence comes from ${proEvidence}.`,
+      `${proA.name}: I think YES. My main reason is this: ${proLead} One helpful source is ${proEvidence}.`,
       proClaims.slice(0, 2).map((claim) => claim.id)
     ),
     turn(
       "opening",
       conA,
       "con",
-      `${conA.name}: The negative case challenges the resolution by arguing: ${conLead} The con side anchors that challenge in ${conEvidence}.`,
+      `${conA.name}: I think NO. My main reason is this: ${conLead} One helpful source is ${conEvidence}.`,
       conClaims.slice(0, 2).map((claim) => claim.id)
     ),
     turn(
       "cross_examination",
       proB,
       "pro",
-      `${proB.name}: The con side needs to explain why "${conLead}" outweighs the affirmative evidence for "${proSecond}".`,
+      `${proB.name}: The NO frog needs to explain why that concern matters more than this YES reason: ${proSecond}.`,
       claimIdsAt(proClaims, 1).concat(claimIdsAt(conClaims, 1))
     ),
     turn(
       "cross_examination",
       conB,
       "con",
-      `${conB.name}: The pro side needs to define its standard clearly; otherwise "${proLead}" may not be enough to prove the resolution.`,
+      `${conB.name}: The YES frog needs to say exactly what would prove the point. Otherwise this reason may not be enough: ${proLead}.`,
       claimIdsAt(conClaims, 2).concat(claimIdsAt(proClaims, 0))
     ),
     turn(
       "rebuttal",
       proA,
       "pro",
-      `${proA.name}: The negative side raises a fair comparison problem, but the pro case still stands if breadth, depth, and downstream effects are weighted together.`,
+      `${proA.name}: The NO frog raises a fair worry, but the YES case can still win if the benefits are broad, deep, and useful later.`,
       proClaims.map((claim) => claim.id)
     ),
     turn(
       "rebuttal",
       conA,
       "con",
-      `${conA.name}: The affirmative case depends heavily on how the key standard is counted. If the rival benchmark explains more of the evidence, the resolution remains unproven.`,
+      `${conA.name}: The YES case depends on how we count the evidence. If the NO standard explains more, the question is not proven.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
       "closing",
       proB,
       "pro",
-      `${proB.name}: Vote pro if the evidence shows the affirmative side explains more of the relevant facts, consequences, and downstream effects.`,
+      `${proB.name}: Vote YES if the evidence shows the YES side explains more of the important facts and consequences.`,
       proClaims.map((claim) => claim.id)
     ),
     turn(
       "closing",
       conB,
       "con",
-      `${conB.name}: Vote con if the stronger case belongs to the opposing benchmark once the evidence is measured by consistent criteria.`,
+      `${conB.name}: Vote NO if the NO side explains the evidence better when both sides are judged the same way.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
       "judge_review",
       teams.judge,
       "neutral",
-      `${teams.judge.name}: The verdict turns on the definition of the key standard. The pro side must prove breadth and downstream reach; the con side must show the rival benchmark remains deeper or more foundational.`,
+      `${teams.judge.name}: The verdict depends on which standard matters most. YES needs to prove broad benefits; NO needs to show the other benchmark explains more.`,
       claims.map((claim) => claim.id)
     )
   ];
@@ -1031,10 +1107,20 @@ function buildScorecard(claims: Claim[], framed: FramedDebate): Scorecard {
   const proBase = Math.round((proConfidence * 10 + topicAdjustment) * 10) / 10;
   const conBase = Math.round(conConfidence * 10 * 10) / 10;
   const spread = proBase - conBase;
+  const recommendation =
+    spread > 0.75
+      ? "lean_yes"
+      : spread > 0.15
+        ? "conditional_yes"
+        : spread < -0.75
+          ? "lean_no"
+          : spread < -0.15
+            ? "conditional_no"
+            : "mixed";
 
   return {
-    recommendation: spread > 0.9 ? "lean_yes" : spread < -0.9 ? "lean_no" : "conditional_yes",
-    confidence: Math.min(0.82, Math.max(0.52, 0.62 + Math.abs(spread) / 20)),
+    recommendation,
+    confidence: Math.min(0.86, Math.max(0.54, 0.64 + Math.abs(spread) / 18)),
     categories: [
       {
         name: "evidence",

@@ -89,14 +89,37 @@ export class OpenRouterLlmProvider implements LlmProvider {
     }
 
     try {
-      return await this.completeStructured<T>(request, model, started, Boolean(request.jsonSchema));
+      return await this.completeStructuredWithRetry<T>(request, model, started, Boolean(request.jsonSchema));
     } catch (error) {
       if (!request.jsonSchema) {
         throw error;
       }
 
-      return this.completeStructured<T>(request, model, started, false);
+      return this.completeStructuredWithRetry<T>(request, model, started, false);
     }
+  }
+
+  private async completeStructuredWithRetry<T>(
+    request: LlmRequest,
+    model: string,
+    started: number,
+    useJsonSchema: boolean
+  ): Promise<{ data: T; snapshot: ModelSnapshot }> {
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= this.config.llmMaxAttempts; attempt += 1) {
+      try {
+        return await this.completeStructured<T>(request, model, started, useJsonSchema);
+      } catch (error) {
+        lastError = error;
+        if (attempt >= this.config.llmMaxAttempts || !isRetriableOpenRouterError(error)) {
+          break;
+        }
+        await delay(this.config.apiRetryBaseDelayMs * attempt);
+      }
+    }
+
+    throw lastError;
   }
 
   private async completeStructured<T>(
@@ -153,7 +176,10 @@ export class OpenRouterLlmProvider implements LlmProvider {
       };
 
       if (!response.ok) {
-        throw new Error(payload.error?.message ?? `OpenRouter request failed with ${response.status}.`);
+        throw new OpenRouterRequestError(
+          payload.error?.message ?? `OpenRouter request failed with ${response.status}.`,
+          response.status
+        );
       }
 
       const content = payload.choices?.[0]?.message?.content;
@@ -182,6 +208,12 @@ export class OpenRouterLlmProvider implements LlmProvider {
 
   modelForRole(role: string): string {
     const normalized = role.toLowerCase();
+    if (normalized.includes("yes frog")) {
+      return this.config.yesModel;
+    }
+    if (normalized.includes("no frog")) {
+      return this.config.noModel;
+    }
     if (normalized.includes("judge") || normalized.includes("summary") || normalized.includes("scorecard")) {
       return this.config.judgeModel;
     }
@@ -190,4 +222,25 @@ export class OpenRouterLlmProvider implements LlmProvider {
     }
     return this.config.quickModel;
   }
+}
+
+class OpenRouterRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+  }
+}
+
+function isRetriableOpenRouterError(error: unknown): boolean {
+  if (error instanceof OpenRouterRequestError) {
+    return error.status === 408 || error.status === 409 || error.status === 429 || error.status >= 500;
+  }
+
+  return error instanceof TypeError || (error instanceof Error && error.name === "AbortError");
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

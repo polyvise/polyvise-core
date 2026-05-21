@@ -9,6 +9,8 @@ const modelSlotSchema = z
 
 export const debateModelSelectionSchema = z
   .object({
+    yes: modelSlotSchema,
+    no: modelSlotSchema,
     quick: modelSlotSchema,
     deep: modelSlotSchema,
     judge: modelSlotSchema
@@ -33,6 +35,12 @@ export const debateRequestSchema = z.object({
 
 export const followupRequestSchema = z.object({
   question: z.string().trim().min(4).max(700)
+});
+
+export const feedbackRequestSchema = z.object({
+  message: z.string().trim().min(1, "Feedback cannot be empty.").max(2000, "Keep feedback under 2000 characters."),
+  debateId: z.string().trim().max(80).optional(),
+  pagePath: z.string().trim().max(500).optional()
 });
 
 const perspectiveSideSchema = z.enum(["pro", "con", "neutral"]);

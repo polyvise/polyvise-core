@@ -5,24 +5,43 @@ export type EvidenceProviderName = "brave" | "mock" | "tavily";
 export interface DebateRuntimeConfig {
   quickModel: string;
   deepModel: string;
+  yesModel: string;
+  noModel: string;
   judgeModel: string;
   maxRounds: number;
   llmTimeoutMs: number;
   llmMaxTokens: number;
+  llmMaxAttempts: number;
+  apiRetryBaseDelayMs: number;
   evidenceProvider: EvidenceProviderName;
   enableMockLlm: boolean;
+  allowDeterministicFallbacks: boolean;
+  modelOptions: string[];
 }
 
 export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): DebateRuntimeConfig {
+  const isProduction = env.NODE_ENV === "production";
+
   return {
     quickModel: env.POLYVISE_QUICK_MODEL || "gpt-4.1",
     deepModel: env.POLYVISE_DEEP_MODEL || "claude-3.7-sonnet",
+    yesModel: env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "gpt-4.1",
+    noModel: env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "claude-3.7-sonnet",
     judgeModel: env.POLYVISE_JUDGE_MODEL || "gemini-2.5-pro",
     maxRounds: coercePositiveInteger(env.POLYVISE_MAX_ROUNDS, 3),
     llmTimeoutMs: coercePositiveInteger(env.POLYVISE_LLM_TIMEOUT_MS, 45000),
     llmMaxTokens: coercePositiveInteger(env.POLYVISE_LLM_MAX_TOKENS, 1800),
+    llmMaxAttempts: coercePositiveInteger(env.POLYVISE_LLM_MAX_ATTEMPTS, 3),
+    apiRetryBaseDelayMs: coercePositiveInteger(env.POLYVISE_API_RETRY_BASE_DELAY_MS, 600),
     evidenceProvider: coerceEvidenceProvider(env.POLYVISE_EVIDENCE_PROVIDER),
-    enableMockLlm: env.POLYVISE_ENABLE_MOCK_LLM !== "false"
+    enableMockLlm: !isProduction && coerceBoolean(env.POLYVISE_ENABLE_MOCK_LLM, true),
+    allowDeterministicFallbacks:
+      !isProduction && coerceBoolean(env.POLYVISE_ALLOW_DETERMINISTIC_FALLBACKS, true),
+    modelOptions: coerceModelOptions(env.POLYVISE_OPENROUTER_MODEL_OPTIONS, [
+      env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "gpt-4.1",
+      env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "claude-3.7-sonnet",
+      env.POLYVISE_JUDGE_MODEL || "gemini-2.5-pro"
+    ])
   };
 }
 
@@ -50,6 +69,20 @@ export function modelRosterFromConfig(config: DebateRuntimeConfig): ModelSnapsho
       configured: isConfigured(config.deepModel)
     },
     {
+      id: "polyvise-yes",
+      provider: inferProvider(config.yesModel),
+      model: config.yesModel,
+      role: "YES frog claims and turns",
+      configured: isConfigured(config.yesModel)
+    },
+    {
+      id: "polyvise-no",
+      provider: inferProvider(config.noModel),
+      model: config.noModel,
+      role: "NO frog claims and turns",
+      configured: isConfigured(config.noModel)
+    },
+    {
       id: "polyvise-judge",
       provider: inferProvider(config.judgeModel),
       model: config.judgeModel,
@@ -66,6 +99,51 @@ function coercePositiveInteger(value: string | undefined, fallback: number): num
 
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function coerceBoolean(value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined) {
+    return fallback;
+  }
+
+  return value === "true" || value === "1" || value === "yes";
+}
+
+function coerceModelOptions(value: string | undefined, defaults: string[]): string[] {
+  const raw = value
+    ? value.split(",").map((item) => item.trim()).filter(Boolean)
+    : defaults;
+
+  return Array.from(new Set(raw));
+}
+
+export function modelOptionsFromConfig(config: DebateRuntimeConfig): {
+  defaults: { yes: string; no: string; judge: string };
+  options: Array<{ id: string; label: string }>;
+} {
+  const options = Array.from(
+    new Set([config.yesModel, config.noModel, config.judgeModel, ...config.modelOptions])
+  );
+
+  return {
+    defaults: {
+      yes: config.yesModel,
+      no: config.noModel,
+      judge: config.judgeModel
+    },
+    options: options.map((id) => ({
+      id,
+      label: labelForModel(id)
+    }))
+  };
+}
+
+function labelForModel(id: string): string {
+  return id
+    .split("/")
+    .pop()!
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function inferProvider(model: string): ModelSnapshot["provider"] {

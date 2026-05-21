@@ -73,6 +73,283 @@ select:focus-visible {
   animation: hop-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+/* Debate start sequence — a short timeline before round one appears. */
+.start-sequence {
+  position: relative;
+}
+
+.start-stage {
+  position: relative;
+  min-height: 14rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(13, 79, 69, 0.14);
+  background:
+    linear-gradient(180deg, rgba(213, 237, 242, 0.92) 0%, rgba(223, 245, 220, 0.9) 54%, rgba(13, 79, 69, 0.1) 100%),
+    linear-gradient(120deg, rgba(244, 201, 93, 0.18), rgba(212, 95, 122, 0.1));
+  box-shadow: inset 0 0 0 1px rgba(255, 253, 242, 0.55);
+}
+
+.start-stage-light {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 0 14%, rgba(255, 247, 221, 0.62) 30%, transparent 52%),
+    linear-gradient(245deg, transparent 0 12%, rgba(255, 247, 221, 0.45) 28%, transparent 48%);
+  opacity: 0;
+  transform: translateY(-12%);
+  animation: start-stage-light 2800ms ease-in-out infinite;
+}
+
+.start-water-line {
+  position: absolute;
+  left: 8%;
+  height: 0.25rem;
+  border-radius: 999px;
+  background: rgba(13, 79, 69, 0.16);
+  transform-origin: center;
+  animation: start-water-drift 2600ms ease-in-out infinite;
+}
+
+.start-water-line-one {
+  right: 52%;
+  bottom: 25%;
+}
+
+.start-water-line-two {
+  right: 18%;
+  bottom: 18%;
+  animation-delay: 260ms;
+}
+
+.start-water-line-three {
+  right: 38%;
+  bottom: 10%;
+  animation-delay: 520ms;
+}
+
+.start-lily-pad {
+  position: absolute;
+  left: 50%;
+  bottom: 1.55rem;
+  width: min(13rem, 70%);
+  aspect-ratio: 2.1 / 1;
+  border-radius: 50%;
+  background:
+    linear-gradient(150deg, rgba(223, 245, 220, 0.95) 0%, rgba(68, 161, 95, 0.88) 58%, rgba(33, 139, 86, 0.95) 100%);
+  box-shadow:
+    0 1.25rem 1.8rem rgba(13, 79, 69, 0.18),
+    inset 0 0.2rem 0.5rem rgba(255, 253, 242, 0.48);
+  transform: translateX(-50%) scale(0.82);
+  animation: start-lily-rise 900ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.start-lily-mark {
+  position: absolute;
+  top: 47%;
+  height: 0.18rem;
+  width: 35%;
+  border-radius: 999px;
+  background: rgba(13, 79, 69, 0.22);
+}
+
+.start-lily-mark-left {
+  left: 16%;
+  transform: rotate(-14deg);
+}
+
+.start-lily-mark-right {
+  right: 18%;
+  transform: rotate(16deg);
+}
+
+.start-countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.start-countdown span {
+  grid-area: 1 / 1;
+  color: rgba(13, 79, 69, 0.12);
+  font-size: 5.5rem;
+  font-weight: 900;
+  line-height: 1;
+  opacity: 0;
+  transform: translateY(10px) scale(0.74);
+  animation: start-count 1200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 700ms;
+}
+
+.start-countdown span:nth-child(2) {
+  animation-delay: 2100ms;
+}
+
+.start-countdown span:nth-child(3) {
+  animation-delay: 3300ms;
+}
+
+.start-frog {
+  position: absolute;
+  bottom: 2.8rem;
+  z-index: 2;
+  filter: drop-shadow(0 0.65rem 0.55rem rgba(13, 79, 69, 0.18));
+}
+
+.start-frog svg {
+  display: block;
+}
+
+.start-frog-pro {
+  left: 12%;
+  animation: start-frog-enter-left 1200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.start-frog-con {
+  right: 12%;
+  animation: start-frog-enter-right 1200ms 240ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.start-frog-judge {
+  left: 50%;
+  bottom: 4.1rem;
+  transform: translateX(-50%);
+  animation: start-judge-pop 1200ms 620ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.start-sequence-step {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(95, 74, 56, 0.14);
+  background: rgba(255, 247, 221, 0.44);
+  padding: 0.55rem 0.65rem;
+  color: rgba(24, 35, 32, 0.62);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.15;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.start-sequence-step.is-active {
+  border-color: rgba(68, 161, 95, 0.38);
+  background: rgba(223, 245, 220, 0.72);
+  color: var(--pond);
+}
+
+.start-sequence-step-dot {
+  height: 0.5rem;
+  width: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(95, 74, 56, 0.22);
+}
+
+.start-sequence-step.is-active .start-sequence-step-dot {
+  background: var(--leaf);
+  box-shadow: 0 0 0 0.25rem rgba(68, 161, 95, 0.12);
+}
+
+@keyframes start-stage-light {
+  0%, 100% {
+    opacity: 0.45;
+    transform: translateY(-10%);
+  }
+  45% {
+    opacity: 0.95;
+    transform: translateY(0);
+  }
+}
+
+@keyframes start-water-drift {
+  0%, 100% {
+    opacity: 0.45;
+    transform: translateX(-0.4rem) scaleX(0.9);
+  }
+  50% {
+    opacity: 0.78;
+    transform: translateX(0.4rem) scaleX(1.06);
+  }
+}
+
+@keyframes start-lily-rise {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(1rem) scale(0.74);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(0.82);
+  }
+}
+
+@keyframes start-count {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.74);
+  }
+  22%, 58% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) scale(1.12);
+  }
+}
+
+@keyframes start-frog-enter-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-5rem) translateY(2rem) rotate(-8deg);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(0.4rem) translateY(-0.25rem) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0);
+  }
+}
+
+@keyframes start-frog-enter-right {
+  0% {
+    opacity: 0;
+    transform: translateX(5rem) translateY(2rem) rotate(8deg);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(-0.4rem) translateY(-0.25rem) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0);
+  }
+}
+
+@keyframes start-judge-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-2.4rem) scale(0.72);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0.35rem) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
 /* -----------------------------------------------------------------------
  * FunFrog — idle bob, blink, mouth chatter, and a
  * one-shot hop when a frog "takes the floor".
@@ -119,6 +396,13 @@ select:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .start-stage-light,
+  .start-water-line,
+  .start-lily-pad,
+  .start-countdown span,
+  .start-frog-pro,
+  .start-frog-con,
+  .start-frog-judge,
   .fun-frog-bob,
   .fun-frog-hop,
   .fun-frog-eye,

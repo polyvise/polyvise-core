@@ -178,3 +178,14 @@ export const debateRecords = pgTable("debate_records", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
 });
+
+export const userFeedback = pgTable("user_feedback", {
+  id: varchar("id", { length: 48 }).primaryKey(),
+  app: varchar("app", { length: 64 }).notNull(),
+  message: text("message").notNull(),
+  debateId: varchar("debate_id", { length: 48 }),
+  pagePath: text("page_path"),
+  userAgent: text("user_agent"),
+  metadata: jsonb("metadata").notNull().default({}),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});

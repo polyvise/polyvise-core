@@ -96,6 +96,8 @@ interface FrogSoundsApi {
   play: (side: Side, options?: { random?: boolean }) => void;
   /** Fade and stop the loop for a side. */
   stop: (side: Side) => void;
+  /** Play a short synthesized cue. No-op if muted or not unlocked. */
+  beep: (options: { frequency: number; durationMs: number; delayMs?: number; gain?: number }) => void;
 }
 
 export function useFrogSounds(): FrogSoundsApi {
@@ -327,6 +329,50 @@ export function useFrogSounds(): FrogSoundsApi {
     [muted, stop]
   );
 
+  const beep = useCallback(
+    ({
+      frequency,
+      durationMs,
+      delayMs = 0,
+      gain = 0.16
+    }: {
+      frequency: number;
+      durationMs: number;
+      delayMs?: number;
+      gain?: number;
+    }) => {
+      const ctx = ctxRef.current;
+      const master = masterGainRef.current;
+      if (!ctx || !master) return;
+      if (muted) return;
+
+      const startAt = ctx.currentTime + delayMs / 1000;
+      const endAt = startAt + durationMs / 1000;
+      const osc = ctx.createOscillator();
+      const envelope = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(frequency, startAt);
+      envelope.gain.setValueAtTime(0, startAt);
+      envelope.gain.linearRampToValueAtTime(gain, startAt + 0.018);
+      envelope.gain.setValueAtTime(gain, Math.max(startAt + 0.02, endAt - 0.06));
+      envelope.gain.linearRampToValueAtTime(0, endAt);
+
+      osc.connect(envelope).connect(master);
+      osc.start(startAt);
+      osc.stop(endAt + 0.02);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          envelope.disconnect();
+        } catch {
+          // already disconnected
+        }
+      };
+    },
+    [muted]
+  );
+
   // Clean up on unmount: close the context so we don't leak nodes.
   useEffect(() => {
     return () => {
@@ -344,5 +390,5 @@ export function useFrogSounds(): FrogSoundsApi {
     };
   }, []);
 
-  return { ready, muted, toggleMute, unlock, play, stop };
+  return { ready, muted, toggleMute, unlock, play, stop, beep };
 }

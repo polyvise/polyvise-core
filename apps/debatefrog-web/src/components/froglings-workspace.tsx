@@ -74,7 +74,20 @@ const kidPrompts = [
   "Should homework be banned?"
 ];
 
+type StartCountdownCue = {
+  delayMs: number;
+  frequency: number;
+  durationMs: number;
+  gain?: number;
+};
+
 const START_SEQUENCE_MIN_MS = 5500;
+const START_COUNTDOWN_CUES: StartCountdownCue[] = [
+  { delayMs: 700, frequency: 660, durationMs: 120 },
+  { delayMs: 2100, frequency: 660, durationMs: 120 },
+  { delayMs: 3300, frequency: 660, durationMs: 120 },
+  { delayMs: 4500, frequency: 920, durationMs: 520, gain: 0.13 }
+];
 const DEBATE_UNAVAILABLE_MESSAGE =
   "The frogs couldn't start a debate right now. Please try again in a few minutes.";
 const CLIENT_API_MAX_ATTEMPTS = 3;
@@ -276,9 +289,10 @@ type FrogSoundsCtx = {
   ready: boolean;
   play: (side: "pro" | "con" | "judge", options?: { random?: boolean }) => void;
   stop: (side: "pro" | "con" | "judge") => void;
+  beep: (options: { frequency: number; durationMs: number; delayMs?: number; gain?: number }) => void;
 };
 
-const noopSounds: FrogSoundsCtx = { ready: false, play: () => {}, stop: () => {} };
+const noopSounds: FrogSoundsCtx = { ready: false, play: () => {}, stop: () => {}, beep: () => {} };
 const FrogSoundsContext = createContext<FrogSoundsCtx>(noopSounds);
 
 // -------------------------------------------------------------------------
@@ -300,8 +314,8 @@ export function FroglingsWorkspace() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const sounds = useFrogSounds();
   const soundControls = useMemo(
-    () => ({ ready: sounds.ready, play: sounds.play, stop: sounds.stop }),
-    [sounds.ready, sounds.play, sounds.stop]
+    () => ({ ready: sounds.ready, play: sounds.play, stop: sounds.stop, beep: sounds.beep }),
+    [sounds.ready, sounds.play, sounds.stop, sounds.beep]
   );
   // Show the intro on first session only. We default to false on the
   // server (so the overlay never SSRs and flashes), then flip to true
@@ -1036,7 +1050,7 @@ function FroglingsLive({
       ) : null}
       {(live.backupReasons ?? []).length > 0 ? <BackupAnswersNotice /> : null}
       {showStartSequence ? <DebateStartSequence live={live} /> : null}
-      {live.teams && !showStartSequence ? <FrogIntros teams={live.teams} /> : null}
+      {live.teams && !preferences.openingSplash ? <FrogIntros teams={live.teams} /> : null}
       {!showStartSequence ? (
         <>
           <CurrentRoundCallout
@@ -1252,20 +1266,18 @@ function DebateStartSequence({ live }: { live: FroglingsLiveState }) {
     if (hasPlayedCueRef.current || !sounds.ready) return;
     hasPlayedCueRef.current = true;
 
-    sounds.play("pro", { random: true });
-    const timers = [
-      window.setTimeout(() => sounds.stop("pro"), 280),
-      window.setTimeout(() => sounds.play("con", { random: true }), 420),
-      window.setTimeout(() => sounds.stop("con"), 720),
-      window.setTimeout(() => sounds.play("judge", { random: true }), 920),
-      window.setTimeout(() => sounds.stop("judge"), 1260)
-    ];
+    const timers = START_COUNTDOWN_CUES.map((cue) =>
+      window.setTimeout(() => {
+        sounds.beep({
+          frequency: cue.frequency,
+          durationMs: cue.durationMs,
+          gain: cue.gain
+        });
+      }, cue.delayMs)
+    );
 
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
-      sounds.stop("pro");
-      sounds.stop("con");
-      sounds.stop("judge");
     };
   }, [sounds]);
 

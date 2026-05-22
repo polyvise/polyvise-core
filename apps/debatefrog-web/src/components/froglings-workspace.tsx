@@ -87,6 +87,7 @@ type StartCountdownCue = {
 };
 
 const START_SEQUENCE_MIN_MS = 5500;
+const START_COUNTDOWN_TITLE_DELAY_MS = 650;
 const START_COUNTDOWN_CUES: StartCountdownCue[] = [
   { delayMs: 700, frequency: 660, durationMs: 120 },
   { delayMs: 2100, frequency: 660, durationMs: 120 },
@@ -1284,7 +1285,13 @@ function FroglingsLive({
   preferences: UserPreferences;
 }) {
   const staged = useStagedFroglingsTurns(live);
-  const showStartSequence = useStartSequenceVisibility(live, staged, preferences.openingSplash);
+  const countdownStarted = isStartCountdownStarted(live);
+  const showStartSequence = useStartSequenceVisibility(
+    live,
+    staged,
+    preferences.openingSplash,
+    countdownStarted
+  );
 
   return (
     <div className="mt-6 space-y-5">
@@ -1295,7 +1302,9 @@ function FroglingsLive({
         </div>
       ) : null}
       {(live.backupReasons ?? []).length > 0 ? <BackupAnswersNotice /> : null}
-      {showStartSequence ? <DebateStartSequence live={live} /> : null}
+      {showStartSequence ? (
+        <DebateStartSequence live={live} countdownStarted={countdownStarted} />
+      ) : null}
       {live.teams && !preferences.openingSplash ? <FrogIntros teams={live.teams} /> : null}
       {!showStartSequence ? (
         <>
@@ -1315,30 +1324,40 @@ function FroglingsLive({
 function useStartSequenceVisibility(
   live: FroglingsLiveState,
   staged: ReturnType<typeof useStagedFroglingsTurns>,
-  enabled: boolean
+  enabled: boolean,
+  countdownStarted: boolean
 ) {
-  const [minimumSequenceDone, setMinimumSequenceDone] = useState(false);
+  const [countdownWindowDone, setCountdownWindowDone] = useState(false);
 
   useEffect(() => {
-    setMinimumSequenceDone(false);
+    setCountdownWindowDone(false);
+  }, [live.debateId]);
+
+  useEffect(() => {
+    if (!countdownStarted) return;
+    setCountdownWindowDone(false);
     const timer = window.setTimeout(() => {
-      setMinimumSequenceDone(true);
+      setCountdownWindowDone(true);
     }, START_SEQUENCE_MIN_MS);
 
     return () => window.clearTimeout(timer);
-  }, [live.debateId]);
+  }, [countdownStarted, live.debateId]);
 
   if (!enabled || live.status === "failed" || live.status === "partial") {
     return false;
   }
 
-  if (!minimumSequenceDone) return true;
+  if (!countdownWindowDone) return true;
 
   if (live.done || live.status === "complete" || live.status === "judging") {
     return false;
   }
 
   return !staged.hasTurns;
+}
+
+function isStartCountdownStarted(live: FroglingsLiveState) {
+  return live.status === "debating" || live.turns.length > 0 || live.done;
 }
 
 function useStagedFroglingsTurns(live: FroglingsLiveState) {
@@ -1497,19 +1516,43 @@ const startSequenceSteps = [
   "Open the debate"
 ] as const;
 
-function DebateStartSequence({ live }: { live: FroglingsLiveState }) {
+function DebateStartSequence({
+  live,
+  countdownStarted
+}: {
+  live: FroglingsLiveState;
+  countdownStarted: boolean;
+}) {
   const sounds = useContext(FrogSoundsContext);
   const hasPlayedCueRef = useRef(false);
   const sequenceRef = useRef<HTMLElement>(null);
+  const [countdownTitleActive, setCountdownTitleActive] = useState(false);
   const activeStep = startSequenceStepIndex(live);
-  const copy = startSequenceCopy(live);
+  const copy = startSequenceCopy(live, countdownTitleActive);
 
   useEffect(() => {
     scrollActiveFrogIntoView(sequenceRef.current);
   }, []);
 
   useEffect(() => {
-    if (hasPlayedCueRef.current || !sounds.ready) return;
+    hasPlayedCueRef.current = false;
+  }, [live.debateId]);
+
+  useEffect(() => {
+    if (!countdownStarted) {
+      setCountdownTitleActive(false);
+      return;
+    }
+    setCountdownTitleActive(false);
+    const timer = window.setTimeout(() => {
+      setCountdownTitleActive(true);
+    }, START_COUNTDOWN_TITLE_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [countdownStarted, live.debateId]);
+
+  useEffect(() => {
+    if (!countdownStarted || hasPlayedCueRef.current || !sounds.ready) return;
     hasPlayedCueRef.current = true;
 
     const timers = START_COUNTDOWN_CUES.map((cue) =>
@@ -1525,7 +1568,7 @@ function DebateStartSequence({ live }: { live: FroglingsLiveState }) {
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [sounds]);
+  }, [countdownStarted, sounds]);
 
   return (
     <section
@@ -1544,9 +1587,13 @@ function DebateStartSequence({ live }: { live: FroglingsLiveState }) {
             <span className="start-lily-mark start-lily-mark-right" />
           </div>
           <div className="start-countdown">
-            <span>3</span>
-            <span>2</span>
-            <span>1</span>
+            {countdownStarted ? (
+              <>
+                <span>3</span>
+                <span>2</span>
+                <span>1</span>
+              </>
+            ) : null}
           </div>
           <div className="start-frog start-frog-pro">
             <FunFrog mood="pro" size={64} />
@@ -1589,8 +1636,8 @@ function startSequenceStepIndex(live: FroglingsLiveState) {
   return 0;
 }
 
-function startSequenceCopy(live: FroglingsLiveState) {
-  if (live.status === "debating" || live.turns.length > 0 || live.done) {
+function startSequenceCopy(live: FroglingsLiveState, countdownTitleActive: boolean) {
+  if (countdownTitleActive) {
     return {
       title: "Opening croak in 3... 2... 1...",
       body: "The frogs have their notes and the judge is watching. The first round is about to hop in."

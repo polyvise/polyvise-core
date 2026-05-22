@@ -173,11 +173,12 @@ select:focus-visible {
 
 .start-countdown span {
   grid-area: 1 / 1;
-  color: rgba(13, 79, 69, 0.12);
+  color: rgba(13, 79, 69, 0.24);
   font-size: 5.5rem;
   font-weight: 900;
   line-height: 1;
   opacity: 0;
+  text-shadow: 0 0.12rem 0.4rem rgba(255, 247, 221, 0.72);
   transform: translateY(10px) scale(0.74);
   animation: start-count 1200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   animation-delay: 700ms;

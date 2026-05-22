@@ -336,19 +336,27 @@ function buildApiCallTimings(live: FroglingsLiveState | null): ApiCallTiming[] {
 
   const llmCalls = live.modelSnapshots
     .filter((snapshot) => typeof snapshot.latencyMs === "number" && isRealLlmSnapshot(snapshot))
-    .map((snapshot) => ({
-      id: snapshot.id,
-      label: labelForApiSnapshot(snapshot),
-      detail: snapshot.role,
-      durationMs: snapshot.latencyMs ?? 0,
-      children: snapshot.attempts?.map((attempt) => ({
-        id: `${snapshot.id}-${attempt.mode}-${attempt.attempt}`,
-        label: `attempt ${attempt.attempt}: ${labelForAttemptMode(attempt.mode)}`,
-        detail: attempt.message ?? attempt.status,
-        durationMs: attempt.durationMs,
-        status: attempt.status
-      }))
-    }));
+    .map((snapshot) => {
+      const attempts = snapshot.attempts ?? [];
+      const shouldShowAttempts =
+        attempts.length > 1 || attempts.some((attempt) => attempt.status === "failed");
+
+      return {
+        id: snapshot.id,
+        label: labelForApiSnapshot(snapshot),
+        detail: snapshot.role,
+        durationMs: snapshot.latencyMs ?? 0,
+        children: shouldShowAttempts
+          ? attempts.map((attempt) => ({
+              id: `${snapshot.id}-${attempt.mode}-${attempt.attempt}-${attempt.status}`,
+              label: labelForAttemptMode(attempt.mode),
+              detail: detailForAttempt(attempt),
+              durationMs: attempt.durationMs,
+              status: attempt.status
+            }))
+          : undefined
+      };
+    });
 
   return [...evidenceCalls, ...llmCalls].filter((call, index, calls) => {
     return calls.findIndex((candidate) => candidate.id === call.id) === index;
@@ -370,7 +378,18 @@ function labelForApiSnapshot(snapshot: ModelSnapshot): string {
 }
 
 function labelForAttemptMode(mode: "json_schema" | "json_object"): string {
-  return mode === "json_schema" ? "schema" : "json";
+  return mode === "json_schema" ? "strict schema" : "JSON retry";
+}
+
+function detailForAttempt(attempt: NonNullable<ModelSnapshot["attempts"]>[number]): string {
+  if (attempt.status === "ok") return "completed";
+  return `failed: ${friendlyAttemptError(attempt.message)}`;
+}
+
+function friendlyAttemptError(message: string | undefined): string {
+  if (!message) return "provider error";
+  if (message.toLowerCase() === "provider returned error") return "provider error";
+  return message;
 }
 
 function labelForModelId(id: string): string {
@@ -870,6 +889,7 @@ function FroglingsControlPanel({
   onPreferencesChange: (next: UserPreferences) => void;
 }) {
   const [apiCallsOpen, setApiCallsOpen] = useState(false);
+  const panelRootRef = useRef<HTMLDivElement>(null);
   const roles: Array<{ key: ModelRole; label: string }> = [
     { key: "yes", label: "YES frog" },
     { key: "no", label: "NO frog" },
@@ -879,8 +899,31 @@ function FroglingsControlPanel({
   const devLiveApisAvailable = Boolean(modelOptions?.dev?.liveApiToggleAvailable);
   const devLiveApisReady = Boolean(modelOptions?.dev?.hasOpenRouterKey && modelOptions?.dev?.hasTavilyKey);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (panelRootRef.current?.contains(target)) return;
+      onClose();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose, open]);
+
   return (
-    <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
+    <div ref={panelRootRef} className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
       {open ? (
         <section className="h-[min(calc(100vh-2rem),760px)] w-[min(calc(100vw-2rem),460px)] overflow-y-auto [scrollbar-gutter:stable] rounded-2xl border border-pond/15 bg-[#111a16]/95 p-4 text-white shadow-2xl backdrop-blur">
           <div className="flex items-center justify-between gap-3">

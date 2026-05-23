@@ -378,11 +378,13 @@ function labelForApiSnapshot(snapshot: ModelSnapshot): string {
 }
 
 function labelForAttemptMode(mode: "json_schema" | "json_object"): string {
-  return mode === "json_schema" ? "strict schema" : "JSON retry";
+  return mode === "json_schema" ? "strict schema" : "live JSON retry";
 }
 
 function detailForAttempt(attempt: NonNullable<ModelSnapshot["attempts"]>[number]): string {
-  if (attempt.status === "ok") return "completed";
+  if (attempt.status === "ok") {
+    return attempt.mode === "json_object" ? "completed with live model" : "completed";
+  }
   return `failed: ${friendlyAttemptError(attempt.message)}`;
 }
 
@@ -1484,9 +1486,7 @@ function QuestionBanner({
   showStartSequence: boolean;
 }) {
   const isActuallyDone = (live.status === "complete" || live.done) && staged.readyForVerdict;
-  const stageCopy = showStartSequence
-    ? froglingsStartSequenceStatusCopy(live)
-    : froglingsStageCopy(live, staged);
+  const stageCopy = froglingsStageCopy(live, staged);
 
   return (
     <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
@@ -1494,14 +1494,16 @@ function QuestionBanner({
         Question
       </div>
       <div className="mt-1 text-lg leading-snug text-ink">
-        {froglingsQuestionText(live.resolution ?? live.subject)}
+        {literalQuestionText(live.subject)}
       </div>
-      <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-xs font-bold text-mud">
-        {isActuallyDone ? null : (
-          <Loader2 className="h-3 w-3 animate-spin text-leaf" />
-        )}
-        {stageCopy}
-      </div>
+      {!showStartSequence ? (
+        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-xs font-bold text-mud">
+          {isActuallyDone ? null : (
+            <Loader2 className="h-3 w-3 animate-spin text-leaf" />
+          )}
+          {stageCopy}
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -2152,6 +2154,10 @@ function froglingsQuestionText(input: string) {
     .trim();
   if (/^should\b/i.test(cleaned)) return `${cleaned.replace(/[.!?]+$/, "")}?`;
   return cleaned.replace(/\.$/, "");
+}
+
+function literalQuestionText(input: string) {
+  return input.replace(/\s+/g, " ").trim();
 }
 
 function froglingsFrogName(side: "pro" | "con") {

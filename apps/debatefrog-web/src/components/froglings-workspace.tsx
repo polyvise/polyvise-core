@@ -18,7 +18,7 @@
  */
 
 const INTRO_SEEN_KEY = "froglings:intro-seen";
-const MODEL_SETTINGS_KEY = "froglings:model-settings:v2";
+const MODEL_SETTINGS_KEY = "froglings:model-settings:v3";
 const USER_PREFERENCES_KEY = "froglings:user-preferences";
 const isPreviewDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "preview";
 
@@ -368,9 +368,8 @@ function isRealLlmSnapshot(snapshot: ModelSnapshot): boolean {
 }
 
 function labelForEvidenceProvider(provider: EvidenceSource["retrievedVia"]): string {
-  if (provider === "tavily") return "Tavily";
-  if (provider === "brave") return "Brave";
-  return "Fact";
+  if (provider === "tavily" || provider === "brave") return "Web Search Model";
+  return "Fact Search";
 }
 
 function labelForApiSnapshot(snapshot: ModelSnapshot): string {
@@ -891,7 +890,8 @@ function FroglingsControlPanel({
   onPreferencesChange: (next: UserPreferences) => void;
 }) {
   const [apiCallsOpen, setApiCallsOpen] = useState(false);
-  const panelRootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+  const controlButtonRef = useRef<HTMLButtonElement>(null);
   const roles: Array<{ key: ModelRole; label: string }> = [
     { key: "yes", label: "YES frog" },
     { key: "no", label: "NO frog" },
@@ -907,7 +907,16 @@ function FroglingsControlPanel({
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target;
       if (!(target instanceof Node)) return;
-      if (panelRootRef.current?.contains(target)) return;
+      if (panelRef.current?.contains(target)) return;
+      if (controlButtonRef.current?.contains(target)) return;
+      onClose();
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (panelRef.current?.contains(target)) return;
+      if (controlButtonRef.current?.contains(target)) return;
       onClose();
     };
 
@@ -916,18 +925,32 @@ function FroglingsControlPanel({
     };
 
     document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("click", handleClick);
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("click", handleClick);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose, open]);
 
   return (
-    <div ref={panelRootRef} className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
+    <>
       {open ? (
-        <section className="h-[min(calc(100vh-2rem),760px)] w-[min(calc(100vw-2rem),460px)] overflow-y-auto [scrollbar-gutter:stable] rounded-2xl border border-pond/15 bg-[#111a16]/95 p-4 text-white shadow-2xl backdrop-blur">
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-30 cursor-default bg-transparent"
+          onClick={onClose}
+          onPointerDown={onClose}
+        />
+      ) : null}
+      <div className="pointer-events-none fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3">
+      {open ? (
+        <section
+          ref={panelRef}
+          className="pointer-events-auto h-[min(calc(100vh-2rem),760px)] w-[min(calc(100vw-2rem),460px)] overflow-y-auto [scrollbar-gutter:stable] rounded-2xl border border-pond/15 bg-[#111a16]/95 p-4 text-white shadow-2xl backdrop-blur"
+        >
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4 text-mint" />
@@ -966,11 +989,11 @@ function FroglingsControlPanel({
                 <span>
                   <span className="block text-xs font-bold text-white/85">Use live APIs in dev</span>
                   <span className="mt-0.5 block text-[11px] leading-snug text-white/55">
-                    Run local debates through real OpenRouter and Tavily calls.
+                    Run local debates through real AI Model and Web Search Model calls.
                   </span>
                   {!devLiveApisReady ? (
                     <span className="mt-1 block text-[10px] font-bold text-berry">
-                      Add local OpenRouter and Tavily keys to enable this.
+                      Add local AI Model and Web Search Model keys to enable this.
                     </span>
                   ) : null}
                 </span>
@@ -990,7 +1013,7 @@ function FroglingsControlPanel({
           <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.06] p-3">
             <div className="text-[11px] font-black uppercase tracking-wide text-mint">Model choices</div>
             <p className="mt-1 text-xs leading-relaxed text-white/65">
-              Pick which curated OpenRouter model speaks for each frog.
+              Pick which curated model speaks for each frog.
             </p>
 
             {modelOptionsError ? (
@@ -1095,15 +1118,17 @@ function FroglingsControlPanel({
       ) : null}
 
       <button
+        ref={controlButtonRef}
         type="button"
         onClick={onToggle}
         aria-label="Open Debatefrog controls"
         aria-expanded={open}
-        className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-[#111a16] text-mint shadow-2xl transition hover:scale-105 hover:bg-[#17251d]"
+        className="pointer-events-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-[#111a16] text-mint shadow-2xl transition hover:scale-105 hover:bg-[#17251d]"
       >
         <Settings className="h-5 w-5" />
       </button>
-    </div>
+      </div>
+    </>
   );
 }
 

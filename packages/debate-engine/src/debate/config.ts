@@ -35,9 +35,8 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
   return {
     quickModel: env.POLYVISE_QUICK_MODEL || "google/gemini-2.5-flash",
     deepModel: env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
-    yesModel: env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "google/gemini-2.5-flash",
-    noModel:
-      env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
+    yesModel: env.POLYVISE_YES_MODEL || "google/gemini-2.5-flash",
+    noModel: env.POLYVISE_NO_MODEL || "google/gemini-2.5-flash",
     judgeModel: env.POLYVISE_JUDGE_MODEL || "openai/gpt-4o-mini",
     maxRounds: coercePositiveInteger(env.POLYVISE_MAX_ROUNDS, 3),
     llmTimeoutMs: coercePositiveInteger(env.POLYVISE_LLM_TIMEOUT_MS, 45000),
@@ -49,8 +48,8 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
     allowDeterministicFallbacks:
       !isProduction && coerceBoolean(env.POLYVISE_ALLOW_DETERMINISTIC_FALLBACKS, true),
     modelOptions: coerceModelOptions(env.POLYVISE_OPENROUTER_MODEL_OPTIONS, [
-      env.POLYVISE_YES_MODEL || env.POLYVISE_QUICK_MODEL || "google/gemini-2.5-flash",
-      env.POLYVISE_NO_MODEL || env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
+      env.POLYVISE_YES_MODEL || "google/gemini-2.5-flash",
+      env.POLYVISE_NO_MODEL || "google/gemini-2.5-flash",
       env.POLYVISE_JUDGE_MODEL || "openai/gpt-4o-mini",
       ...DEFAULT_OPENROUTER_MODEL_OPTIONS
     ])

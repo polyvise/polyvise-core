@@ -368,7 +368,7 @@ function isRealLlmSnapshot(snapshot: ModelSnapshot): boolean {
 }
 
 function labelForEvidenceProvider(provider: EvidenceSource["retrievedVia"]): string {
-  if (provider === "tavily" || provider === "brave") return "Web Search Model";
+  if (provider === "tavily" || provider === "brave") return "web search model";
   return "Fact Search";
 }
 
@@ -989,11 +989,11 @@ function FroglingsControlPanel({
                 <span>
                   <span className="block text-xs font-bold text-white/85">Use live APIs in dev</span>
                   <span className="mt-0.5 block text-[11px] leading-snug text-white/55">
-                    Run local debates through real AI Model and Web Search Model calls.
+                    Run local debates through real AI model and web search model calls.
                   </span>
                   {!devLiveApisReady ? (
                     <span className="mt-1 block text-[10px] font-bold text-berry">
-                      Add local AI Model and Web Search Model keys to enable this.
+                      Add local AI model and web search model keys to enable this.
                     </span>
                   ) : null}
                 </span>

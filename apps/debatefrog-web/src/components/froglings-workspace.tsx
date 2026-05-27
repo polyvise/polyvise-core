@@ -1434,11 +1434,6 @@ function FroglingsLive({
       {live.teams && !preferences.openingSplash ? <FrogIntros teams={live.teams} /> : null}
       {!showStartSequence ? (
         <>
-          <CurrentRoundCallout
-            live={live}
-            readyForVerdict={staged.readyForVerdict}
-            visibleTurns={staged.visibleTurns}
-          />
           <SlowFrogWaitNotice wait={slowWait} />
           <Rounds live={live} visibleTurns={staged.visibleTurns} onTurnComplete={staged.showNextTurn} />
           <Verdict live={live} readyForVerdict={staged.readyForVerdict} />
@@ -1716,7 +1711,7 @@ function QuestionBanner({
   const stageCopy = froglingsStageCopy(live, staged);
 
   return (
-    <section className="rounded-2xl border border-mud/20 bg-panel/90 p-5 shadow-lily">
+    <section className="sticky top-3 z-30 rounded-2xl border border-mud/20 bg-panel/95 p-5 shadow-lily backdrop-blur supports-[backdrop-filter]:bg-panel/90">
       <div className="text-[11px] font-extrabold uppercase tracking-wide text-mud/60">
         Question
       </div>
@@ -1982,62 +1977,6 @@ function FrogIntros({ teams }: { teams: DebateTeam }) {
           </div>
           <div className="text-xs text-ink/60">Argues the NO side</div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-/**
- * Announces the currently-arriving round in plain language. Uses the
- * latest debate-round turn in live.turns as the "now playing" signal,
- * and re-keys on round change so the hop-in animation replays each
- * time. Hidden once judging/complete take over.
- */
-function CurrentRoundCallout({
-  live,
-  readyForVerdict,
-  visibleTurns
-}: {
-  live: FroglingsLiveState;
-  readyForVerdict: boolean;
-  visibleTurns: RoundTurn[];
-}) {
-  // Treat only the four kid-facing debate rounds as "now playing"
-  // candidates; judge_review/synthesis are handled by Verdict.
-  const trackedRounds: DebateRound[] = [
-    "opening",
-    "cross_examination",
-    "rebuttal",
-    "closing"
-  ];
-
-  const latestDebateRound = [...visibleTurns]
-    .reverse()
-    .find((turn) => trackedRounds.includes(turn.round))?.round;
-
-  if (!latestDebateRound) return null;
-  if (readyForVerdict && (live.status === "judging" || live.status === "complete")) return null;
-
-  const meta = friendlyRound[latestDebateRound];
-  const index = trackedRounds.indexOf(latestDebateRound);
-  const ordinal = index >= 0 ? index + 1 : 1;
-
-  return (
-    <section
-      // Re-key on round so the hop-in animation runs each time a new
-      // round arrives — kids see a clear "we just changed gears" signal.
-      key={latestDebateRound}
-      className="hop-in flex items-center gap-3 rounded-2xl border border-leaf/40 bg-gradient-to-br from-mint/70 to-cream/40 p-4 shadow-sm"
-    >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-pond text-base font-black text-white shadow-lily">
-        {ordinal}
-      </div>
-      <div className="min-w-0">
-        <div className="text-[11px] font-extrabold uppercase tracking-wide text-pond/70">
-          Now arriving — Round {ordinal} of 4
-        </div>
-        <div className="mt-0.5 text-base font-black text-pond">{meta.title.replace(/^Round \d+ — /, "")}</div>
-        <div className="mt-0.5 text-xs text-ink/70">{meta.blurb}</div>
       </div>
     </section>
   );

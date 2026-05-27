@@ -7,6 +7,7 @@ export interface LlmRequest {
   schemaName: string;
   jsonSchema?: Record<string, unknown>;
   fallback?: unknown;
+  sessionId?: string;
 }
 
 export interface LlmProvider {
@@ -193,6 +194,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
         },
         body: JSON.stringify({
           model,
+          ...(request.sessionId ? { session_id: sanitizeOpenRouterSessionId(request.sessionId) } : {}),
           messages: [
             {
               role: "system",
@@ -361,6 +363,10 @@ function sanitizeProviderMessage(message: string): string {
   return message
     .replace(/https:\/\/openrouter\.ai\/workspaces\/[^\s"')]+/g, "the provider dashboard")
     .replace(/sk-or-v1-[a-zA-Z0-9_-]+/g, "[redacted-api-key]");
+}
+
+function sanitizeOpenRouterSessionId(sessionId: string): string {
+  return sessionId.replace(/[^a-zA-Z0-9_.:-]/g, "-").slice(0, 256);
 }
 
 function delay(ms: number): Promise<void> {

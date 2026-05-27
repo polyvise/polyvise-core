@@ -188,10 +188,18 @@ describe("LLM provider selection", () => {
       role: "yes frog claim builder",
       schemaName: "testSchema",
       prompt: "{\"ok\":true}",
-      jsonSchema: { type: "object" }
+      jsonSchema: { type: "object" },
+      sessionId: "run_test-session"
     });
 
     expect(result.data).toEqual({ ok: true });
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://openrouter.ai/api/v1/chat/completions",
+      expect.objectContaining({
+        body: expect.stringContaining("\"session_id\":\"run_test-session\"")
+      })
+    );
     expect(result.snapshot.attempts?.map((attempt) => attempt.status)).toEqual(["failed", "ok"]);
     expect(result.snapshot.attempts?.map((attempt) => attempt.mode)).toEqual(["json_object", "json_object"]);
     expect(result.snapshot.latencyMs).toBeGreaterThanOrEqual(

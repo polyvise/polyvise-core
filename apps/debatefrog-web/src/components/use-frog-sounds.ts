@@ -257,7 +257,7 @@ export function useFrogSounds(): FrogSoundsApi {
           .map(([, channel]) => channel.currentClipId)
           .filter((clipId): clipId is string => Boolean(clipId))
       );
-      const targetGain = 0.36;
+      const targetGain = side === "judge" ? 0.2 : 0.18;
       const pool = poolRef.current;
 
       if (pool.length > 0) {

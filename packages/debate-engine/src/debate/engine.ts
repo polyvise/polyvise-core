@@ -173,7 +173,8 @@ class DebateWorkflowExecutor {
           task: "Create five debate agents with distinct lenses for this exact resolution.",
           framed,
           fallback
-        })
+        }),
+        runId
       );
       recordSnapshot(snapshot);
       scoutsPlaceholder = placeholder;
@@ -251,7 +252,8 @@ class DebateWorkflowExecutor {
             framed,
             sources,
             fallback: batchFallback
-          })
+          }),
+          runId
         );
         recordSnapshot(snapshot);
         claimsPlaceholder = claimsPlaceholder ?? placeholder;
@@ -328,7 +330,8 @@ class DebateWorkflowExecutor {
               teams,
               round,
               fallback: batchFallback
-            })
+            }),
+            runId
           );
           recordSnapshot(snapshot);
           roundPlaceholder = roundPlaceholder ?? placeholder;
@@ -377,7 +380,8 @@ class DebateWorkflowExecutor {
           teams,
           turns: openingTurns,
           fallback
-        })
+        }),
+        runId
       );
       recordSnapshot(snapshot);
       scorecardPlaceholder = placeholder;
@@ -411,7 +415,8 @@ class DebateWorkflowExecutor {
           turns: openingTurns,
           scorecard,
           fallback
-        })
+        }),
+        runId
       );
       recordSnapshot(snapshot);
       summaryPlaceholder = placeholder;
@@ -505,7 +510,8 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
   fallback: z.infer<TSchema>,
   schema: TSchema,
   config: DebateRuntimeConfig,
-  prompt?: string
+  prompt?: string,
+  sessionId?: string
 ): Promise<{
   data: z.infer<TSchema>;
   snapshot: ModelSnapshot;
@@ -527,7 +533,8 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
         schemaName,
         prompt: prompt ?? JSON.stringify(fallbackParse.data),
         fallback: fallbackParse.data,
-        jsonSchema: z.toJSONSchema(schema)
+        jsonSchema: z.toJSONSchema(schema),
+        sessionId
       });
       const parsed = schema.safeParse(result.data);
 

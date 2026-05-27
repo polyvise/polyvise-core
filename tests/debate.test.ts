@@ -193,7 +193,7 @@ describe("LLM provider selection", () => {
 
     expect(result.data).toEqual({ ok: true });
     expect(result.snapshot.attempts?.map((attempt) => attempt.status)).toEqual(["failed", "ok"]);
-    expect(result.snapshot.attempts?.map((attempt) => attempt.mode)).toEqual(["json_schema", "json_schema"]);
+    expect(result.snapshot.attempts?.map((attempt) => attempt.mode)).toEqual(["json_object", "json_object"]);
     expect(result.snapshot.latencyMs).toBeGreaterThanOrEqual(
       result.snapshot.attempts?.reduce((total, attempt) => total + attempt.durationMs, 0) ?? 0
     );
@@ -222,7 +222,7 @@ describe("LLM provider selection", () => {
     expect(modelOptions.defaults).toEqual({
       yes: "google/gemini-2.5-flash",
       no: "google/gemini-2.5-flash",
-      judge: "openai/gpt-4o-mini"
+      judge: "openai/gpt-4.1"
     });
   });
 
@@ -236,7 +236,10 @@ describe("LLM provider selection", () => {
 
     expect(optionIds).toContain("openai/gpt-4o-mini");
     expect(optionIds).toContain("openai/gpt-4.1");
-    expect(optionIds).toContain("google/gemini-2.5-pro");
+    expect(optionIds).toContain("google/gemini-2.5-flash");
+    expect(optionIds).toContain("anthropic/claude-3.5-haiku");
+    expect(optionIds).not.toContain("google/gemini-2.5-pro");
+    expect(optionIds).not.toContain("anthropic/claude-3.5-sonnet");
     expect(optionIds.length).toBeGreaterThan(1);
   });
 });
@@ -560,6 +563,81 @@ describe("hybrid council engine", () => {
 
     expect(run.turns.some((turn) => turn.content.includes("You says"))).toBe(false);
     expect(run.turns.some((turn) => turn.content.includes("You said"))).toBe(true);
+  });
+
+  it("keeps Yes Frog and No Frog names out of spoken transcript copy", async () => {
+    class AmbiguousFrogNameProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<{
+          turns?: Array<{ side: "pro" | "con"; content: string }>;
+          headline?: string;
+          recommendation?: string;
+          strongestPro?: string[];
+          strongestCon?: string[];
+          unresolvedUncertainties?: string[];
+          whatWouldChangeMind?: string[];
+        }>(request);
+
+        if (request.schemaName === "debateTurnOutput" && Array.isArray(result.data.turns)) {
+          return {
+            data: {
+              ...result.data,
+              turns: result.data.turns.map((turn) => ({
+                ...turn,
+                content:
+                  turn.side === "pro"
+                    ? "No Frog says pets are risky, but Yes Frog argues pets can help students learn."
+                    : "Yes Frog says pets help learning, but No Frog points out allergies can disrupt class."
+              }))
+            } as T,
+            snapshot: result.snapshot
+          };
+        }
+
+        if (request.schemaName === "finalSummaryOutput") {
+          return {
+            data: {
+              ...result.data,
+              headline: "The YES frog made the stronger case.",
+              recommendation: "The NO frog had concerns, but the pro side answered more clearly.",
+              strongestPro: ["The YES frog gave the clearest benefit."],
+              strongestCon: ["The con side raised safety worries."],
+              unresolvedUncertainties: ["The NO frog would need stronger evidence."],
+              whatWouldChangeMind: ["More proof from the con side could change the answer."]
+            } as T,
+            snapshot: result.snapshot
+          };
+        }
+
+        return result as { data: T; snapshot: ModelSnapshot };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_frog_name_test",
+      {
+        subject: "Should pets be allowed at school?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new AmbiguousFrogNameProvider() }
+    );
+
+    const visibleTranscript = run.turns.map((turn) => turn.content).join(" ");
+    const visibleJudgeCopy = [
+      run.summary.headline,
+      run.summary.recommendation,
+      ...run.summary.strongestPro,
+      ...run.summary.strongestCon,
+      ...run.summary.unresolvedUncertainties,
+      ...run.summary.whatWouldChangeMind
+    ].join(" ");
+
+    expect(visibleTranscript).not.toMatch(/\b(?:Yes|No) Frog\b/);
+    expect(visibleTranscript).toContain("my opponent");
+    expect(visibleJudgeCopy).not.toMatch(/\b(?:YES|NO) frog\b/i);
+    expect(visibleJudgeCopy).toContain("green frog");
+    expect(visibleJudgeCopy).toContain("pink frog");
   });
 
   it("does not accept a generated duo turn for the wrong frog side", async () => {

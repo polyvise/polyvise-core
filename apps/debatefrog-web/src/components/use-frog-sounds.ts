@@ -83,6 +83,11 @@ interface SideChannel {
   currentClipId: string | null;
 }
 
+interface IntroLoop {
+  gain: GainNode;
+  timer: number;
+}
+
 interface FrogSoundsApi {
   /** True once the AudioContext has been resumed by a user gesture. */
   ready: boolean;
@@ -98,12 +103,17 @@ interface FrogSoundsApi {
   stop: (side: Side) => void;
   /** Play a short synthesized cue. No-op if muted or not unlocked. */
   beep: (options: { frequency: number; durationMs: number; delayMs?: number; gain?: number }) => void;
+  /** Start the soft generated music bed for the debate splash. */
+  startIntro: () => void;
+  /** Fade out and stop the generated music bed. */
+  stopIntro: () => void;
 }
 
 export function useFrogSounds(): FrogSoundsApi {
   const ctxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const channelsRef = useRef<Record<Side, SideChannel> | null>(null);
+  const introLoopRef = useRef<IntroLoop | null>(null);
   /** All real clips successfully fetched + decoded. May be empty. */
   const poolRef = useRef<LoadedClip[]>([]);
   const [ready, setReady] = useState(false);
@@ -373,6 +383,75 @@ export function useFrogSounds(): FrogSoundsApi {
     [muted]
   );
 
+  const stopIntro = useCallback(() => {
+    const ctx = ctxRef.current;
+    const loop = introLoopRef.current;
+    if (!ctx || !loop) return;
+    window.clearInterval(loop.timer);
+    loop.gain.gain.cancelScheduledValues(ctx.currentTime);
+    loop.gain.gain.setValueAtTime(loop.gain.gain.value, ctx.currentTime);
+    loop.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.45);
+    const gain = loop.gain;
+    window.setTimeout(() => {
+      try {
+        gain.disconnect();
+      } catch {
+        // already disconnected
+      }
+    }, 520);
+    introLoopRef.current = null;
+  }, []);
+
+  const startIntro = useCallback(() => {
+    const ctx = ctxRef.current;
+    const master = masterGainRef.current;
+    if (!ctx || !master) return;
+    if (muted || introLoopRef.current) return;
+
+    const introGain = ctx.createGain();
+    introGain.gain.value = 0;
+    introGain.connect(master);
+    introGain.gain.linearRampToValueAtTime(0.055, ctx.currentTime + 0.55);
+
+    const notes = [392, 494, 587, 659, 587, 494];
+    let noteIndex = 0;
+
+    const playPluck = () => {
+      const startAt = ctx.currentTime;
+      const endAt = startAt + 0.34;
+      const osc = ctx.createOscillator();
+      const toneGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      const frequency = notes[noteIndex % notes.length];
+      noteIndex += 1;
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(frequency, startAt);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1450, startAt);
+      toneGain.gain.setValueAtTime(0, startAt);
+      toneGain.gain.linearRampToValueAtTime(0.42, startAt + 0.025);
+      toneGain.gain.exponentialRampToValueAtTime(0.001, endAt);
+
+      osc.connect(filter).connect(toneGain).connect(introGain);
+      osc.start(startAt);
+      osc.stop(endAt + 0.03);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          filter.disconnect();
+          toneGain.disconnect();
+        } catch {
+          // already disconnected
+        }
+      };
+    };
+
+    playPluck();
+    const timer = window.setInterval(playPluck, 440);
+    introLoopRef.current = { gain: introGain, timer };
+  }, [muted]);
+
   // Clean up on unmount: close the context so we don't leak nodes.
   useEffect(() => {
     return () => {
@@ -386,9 +465,13 @@ export function useFrogSounds(): FrogSoundsApi {
       ctxRef.current = null;
       channelsRef.current = null;
       masterGainRef.current = null;
+      if (introLoopRef.current) {
+        window.clearInterval(introLoopRef.current.timer);
+      }
+      introLoopRef.current = null;
       poolRef.current = [];
     };
   }, []);
 
-  return { ready, muted, toggleMute, unlock, play, stop, beep };
+  return { ready, muted, toggleMute, unlock, play, stop, beep, startIntro, stopIntro };
 }

@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start --port 3001",
     "audio:manifest": "node scripts/generate-audio-manifest.mjs",
+    "eval:models": "tsx scripts/evaluate-models.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -1,0 +1,1077 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T04:55:50.139Z",
+  "modelId": "google/gemini-2.5-flash",
+  "questionId": "phones-at-school",
+  "question": "Should students be allowed to use phones during school?",
+  "run": {
+    "id": "run_cc83d34d",
+    "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+    "status": "complete",
+    "startedAt": "2026-05-26T04:55:26.930Z",
+    "completedAt": "2026-05-26T04:55:50.139Z",
+    "events": [
+      {
+        "id": "event_6c946159",
+        "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+        "runId": "run_cc83d34d",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T04:55:26.930Z"
+      },
+      {
+        "id": "event_af935603",
+        "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+        "runId": "run_cc83d34d",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T04:55:26.930Z"
+      },
+      {
+        "id": "event_dbda98f7",
+        "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+        "runId": "run_cc83d34d",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T04:55:26.930Z"
+      },
+      {
+        "id": "event_1a7d2350",
+        "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+        "runId": "run_cc83d34d",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T04:55:30.768Z"
+      },
+      {
+        "id": "event_e9a5e39e",
+        "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+        "runId": "run_cc83d34d",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T04:55:43.668Z"
+      },
+      {
+        "id": "event_b015fda0",
+        "debateId": "eval_phones-at-school_google-gemini-2-5-flash",
+        "runId": "run_cc83d34d",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_c0735888",
+        "name": "Strategic Optimist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should students be allowed to use phones during school? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students be allowed to use phones during school?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_06371d7c",
+        "name": "Risk Skeptic",
+        "model": "google/gemini-2.5-flash",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students be allowed to use phones during school? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students be allowed to use phones during school?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_374ef57a",
+        "name": "Empirical Referee",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_8f6e2193",
+        "name": "Implementation Pragmatist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should students be allowed to use phones during school? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students be allowed to use phones during school?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_919a3150",
+        "name": "Equity Auditor",
+        "model": "google/gemini-2.5-flash",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should students be allowed to use phones during school? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students be allowed to use phones during school?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_62690aef",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "google/gemini-2.5-flash",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should students be allowed to use phones during school? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_8a5d4333",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "google/gemini-2.5-flash",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students be allowed to use phones during school? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_d0014ad9",
+        "name": "Neutral Synthesis Judge",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Global Education Monitoring Report 2023",
+        "url": "https://www.unesco.org/gem-report/en/technology",
+        "publisher": "UNESCO",
+        "snippet": "Reviews education technology tradeoffs, distraction risks, and policy considerations.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Student Mobile Phone Use in Schools",
+        "url": "https://www.oecd.org/education/",
+        "publisher": "OECD",
+        "snippet": "Provides education-system context for student technology policies and outcomes.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Allowing students to use phones during school can offer educational benefits, as suggested by reviews of education technology tradeoffs.",
+        "warrant": "The 'Global Education Monitoring Report 2023' indicates that there are tradeoffs in education technology, implying potential benefits that could be leveraged.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.72,
+        "id": "claim_0df5b858"
+      },
+      {
+        "side": "pro",
+        "text": "Permitting phone use in schools could align with broader education-system contexts for student technology policies, potentially leading to improved outcomes.",
+        "warrant": "The 'Student Mobile Phone Use in Schools' report provides context for technology policies and outcomes, suggesting that allowing phone use could be part of a beneficial policy framework.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.68,
+        "id": "claim_79d77cac"
+      },
+      {
+        "side": "pro",
+        "text": "Strategic integration of student phone use could improve the school day by addressing specific educational needs or enhancing learning experiences, as implied by discussions of education technology.",
+        "warrant": "The 'Global Education Monitoring Report 2023' discusses education technology tradeoffs, which suggests that thoughtful implementation of phone use could lead to improvements.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.64,
+        "id": "claim_1f7225c8"
+      },
+      {
+        "side": "con",
+        "text": "Allowing students to use phones during school may not work better than the current approach, as the evidence does not show a clear benefit.",
+        "warrant": "The OECD's 'Student Mobile Phone Use in Schools' can expose whether the YES side is overstating the benefits of phone use relative to the alternative.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.7,
+        "id": "claim_ba04eb0e"
+      },
+      {
+        "side": "con",
+        "text": "The appeal of allowing students to use phones during school may not be supported by actual proven benefits.",
+        "warrant": "The UNESCO 'Global Education Monitoring Report 2023' can help separate what sounds appealing from what is actually proven to help in education technology.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.66,
+        "id": "claim_68befdf0"
+      },
+      {
+        "side": "con",
+        "text": "The decision on whether students should be allowed to use phones during school may depend on which specific dimension of the question is prioritized.",
+        "warrant": "The OECD's 'Student Mobile Phone Use in Schools' suggests that a precise verdict should name the dimension being judged rather than collapsing all forms of evidence into one score.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.74,
+        "id": "claim_ed079e56"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should students be allowed to use phones during school?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_0df5b858",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing students to use phones during school can offer educational benefits, as suggested by reviews of education technology tradeoffs."
+      },
+      {
+        "id": "claim_79d77cac",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Permitting phone use in schools could align with broader education-system contexts for student technology policies, potentially leading to improved outcomes."
+      },
+      {
+        "id": "claim_1f7225c8",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Strategic integration of student phone use could improve the school day by addressing specific educational needs or enhancing learning experiences, as implied by discussions of education technology."
+      },
+      {
+        "id": "claim_ba04eb0e",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Allowing students to use phones during school may not work better than the current approach, as the evidence does not show a clear benefit."
+      },
+      {
+        "id": "claim_68befdf0",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The appeal of allowing students to use phones during school may not be supported by actual proven benefits."
+      },
+      {
+        "id": "claim_ed079e56",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The decision on whether students should be allowed to use phones during school may depend on which specific dimension of the question is prioritized."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "UNESCO",
+        "detail": "Global Education Monitoring Report 2023",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OECD",
+        "detail": "Student Mobile Phone Use in Schools",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_b2ac16b9",
+        "source": "claim_0df5b858",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_870991cf",
+        "source": "claim_79d77cac",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_03026eed",
+        "source": "claim_1f7225c8",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_beb16cd4",
+        "source": "claim_ba04eb0e",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_e80f2452",
+        "source": "claim_68befdf0",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_e4e74595",
+        "source": "claim_ed079e56",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_b7ad229d",
+        "source": "evidence-src-mock-1",
+        "target": "claim_0df5b858",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_ca960877",
+        "source": "evidence-src-mock-2",
+        "target": "claim_79d77cac",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_212ed9b6",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_62690aef",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, students should be allowed to use phones during school. Allowing students to use phones can offer educational benefits, as suggested by reviews of education technology tradeoffs. This approach could also align with broader education-system contexts for student technology policies, potentially leading to improved outcomes.",
+        "claimIds": [
+          "claim_0df5b858",
+          "claim_79d77cac"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_dc8f57fe",
+        "createdAt": "2026-05-26T04:55:33.404Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_8a5d4333",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that allowing students to use phones during school may not be better than what we do now, because there isn't clear proof of a benefit. The appeal of letting students use phones might not be based on real, proven advantages. The decision should consider specific aspects of the question, as suggested by the OECD's 'Student Mobile Phone Use in Schools' and UNESCO's 'Global Education Monitoring Report 2023'.",
+        "claimIds": [
+          "claim_ba04eb0e",
+          "claim_68befdf0",
+          "claim_ed079e56"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_56c48716",
+        "createdAt": "2026-05-26T04:55:33.404Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_62690aef",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side states that allowing phones may not work better than the current approach. However, the YES side argues that allowing students to use phones can offer educational benefits, as suggested by reviews of education technology tradeoffs. Can the NO side explain why the potential educational benefits are not a strong enough reason to consider allowing phones?",
+        "claimIds": [
+          "claim_0df5b858",
+          "claim_ba04eb0e"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_9ccba8d6",
+        "createdAt": "2026-05-26T04:55:36.011Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_8a5d4333",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The YES side claims that allowing students to use phones can offer educational benefits, as suggested by reviews of education technology tradeoffs. However, the NO side argues that the decision may depend on which specific dimension of the question is prioritized. Can the YES side specify what exact educational benefits are being referred to, and how these benefits outweigh the potential for distraction risks mentioned in the same report?",
+        "claimIds": [
+          "claim_ed079e56",
+          "claim_0df5b858"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_09075546",
+        "createdAt": "2026-05-26T04:55:36.011Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_62690aef",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side suggests there isn't a clear benefit, but the YES side argues that allowing phones can offer educational benefits and align with broader technology policies, as indicated by the Global Education Monitoring Report and the OECD's report on student mobile phone use. Strategic integration could improve the school day.",
+        "claimIds": [
+          "claim_0df5b858",
+          "claim_79d77cac",
+          "claim_1f7225c8"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_7b217534",
+        "createdAt": "2026-05-26T04:55:38.968Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_8a5d4333",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The YES side claims educational benefits and improved outcomes from phone use, but the NO side argues that these benefits are not clearly proven. The UNESCO report on education technology tradeoffs and the OECD report on student mobile phone use suggest that the appeal of phone use may not be supported by actual proven benefits, and the decision depends on which dimension is prioritized. Therefore, the YES side has not shown that allowing phones works better than the current approach.",
+        "claimIds": [
+          "claim_ba04eb0e",
+          "claim_68befdf0",
+          "claim_ed079e56"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_06347138",
+        "createdAt": "2026-05-26T04:55:38.968Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_62690aef",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The YES side has shown that allowing students to use phones during school can offer educational benefits, as suggested by the Global Education Monitoring Report 2023, and aligns with broader education-system contexts for student technology policies, according to the OECD. Strategic integration of phone use could improve the school day. Therefore, you should vote YES.",
+        "claimIds": [
+          "claim_0df5b858",
+          "claim_79d77cac",
+          "claim_1f7225c8"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_d54869a7",
+        "createdAt": "2026-05-26T04:55:42.054Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_8a5d4333",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side has shown that allowing phones in school may not work better than the current approach, as there is no clear benefit (claim_ba04eb0e). The appeal of phones in school is not supported by proven benefits (claim_68befdf0). The decision depends on what we prioritize (claim_ed079e56).",
+        "claimIds": [
+          "claim_ba04eb0e",
+          "claim_68befdf0",
+          "claim_ed079e56"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_6dee813d",
+        "createdAt": "2026-05-26T04:55:42.054Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_d0014ad9",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The YES side argues for potential educational benefits and alignment with technology policies, citing education technology tradeoffs and education-system contexts. The NO side counters that there is no clear proven benefit and that the appeal of phone use may not be supported by actual benefits, emphasizing the need to prioritize specific dimensions of the question. The verdict depends on whether the YES side can demonstrate concrete benefits and safeguards that outweigh the current approach, as the burden of proof is on the side advocating for change.",
+        "claimIds": [
+          "claim_0df5b858",
+          "claim_79d77cac",
+          "claim_1f7225c8",
+          "claim_ba04eb0e",
+          "claim_68befdf0",
+          "claim_ed079e56"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_ea7e00a4",
+        "createdAt": "2026-05-26T04:55:43.668Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.7,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 4,
+          "con": 7,
+          "note": "The pro side claims 'educational benefits' and 'improved outcomes' but does not specify what these are or how they are directly linked to allowing phone use during school. The con side effectively highlights the lack of clear, proven benefits, suggesting the pro side's claims are based on 'appeal' rather than concrete evidence from the cited sources."
+        },
+        {
+          "name": "practicality",
+          "pro": 3,
+          "con": 7,
+          "note": "The pro side's argument for 'strategic integration' and 'aligning with broader education-system contexts' remains abstract. It does not provide practical details on how phone use would be managed to achieve benefits while mitigating risks. The con side implicitly questions the practicality by asking for specific benefits and how they outweigh distraction risks."
+        },
+        {
+          "name": "risk",
+          "pro": 3,
+          "con": 8,
+          "note": "The pro side fails to address the inherent risks of phone use in schools, such as distraction, which is explicitly mentioned in one of the sources. The con side effectively raises the concern that the 'appeal' of phone use might not be supported by actual proven benefits, implying a risk of negative consequences without clear gains."
+        },
+        {
+          "name": "fairness",
+          "pro": 4,
+          "con": 7,
+          "note": "The pro side's general claims of 'educational benefits' and 'improved outcomes' do not adequately address the fairness implications for all students, especially concerning potential disparities in access or the impact on learning environments. The con side's emphasis on 'proven benefits' implicitly demands a fair assessment of whether the policy would genuinely benefit students."
+        },
+        {
+          "name": "reversibility",
+          "pro": 5,
+          "con": 6,
+          "note": "While not explicitly debated, the pro side's vague benefits make it harder to assess if a policy change would be easily reversible if it fails. The con side's focus on the lack of clear benefits suggests that implementing such a policy without strong justification could lead to difficult-to-reverse negative impacts on the learning environment."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "No clear benefit shown for allowing students to use phones during school.",
+      "recommendation": "NO, students should not be allowed to use phones during school. The proponents failed to demonstrate clear, proven educational benefits or practical implementation strategies that outweigh the potential risks and lack of concrete advantages over the current approach.",
+      "strongestPro": [
+        "Allowing students to use phones during school can offer educational benefits, as suggested by reviews of education technology tradeoffs.",
+        "Permitting phone use in schools could align with broader education-system contexts for student technology policies, potentially leading to improved outcomes.",
+        "Strategic integration of student phone use could improve the school day by addressing specific educational needs or enhancing learning experiences, as implied by discussions of education technology."
+      ],
+      "strongestCon": [
+        "Allowing students to use phones during school may not work better than the current approach, as the evidence does not show a clear benefit.",
+        "The appeal of allowing students to use phones during school may not be supported by actual proven benefits.",
+        "The decision on whether students should be allowed to use phones during school may depend on which specific dimension of the question is prioritized."
+      ],
+      "unresolvedUncertainties": [
+        "Specific examples of educational benefits derived from phone use in a school setting were not provided.",
+        "How potential distraction risks, explicitly mentioned in the UNESCO report, would be mitigated through 'strategic integration' was not detailed.",
+        "The precise dimensions of the question that should be prioritized for decision-making were not elaborated upon by either side."
+      ],
+      "whatWouldChangeMind": [
+        "Concrete evidence demonstrating specific, measurable educational benefits directly attributable to student phone use during school hours.",
+        "A detailed plan for 'strategic integration' that addresses and mitigates potential risks like distraction, supported by empirical data.",
+        "Comparative studies showing that allowing phone use leads to demonstrably better student outcomes than current policies, considering various learning environments and student demographics."
+      ],
+      "confidence": 0.7
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "stance scout and fast debate turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": false
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "YES frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "NO frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard and final synthesis judge",
+        "configured": false
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 2003,
+        "promptTokens": 1124,
+        "completionTokens": 350,
+        "estimatedCostUsd": 0.0012122,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2003
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 1834,
+        "promptTokens": 1110,
+        "completionTokens": 349,
+        "estimatedCostUsd": 0.0012055,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1834
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1148,
+        "promptTokens": 2215,
+        "completionTokens": 184,
+        "estimatedCostUsd": 0.0011245,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1148
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1486,
+        "promptTokens": 2216,
+        "completionTokens": 234,
+        "estimatedCostUsd": 0.0012498,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1486
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1244,
+        "promptTokens": 2216,
+        "completionTokens": 196,
+        "estimatedCostUsd": 0.0011548,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1244
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1362,
+        "promptTokens": 2221,
+        "completionTokens": 210,
+        "estimatedCostUsd": 0.0011913,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1361
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1478,
+        "promptTokens": 2215,
+        "completionTokens": 206,
+        "estimatedCostUsd": 0.0011795,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1478
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1478,
+        "promptTokens": 2210,
+        "completionTokens": 231,
+        "estimatedCostUsd": 0.0012405,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1478
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1728,
+        "promptTokens": 2200,
+        "completionTokens": 213,
+        "estimatedCostUsd": 0.0011925,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1728
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1356,
+        "promptTokens": 2199,
+        "completionTokens": 218,
+        "estimatedCostUsd": 0.0012047,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1356
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1613,
+        "promptTokens": 2249,
+        "completionTokens": 277,
+        "estimatedCostUsd": 0.0013672,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1613
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 3779,
+        "promptTokens": 4058,
+        "completionTokens": 543,
+        "estimatedCostUsd": 0.0025749,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3779
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 2689,
+        "promptTokens": 4669,
+        "completionTokens": 449,
+        "estimatedCostUsd": 0.0025232,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2689
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_3fe4a5b2",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_cfb7c800",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_bd794a79",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 2,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_4983e6fc",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_f4f002fe",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_dbbe0430",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_c25d184c",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      },
+      {
+        "id": "artifact_bcb80be8",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T04:55:50.139Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_688c4b8b",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T04:55:26.930Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_b43dd902",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T04:55:26.930Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_cbd9e350",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T04:55:26.930Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_f2442599",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T04:55:26.930Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_18f9fd59",
+        "step": "opening",
+        "status": "ok",
+        "message": "6 source-linked claims generated.",
+        "at": "2026-05-26T04:55:30.768Z",
+        "durationMs": 3838
+      },
+      {
+        "id": "trace_8c06f9df",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T04:55:33.405Z",
+        "durationMs": 2636
+      },
+      {
+        "id": "trace_059f6530",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T04:55:36.011Z",
+        "durationMs": 2606
+      },
+      {
+        "id": "trace_207bc0ca",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T04:55:38.968Z",
+        "durationMs": 2957
+      },
+      {
+        "id": "trace_f2e8cd07",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T04:55:42.054Z",
+        "durationMs": 3086
+      },
+      {
+        "id": "trace_1908554f",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T04:55:43.668Z",
+        "durationMs": 1614
+      },
+      {
+        "id": "trace_ffa92a56",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T04:55:47.449Z",
+        "durationMs": 3781
+      },
+      {
+        "id": "trace_10fb7613",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T04:55:50.138Z",
+        "durationMs": 2689
+      },
+      {
+        "id": "trace_260819d0",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T04:55:50.139Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

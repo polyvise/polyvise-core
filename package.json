@@ -14,6 +14,7 @@
     "build": "npm run build --workspaces --if-present",
     "build:polyvise": "npm run build -w @polyvise/polyvise-web",
     "build:debatefrog": "npm run build -w @polyvise/debatefrog-web",
+    "eval:debatefrog-models": "npm run eval:models -w @polyvise/debatefrog-web",
     "start": "npm run start:polyvise",
     "start:polyvise": "npm run start -w @polyvise/polyvise-web",
     "start:debatefrog": "npm run start -w @polyvise/debatefrog-web",

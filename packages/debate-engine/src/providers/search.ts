@@ -152,9 +152,6 @@ export async function collectEvidenceWithDiagnostics(
   const preferredProvider = config.evidenceProvider;
 
   if (preferredProvider === "mock") {
-    if (!config.allowDeterministicFallbacks) {
-      throw new Error("Live evidence search is required.");
-    }
     return {
       sources: await new MockEvidenceProvider().search(subject, topicKind),
       diagnostic: "Configured evidence provider is mock."

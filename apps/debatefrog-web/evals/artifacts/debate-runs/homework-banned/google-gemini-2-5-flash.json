@@ -1,0 +1,1164 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T04:53:35.090Z",
+  "modelId": "google/gemini-2.5-flash",
+  "questionId": "homework-banned",
+  "question": "Should homework be banned?",
+  "run": {
+    "id": "run_972b0c66",
+    "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+    "status": "complete",
+    "startedAt": "2026-05-26T04:53:12.318Z",
+    "completedAt": "2026-05-26T04:53:35.090Z",
+    "events": [
+      {
+        "id": "event_6eac83c5",
+        "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+        "runId": "run_972b0c66",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T04:53:12.318Z"
+      },
+      {
+        "id": "event_75e8b4b1",
+        "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+        "runId": "run_972b0c66",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T04:53:12.318Z"
+      },
+      {
+        "id": "event_81790417",
+        "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+        "runId": "run_972b0c66",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T04:53:12.318Z"
+      },
+      {
+        "id": "event_00ecea1f",
+        "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+        "runId": "run_972b0c66",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T04:53:16.452Z"
+      },
+      {
+        "id": "event_a1f95cea",
+        "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+        "runId": "run_972b0c66",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T04:53:29.322Z"
+      },
+      {
+        "id": "event_1f46d8bc",
+        "debateId": "eval_homework-banned_google-gemini-2-5-flash",
+        "runId": "run_972b0c66",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_d437fe73",
+        "name": "Strategic Optimist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should homework be banned? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should homework be banned?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_3df06761",
+        "name": "Risk Skeptic",
+        "model": "google/gemini-2.5-flash",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should homework be banned? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should homework be banned?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_ca2e3780",
+        "name": "Empirical Referee",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_67b0cf25",
+        "name": "Implementation Pragmatist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should homework be banned? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should homework be banned?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_28761c5c",
+        "name": "Equity Auditor",
+        "model": "google/gemini-2.5-flash",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should homework be banned? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should homework be banned?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_f88e45d7",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "google/gemini-2.5-flash",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should homework be banned? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_8c2f57b8",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "google/gemini-2.5-flash",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should homework be banned? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_d08ec5c0",
+        "name": "Neutral Synthesis Judge",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for policy topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Banning homework would allow students to have more time for other activities, potentially improving their overall well-being and reducing stress.",
+        "warrant": "Reducing academic pressure outside of school hours can lead to a healthier balance between school and personal life for students.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_96e53e95"
+      },
+      {
+        "side": "pro",
+        "text": "Eliminating homework could lead to increased student engagement during school hours, as all learning would be concentrated in the classroom.",
+        "warrant": "When students are not burdened with homework, they may be more focused and receptive to in-class instruction and activities.",
+        "evidenceSourceIds": [],
+        "confidence": 0.7,
+        "id": "claim_3d96cf50"
+      },
+      {
+        "side": "pro",
+        "text": "A ban on homework could help address educational inequities by removing a factor that often disadvantages students without adequate home support or resources.",
+        "warrant": "Homework can exacerbate disparities between students from different socioeconomic backgrounds, as not all students have access to quiet study spaces, parental help, or necessary materials at home.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_27e3a8ed"
+      },
+      {
+        "side": "con",
+        "text": "Banning homework may not be better than the current approach if the evidence does not demonstrate its effectiveness.",
+        "warrant": "Research on multi-AI collaboration suggests that rigorous analysis can expose whether a proposed change, like banning homework, is truly superior to existing methods.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.7,
+        "id": "claim_36fdfca3"
+      },
+      {
+        "side": "con",
+        "text": "The appeal of banning homework might not align with its actual proven benefits.",
+        "warrant": "Deliberative practices, such as those described for citizens' assemblies, highlight the importance of distinguishing between rhetorically attractive proposals and those with demonstrated positive impacts.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.66,
+        "id": "claim_4ad6e5db"
+      },
+      {
+        "side": "con",
+        "text": "The decision to ban homework could depend on which aspect of the issue is prioritized.",
+        "warrant": "A comprehensive evaluation requires identifying and weighing different dimensions of the question, rather than making a blanket judgment.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.74,
+        "id": "claim_68670e89"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should homework be banned?",
+        "detail": "Classified as a policy debate."
+      },
+      {
+        "id": "claim_96e53e95",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Banning homework would allow students to have more time for other activities, potentially improving their overall well-being and reducing stress."
+      },
+      {
+        "id": "claim_3d96cf50",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Eliminating homework could lead to increased student engagement during school hours, as all learning would be concentrated in the classroom."
+      },
+      {
+        "id": "claim_27e3a8ed",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "A ban on homework could help address educational inequities by removing a factor that often disadvantages students without adequate home support or resources."
+      },
+      {
+        "id": "claim_36fdfca3",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Banning homework may not be better than the current approach if the evidence does not demonstrate its effectiveness."
+      },
+      {
+        "id": "claim_4ad6e5db",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The appeal of banning homework might not align with its actual proven benefits."
+      },
+      {
+        "id": "claim_68670e89",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The decision to ban homework could depend on which aspect of the issue is prioritized."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for policy topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_9fd62a56",
+        "source": "claim_96e53e95",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_b64475c1",
+        "source": "claim_3d96cf50",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_548f5664",
+        "source": "claim_27e3a8ed",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_b9a3ee49",
+        "source": "claim_36fdfca3",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_01c3b497",
+        "source": "claim_4ad6e5db",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_d9a1f61a",
+        "source": "claim_68670e89",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_c8945ae7",
+        "source": "evidence-src-mock-4",
+        "target": "claim_36fdfca3",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_9ada0b8e",
+        "source": "evidence-src-mock-5",
+        "target": "claim_4ad6e5db",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_2037b4b2",
+        "source": "evidence-src-mock-6",
+        "target": "claim_68670e89",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_da105671",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_f88e45d7",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, homework should be banned. Banning homework would allow students more time for other activities, potentially improving their overall well-being and reducing stress. This change could also lead to increased student engagement during school hours, as all learning would be concentrated in the classroom. Furthermore, eliminating homework could help address educational inequities by removing a factor that often disadvantages students without adequate home support or resources.",
+        "claimIds": [
+          "claim_96e53e95",
+          "claim_3d96cf50",
+          "claim_27e3a8ed"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_ea50420c",
+        "createdAt": "2026-05-26T04:53:18.966Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_8c2f57b8",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "NO, homework should not be banned. Banning homework may not be better than the current approach if the evidence does not demonstrate its effectiveness (claim_36fdfca3). The appeal of banning homework might not align with its actual proven benefits (claim_4ad6e5db).",
+        "claimIds": [
+          "claim_36fdfca3",
+          "claim_4ad6e5db"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_f0d98af3",
+        "createdAt": "2026-05-26T04:53:18.966Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_f88e45d7",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side claims that banning homework may not be better than the current approach if the evidence does not demonstrate its effectiveness. However, if eliminating homework leads to increased student engagement during school hours, as all learning would be concentrated in the classroom, wouldn't that be a demonstrated benefit?",
+        "claimIds": [
+          "claim_3d96cf50",
+          "claim_36fdfca3"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_0b7aadc1",
+        "createdAt": "2026-05-26T04:53:21.604Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_8c2f57b8",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side questions the YES side: If the decision to ban homework depends on which aspect is prioritized, how can we be sure that the benefits of more free time, as stated in the claim \"Banning homework would allow students to have more time for other activities, potentially improving their overall well-being and reducing stress,\" outweigh potential drawbacks without clear evidence?",
+        "claimIds": [
+          "claim_68670e89",
+          "claim_96e53e95"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_6c8af09d",
+        "createdAt": "2026-05-26T04:53:21.604Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_f88e45d7",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side suggests that banning homework may not be better without proven effectiveness (claim_36fdfca3) or that its appeal might not align with actual benefits (claim_4ad6e5db). However, the YES side argues that banning homework would allow students more time for other activities, improving well-being and reducing stress (claim_96e53e95). It could also increase student engagement during school hours (claim_3d96cf50) and address educational inequities by removing disadvantages for students without home support (claim_27e3a8ed). These are broad and deep benefits that support the YES case.",
+        "claimIds": [
+          "claim_96e53e95",
+          "claim_3d96cf50",
+          "claim_27e3a8ed",
+          "claim_36fdfca3",
+          "claim_4ad6e5db"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_fab0c55e",
+        "createdAt": "2026-05-26T04:53:24.820Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_8c2f57b8",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that banning homework may not be better than the current approach if there isn't clear evidence of its effectiveness (claim_36fdfca3). The appeal of banning homework might not align with actual proven benefits (claim_4ad6e5db), and the decision could depend on which aspect of the issue is prioritized (claim_68670e89).",
+        "claimIds": [
+          "claim_36fdfca3",
+          "claim_4ad6e5db",
+          "claim_68670e89"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-6"
+        ],
+        "id": "turn_b3604ae8",
+        "createdAt": "2026-05-26T04:53:24.820Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_f88e45d7",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The YES side has shown that banning homework can give students more time for other activities, reducing stress and improving their well-being. It can also make learning in school more engaging and help all students, especially those who don't have good support at home. Vote YES to support a healthier and fairer learning environment for everyone.",
+        "claimIds": [
+          "claim_96e53e95",
+          "claim_3d96cf50",
+          "claim_27e3a8ed"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_728bd125",
+        "createdAt": "2026-05-26T04:53:27.584Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_8c2f57b8",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side has shown that banning homework may not be better than the current approach if there is no evidence of its effectiveness (claim_36fdfca3). The appeal of banning homework might not align with its actual proven benefits (claim_4ad6e5db). The decision to ban homework depends on which aspect is prioritized (claim_68670e89).",
+        "claimIds": [
+          "claim_36fdfca3",
+          "claim_4ad6e5db",
+          "claim_68670e89"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-6"
+        ],
+        "id": "turn_2abbed79",
+        "createdAt": "2026-05-26T04:53:27.584Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_d08ec5c0",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The YES side argues that banning homework could improve student well-being, increase engagement, and address inequities (claim_96e53e95, claim_3d96cf50, claim_27e3a8ed). The NO side suggests that the effectiveness of banning homework needs to be proven and that the decision depends on prioritizing certain aspects (claim_36fdfca3, claim_4ad6e5db, claim_68670e89).",
+        "claimIds": [
+          "claim_96e53e95",
+          "claim_3d96cf50",
+          "claim_27e3a8ed",
+          "claim_36fdfca3",
+          "claim_4ad6e5db",
+          "claim_68670e89"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_99e4d86e",
+        "createdAt": "2026-05-26T04:53:29.322Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.7,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 4,
+          "con": 7,
+          "note": "The pro side makes claims about benefits (improved well-being, increased engagement, addressing inequities) but provides no specific evidence to support these claims in the context of banning homework. The con side correctly points out the lack of demonstrated effectiveness and proven benefits for a ban on homework, citing the need for rigorous analysis."
+        },
+        {
+          "name": "practicality",
+          "pro": 3,
+          "con": 6,
+          "note": "The pro side suggests that concentrating learning in the classroom would increase engagement, but doesn't detail how this would be practically achieved or if it's a guaranteed outcome. The con side highlights the need for clear evidence to show that banning homework is practically better than the current approach, which the pro side fails to provide."
+        },
+        {
+          "name": "risk",
+          "pro": 3,
+          "con": 7,
+          "note": "The pro side implies benefits like reduced stress and improved well-being, but does not address potential risks or negative consequences of banning homework, such as a potential decrease in academic rigor or preparation for higher education. The con side raises the risk of making a decision without clear evidence of effectiveness and the potential for the appeal of the ban not aligning with actual benefits."
+        },
+        {
+          "name": "fairness",
+          "pro": 5,
+          "con": 6,
+          "note": "The pro side argues that banning homework could address educational inequities by removing disadvantages for students without home support. While this is a valid concern, the pro side does not provide evidence that banning homework is the most effective or fair solution, or that it wouldn't introduce other inequities. The con side implicitly argues for fairness by requiring proven benefits before implementing a policy that could have widespread impact."
+        },
+        {
+          "name": "reversibility",
+          "pro": 4,
+          "con": 6,
+          "note": "The pro side does not discuss the reversibility of banning homework. The con side, by emphasizing the need for proven effectiveness and considering which aspects are prioritized, implicitly suggests that a decision to ban homework without strong evidence could be difficult to reverse if negative consequences arise."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Evidence Lacking for a Blanket Ban on Homework",
+      "recommendation": "NO, homework should not be banned, as the arguments for its effectiveness and benefits are not sufficiently supported by evidence.",
+      "strongestPro": [
+        "Banning homework would allow students to have more time for other activities, potentially improving their overall well-being and reducing stress.",
+        "A ban on homework could help address educational inequities by removing a factor that often disadvantages students without adequate home support or resources."
+      ],
+      "strongestCon": [
+        "Banning homework may not be better than the current approach if the evidence does not demonstrate its effectiveness.",
+        "The appeal of banning homework might not align with its actual proven benefits.",
+        "The decision to ban homework could depend on which aspect of the issue is prioritized."
+      ],
+      "unresolvedUncertainties": [
+        "The specific evidence demonstrating that banning homework leads to increased student engagement during school hours.",
+        "The extent to which banning homework would genuinely address educational inequities without creating new disparities.",
+        "The potential negative impacts of banning homework on academic rigor or student preparation for future educational stages."
+      ],
+      "whatWouldChangeMind": [
+        "Empirical evidence demonstrating a clear and consistent improvement in student well-being, academic performance, and equity outcomes in schools that have banned homework.",
+        "A comprehensive study comparing the long-term educational and developmental outcomes of students in systems with and without homework.",
+        "Specific proposals for how learning objectives typically reinforced by homework would be effectively integrated into the school day or alternative, equitable out-of-school learning structures."
+      ],
+      "confidence": 0.7
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "stance scout and fast debate turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": false
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "YES frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "NO frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard and final synthesis judge",
+        "configured": false
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 2158,
+        "promptTokens": 1368,
+        "completionTokens": 292,
+        "estimatedCostUsd": 0.0011404,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2158
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 1975,
+        "promptTokens": 1360,
+        "completionTokens": 312,
+        "estimatedCostUsd": 0.001188,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1975
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1300,
+        "promptTokens": 2390,
+        "completionTokens": 203,
+        "estimatedCostUsd": 0.0012245,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1300
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1212,
+        "promptTokens": 2384,
+        "completionTokens": 171,
+        "estimatedCostUsd": 0.0011427,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1212
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1227,
+        "promptTokens": 2385,
+        "completionTokens": 170,
+        "estimatedCostUsd": 0.0011405,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1227
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1410,
+        "promptTokens": 2395,
+        "completionTokens": 188,
+        "estimatedCostUsd": 0.0011885,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1410
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1800,
+        "promptTokens": 2385,
+        "completionTokens": 309,
+        "estimatedCostUsd": 0.001488,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1800
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1414,
+        "promptTokens": 2380,
+        "completionTokens": 239,
+        "estimatedCostUsd": 0.0013115,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1414
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1385,
+        "promptTokens": 2370,
+        "completionTokens": 191,
+        "estimatedCostUsd": 0.0011885,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1385
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1379,
+        "promptTokens": 2369,
+        "completionTokens": 235,
+        "estimatedCostUsd": 0.0012982,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1379
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1738,
+        "promptTokens": 2420,
+        "completionTokens": 271,
+        "estimatedCostUsd": 0.00087187,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1738
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 3146,
+        "promptTokens": 4457,
+        "completionTokens": 542,
+        "estimatedCostUsd": 0.0026921,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3146
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 2621,
+        "promptTokens": 5026,
+        "completionTokens": 375,
+        "estimatedCostUsd": 0.0024453,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2621
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_f120b4ea",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_6645e14c",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_4e9db94a",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_a31d417b",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_3ab6a1cd",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_e4c04e67",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_25ca5ca0",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      },
+      {
+        "id": "artifact_6cfebb42",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T04:53:35.090Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_24e8f2da",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as policy.",
+        "at": "2026-05-26T04:53:12.318Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_e74ccbf7",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T04:53:12.318Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_debbf03e",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T04:53:12.318Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_450c4ba3",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T04:53:12.318Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_0ebf1611",
+        "step": "opening",
+        "status": "ok",
+        "message": "6 source-linked claims generated.",
+        "at": "2026-05-26T04:53:16.452Z",
+        "durationMs": 4134
+      },
+      {
+        "id": "trace_5ad5bf10",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T04:53:18.966Z",
+        "durationMs": 2514
+      },
+      {
+        "id": "trace_7a3c1c18",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T04:53:21.604Z",
+        "durationMs": 2638
+      },
+      {
+        "id": "trace_776f55d2",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T04:53:24.820Z",
+        "durationMs": 3216
+      },
+      {
+        "id": "trace_ff356232",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T04:53:27.584Z",
+        "durationMs": 2764
+      },
+      {
+        "id": "trace_94feb82d",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T04:53:29.322Z",
+        "durationMs": 1738
+      },
+      {
+        "id": "trace_8c767908",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T04:53:32.469Z",
+        "durationMs": 3147
+      },
+      {
+        "id": "trace_1ddc7185",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T04:53:35.090Z",
+        "durationMs": 2621
+      },
+      {
+        "id": "trace_c25aa609",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T04:53:35.090Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

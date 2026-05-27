@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { createDefaultLlmProvider } from "../providers/llm";
+import { createDefaultLlmProvider, LlmProviderFailure } from "../providers/llm";
 import { loadDebateRuntimeConfig, type DebateRuntimeConfig } from "./config";
 import { debateRequestSchema, feedbackRequestSchema, followupOutputSchema } from "./schema";
 import { frameDebateRequest, productNotes, runHybridCouncilDebate } from "./engine";
@@ -9,6 +9,7 @@ import type {
   DebateRecord,
   DebateRequest,
   FollowupExchange,
+  ModelSnapshot,
   UserFeedback
 } from "./types";
 
@@ -16,6 +17,8 @@ const repository = createDefaultDebateRepository();
 const feedbackRepository = createDefaultFeedbackRepository();
 export const DEBATE_UNAVAILABLE_MESSAGE =
   "The frogs couldn't start a debate right now. Please try again in a few minutes.";
+export const DEBATE_JUDGE_UNAVAILABLE_MESSAGE =
+  "The judge frog couldn't finish this debate right now. Please try again in a few minutes.";
 
 type Listener = (event: DebateLiveEvent) => void;
 
@@ -156,7 +159,17 @@ export async function startDebate(input: DebateRequest): Promise<StartDebateResu
       scheduleBusCleanup(record.id);
       return completed;
     } catch (error) {
-      bus.emit({ kind: "error", message: DEBATE_UNAVAILABLE_MESSAGE });
+      const failedSnapshot = modelSnapshotFromError(error);
+      if (failedSnapshot) {
+        bus.emit({ kind: "model_snapshot", snapshot: failedSnapshot });
+      }
+      const hasStartedDebate = bus.buffer.some(
+        (event) => event.kind === "turns" || event.kind === "scorecard" || event.kind === "summary"
+      );
+      bus.emit({
+        kind: "error",
+        message: hasStartedDebate ? DEBATE_JUDGE_UNAVAILABLE_MESSAGE : DEBATE_UNAVAILABLE_MESSAGE
+      });
       const failed: DebateRecord = {
         ...record,
         status: "failed",
@@ -172,6 +185,13 @@ export async function startDebate(input: DebateRequest): Promise<StartDebateResu
   completion.catch(() => {});
 
   return { debate: record, completion };
+}
+
+function modelSnapshotFromError(error: unknown): ModelSnapshot | null {
+  if (error instanceof LlmProviderFailure) {
+    return error.snapshot;
+  }
+  return null;
 }
 
 export async function createDebate(input: DebateRequest): Promise<DebateRecord> {

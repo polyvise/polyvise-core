@@ -1,0 +1,1120 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:44:54.195Z",
+  "modelId": "openai/gpt-4o",
+  "questionId": "video-games-exercise",
+  "question": "Should video games count as exercise?",
+  "run": {
+    "id": "run_abdc13d3",
+    "debateId": "eval_video-games-exercise_openai-gpt-4o",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:44:27.918Z",
+    "completedAt": "2026-05-26T05:44:54.195Z",
+    "events": [
+      {
+        "id": "event_cd810c9d",
+        "debateId": "eval_video-games-exercise_openai-gpt-4o",
+        "runId": "run_abdc13d3",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:44:27.918Z"
+      },
+      {
+        "id": "event_03858caa",
+        "debateId": "eval_video-games-exercise_openai-gpt-4o",
+        "runId": "run_abdc13d3",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:44:27.919Z"
+      },
+      {
+        "id": "event_f207e450",
+        "debateId": "eval_video-games-exercise_openai-gpt-4o",
+        "runId": "run_abdc13d3",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:44:27.919Z"
+      },
+      {
+        "id": "event_5cbc4794",
+        "debateId": "eval_video-games-exercise_openai-gpt-4o",
+        "runId": "run_abdc13d3",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:44:32.508Z"
+      },
+      {
+        "id": "event_50d059eb",
+        "debateId": "eval_video-games-exercise_openai-gpt-4o",
+        "runId": "run_abdc13d3",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:44:49.869Z"
+      },
+      {
+        "id": "event_82720ee6",
+        "debateId": "eval_video-games-exercise_openai-gpt-4o",
+        "runId": "run_abdc13d3",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_7618a8a5",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4o",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should video games count as exercise? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should video games count as exercise?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_85304a60",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4o",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should video games count as exercise? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should video games count as exercise?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_2f4e6d21",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4o (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_def2da32",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4o",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should video games count as exercise? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should video games count as exercise?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_0ba205cf",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4o",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should video games count as exercise? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should video games count as exercise?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_40191129",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4o",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should video games count as exercise? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_8f46a5a7",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4o",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should video games count as exercise? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_9743586a",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4o (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Video games can promote physical activity through interactive gameplay that requires movement.",
+        "warrant": "Games designed with motion-sensing technology, like those using VR or consoles with motion controllers, encourage players to engage in physical movements, which can be considered a form of exercise.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.85,
+        "id": "claim_8e7f1f6e"
+      },
+      {
+        "side": "pro",
+        "text": "Video games can improve mental health and cognitive function, which are essential components of overall exercise benefits.",
+        "warrant": "Engaging in video games can enhance problem-solving skills, improve concentration, and reduce stress, contributing to mental well-being similar to traditional exercise.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.8,
+        "id": "claim_cbc14ccb"
+      },
+      {
+        "side": "con",
+        "text": "Video games do not provide the same physical benefits as traditional exercise.",
+        "warrant": "Traditional exercise involves physical activities that improve cardiovascular health, muscle strength, and flexibility, which video games generally do not offer.",
+        "evidenceSourceIds": [],
+        "confidence": 0.85,
+        "id": "claim_a2e5ca70"
+      },
+      {
+        "side": "con",
+        "text": "Counting video games as exercise could lead to a misunderstanding of what constitutes healthy physical activity.",
+        "warrant": "If video games are considered exercise, individuals might prioritize gaming over more physically demanding activities, potentially leading to a sedentary lifestyle.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_c4f97ca3"
+      },
+      {
+        "side": "con",
+        "text": "Video games primarily engage cognitive and fine motor skills rather than providing full-body physical engagement.",
+        "warrant": "While some video games may involve movement, they do not typically engage the entire body in a way that promotes overall physical fitness.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_a4e0ae29"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should video games count as exercise?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_8e7f1f6e",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Video games can promote physical activity through interactive gameplay that requires movement."
+      },
+      {
+        "id": "claim_cbc14ccb",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Video games can improve mental health and cognitive function, which are essential components of overall exercise benefits."
+      },
+      {
+        "id": "claim_a2e5ca70",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Video games do not provide the same physical benefits as traditional exercise."
+      },
+      {
+        "id": "claim_c4f97ca3",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Counting video games as exercise could lead to a misunderstanding of what constitutes healthy physical activity."
+      },
+      {
+        "id": "claim_a4e0ae29",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Video games primarily engage cognitive and fine motor skills rather than providing full-body physical engagement."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_41af5940",
+        "source": "claim_8e7f1f6e",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_fbe1e3c9",
+        "source": "claim_cbc14ccb",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_418d1491",
+        "source": "claim_a2e5ca70",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_112aac57",
+        "source": "claim_c4f97ca3",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_b33bcba2",
+        "source": "claim_a4e0ae29",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_fb8b3f5f",
+        "source": "evidence-src-mock-4",
+        "target": "claim_cbc14ccb",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_be2b062c",
+        "source": "evidence-src-mock-6",
+        "target": "claim_8e7f1f6e",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_91a7fd16",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_40191129",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Yes, video games should count as exercise. Many video games now use motion-sensing technology, encouraging players to move their bodies, similar to traditional exercise. This interactive gameplay can promote physical activity. Additionally, video games can enhance mental health and cognitive function, which are important components of overall exercise benefits.",
+        "claimIds": [
+          "claim_8e7f1f6e",
+          "claim_cbc14ccb"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-4"
+        ],
+        "id": "turn_bdc168ff",
+        "createdAt": "2026-05-26T05:44:35.615Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_8f46a5a7",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "I believe the answer is NO. Video games do not offer the same physical benefits as traditional exercise, which includes improving cardiovascular health and muscle strength. Additionally, considering video games as exercise might lead people to choose gaming over more physically demanding activities, potentially resulting in a sedentary lifestyle.",
+        "claimIds": [
+          "claim_a2e5ca70",
+          "claim_c4f97ca3"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_6f1a708a",
+        "createdAt": "2026-05-26T05:44:35.615Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_40191129",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Can you clarify why the potential for video games to enhance mental health and cognitive function is less significant than the concern that they might not provide the same physical benefits as traditional exercise?",
+        "claimIds": [
+          "claim_cbc14ccb",
+          "claim_a2e5ca70"
+        ],
+        "sourceIds": [
+          "src-mock-4"
+        ],
+        "id": "turn_5a1e102b",
+        "createdAt": "2026-05-26T05:44:38.484Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_8f46a5a7",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Can you explain how video games provide the same level of physical benefits as traditional exercise, considering they primarily engage cognitive and fine motor skills rather than full-body physical engagement?",
+        "claimIds": [
+          "claim_a4e0ae29",
+          "claim_a2e5ca70"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_914e5764",
+        "createdAt": "2026-05-26T05:44:38.484Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_40191129",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "While it's true that traditional exercise offers significant physical benefits, video games with motion-sensing technology can also promote physical activity. These games require players to move their bodies, which can be a fun and engaging way to exercise. Additionally, video games can improve mental health by enhancing problem-solving skills and reducing stress, which are important aspects of overall well-being.",
+        "claimIds": [
+          "claim_8e7f1f6e",
+          "claim_cbc14ccb"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-4"
+        ],
+        "id": "turn_f4c2e6d6",
+        "createdAt": "2026-05-26T05:44:44.097Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_8f46a5a7",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Video games do not provide the same physical benefits as traditional exercise. Traditional exercise improves cardiovascular health and muscle strength, which video games generally do not offer. Counting video games as exercise could lead to a misunderstanding of healthy physical activity, potentially leading to a sedentary lifestyle.",
+        "claimIds": [
+          "claim_a2e5ca70",
+          "claim_c4f97ca3",
+          "claim_a4e0ae29"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_4e258fda",
+        "createdAt": "2026-05-26T05:44:44.097Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_40191129",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Video games can indeed count as exercise because they promote physical activity through interactive gameplay. Games using motion-sensing technology encourage players to move, which can be a form of exercise. Additionally, video games improve mental health and cognitive function, essential components of overall exercise benefits. Vote YES to recognize these important aspects.",
+        "claimIds": [
+          "claim_8e7f1f6e",
+          "claim_cbc14ccb"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-4"
+        ],
+        "id": "turn_be35a9b5",
+        "createdAt": "2026-05-26T05:44:47.400Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_8f46a5a7",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Video games should not count as exercise because they don't provide the same physical benefits as traditional activities like running or swimming. While some games involve movement, they mainly engage cognitive and fine motor skills, not full-body physical fitness. Counting them as exercise could lead to confusion about healthy activity, encouraging a sedentary lifestyle. Vote NO to keep exercise standards clear and effective.",
+        "claimIds": [
+          "claim_a2e5ca70",
+          "claim_c4f97ca3",
+          "claim_a4e0ae29"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_8b841437",
+        "createdAt": "2026-05-26T05:44:47.400Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_9743586a",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The YES side argues that video games can promote physical activity and improve mental health, which are important aspects of exercise. They highlight games with motion-sensing technology that encourage movement. On the other hand, the NO side contends that video games do not provide the same physical benefits as traditional exercise, such as cardiovascular health and muscle strength. They also warn that considering video games as exercise might lead to less engagement in more physically demanding activities. The decision hinges on whether the mental and limited physical benefits of video games are enough to classify them as exercise.",
+        "claimIds": [
+          "claim_8e7f1f6e",
+          "claim_cbc14ccb",
+          "claim_a2e5ca70",
+          "claim_c4f97ca3",
+          "claim_a4e0ae29"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-6"
+        ],
+        "id": "turn_2332fc25",
+        "createdAt": "2026-05-26T05:44:49.869Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.72,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.5,
+          "con": 8.5,
+          "note": "The con side effectively argues that video games lack the physical benefits of traditional exercise, such as cardiovascular health, which is not sufficiently countered by the pro side's evidence."
+        },
+        {
+          "name": "practicality",
+          "pro": 7,
+          "con": 8,
+          "note": "The con side highlights practical concerns about misclassifying video games as exercise, potentially leading to less engagement in traditional physical activities."
+        },
+        {
+          "name": "risk",
+          "pro": 7.2,
+          "con": 8.8,
+          "note": "The risk of promoting a sedentary lifestyle by counting video games as exercise is a strong point for the con side."
+        },
+        {
+          "name": "fairness",
+          "pro": 7.8,
+          "con": 8,
+          "note": "Both sides present fair arguments, but the con side's focus on maintaining clear standards for exercise is more convincing."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.5,
+          "con": 8,
+          "note": "Reversibility is not a major issue, but the con side's arguments about maintaining exercise standards are more robust."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Video games should not count as exercise due to insufficient physical benefits.",
+      "recommendation": "The verdict is NO. While video games can offer some physical activity and mental health benefits, they do not match the physical benefits provided by traditional exercise, such as cardiovascular health and muscle strength.",
+      "strongestPro": [
+        "Video games can promote physical activity through interactive gameplay that requires movement.",
+        "Video games can improve mental health and cognitive function, which are essential components of overall exercise benefits."
+      ],
+      "strongestCon": [
+        "Video games do not provide the same physical benefits as traditional exercise.",
+        "Counting video games as exercise could lead to a misunderstanding of what constitutes healthy physical activity.",
+        "Video games primarily engage cognitive and fine motor skills rather than providing full-body physical engagement."
+      ],
+      "unresolvedUncertainties": [
+        "The extent to which motion-sensing video games can provide substantial physical benefits comparable to traditional exercise.",
+        "Whether mental health benefits from video games should be weighted equally with physical benefits in defining exercise."
+      ],
+      "whatWouldChangeMind": [
+        "Evidence showing that video games with motion-sensing technology provide comparable cardiovascular and muscle-strengthening benefits to traditional exercise.",
+        "A comprehensive study demonstrating that video games significantly reduce sedentary behavior and promote overall physical fitness."
+      ],
+      "confidence": 0.72
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 2003,
+        "promptTokens": 1234,
+        "completionTokens": 203,
+        "estimatedCostUsd": 0.005115,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2003
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 2586,
+        "promptTokens": 1228,
+        "completionTokens": 248,
+        "estimatedCostUsd": 0.00555,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2586
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1718,
+        "promptTokens": 2013,
+        "completionTokens": 169,
+        "estimatedCostUsd": 0.0067225,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1718
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1388,
+        "promptTokens": 2016,
+        "completionTokens": 150,
+        "estimatedCostUsd": 0.00654,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1388
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1411,
+        "promptTokens": 2017,
+        "completionTokens": 136,
+        "estimatedCostUsd": 0.0064025,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1411
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1457,
+        "promptTokens": 2023,
+        "completionTokens": 129,
+        "estimatedCostUsd": 0.0063475,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1457
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 4030,
+        "promptTokens": 2010,
+        "completionTokens": 181,
+        "estimatedCostUsd": 0.006835,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4030
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1581,
+        "promptTokens": 2018,
+        "completionTokens": 158,
+        "estimatedCostUsd": 0.006625,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1581
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1585,
+        "promptTokens": 1994,
+        "completionTokens": 171,
+        "estimatedCostUsd": 0.006695,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1585
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1716,
+        "promptTokens": 2006,
+        "completionTokens": 176,
+        "estimatedCostUsd": 0.006775,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1716
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 2469,
+        "promptTokens": 2036,
+        "completionTokens": 250,
+        "estimatedCostUsd": 0.00759,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2469
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 2184,
+        "promptTokens": 3577,
+        "completionTokens": 330,
+        "estimatedCostUsd": 0.0122425,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2184
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 2139,
+        "promptTokens": 3907,
+        "completionTokens": 296,
+        "estimatedCostUsd": 0.0127275,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2139
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_255356c7",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_137eeb50",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_a9348092",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_332229ff",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_4f1bcc2b",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_2f06c5a4",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_a365cdad",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      },
+      {
+        "id": "artifact_4f3e04b3",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:44:54.195Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_c0d22b08",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:44:27.919Z",
+        "durationMs": 1
+      },
+      {
+        "id": "trace_1af92f1e",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:44:27.919Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_6ac35d8c",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:44:27.919Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_c6a9130b",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:44:27.919Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_84bb4009",
+        "step": "opening",
+        "status": "ok",
+        "message": "5 source-linked claims generated.",
+        "at": "2026-05-26T05:44:32.508Z",
+        "durationMs": 4589
+      },
+      {
+        "id": "trace_5c5ea647",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:44:35.615Z",
+        "durationMs": 3107
+      },
+      {
+        "id": "trace_157d34f6",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:44:38.484Z",
+        "durationMs": 2869
+      },
+      {
+        "id": "trace_50569e66",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:44:44.097Z",
+        "durationMs": 5613
+      },
+      {
+        "id": "trace_e2c41fd1",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:44:47.400Z",
+        "durationMs": 3303
+      },
+      {
+        "id": "trace_bc54a5c8",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:44:49.869Z",
+        "durationMs": 2469
+      },
+      {
+        "id": "trace_aa459cfc",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T05:44:52.055Z",
+        "durationMs": 2186
+      },
+      {
+        "id": "trace_658e131d",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T05:44:54.195Z",
+        "durationMs": 2140
+      },
+      {
+        "id": "trace_2c78d158",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:44:54.195Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

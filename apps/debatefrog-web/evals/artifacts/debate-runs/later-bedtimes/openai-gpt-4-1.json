@@ -1,0 +1,1088 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:41:43.942Z",
+  "modelId": "openai/gpt-4.1",
+  "questionId": "later-bedtimes",
+  "question": "Should kids get to choose their own bedtime?",
+  "run": {
+    "id": "run_529f79e3",
+    "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:41:09.409Z",
+    "completedAt": "2026-05-26T05:41:43.942Z",
+    "events": [
+      {
+        "id": "event_827c1f7b",
+        "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+        "runId": "run_529f79e3",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:41:09.409Z"
+      },
+      {
+        "id": "event_db0d1273",
+        "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+        "runId": "run_529f79e3",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:41:09.409Z"
+      },
+      {
+        "id": "event_b212f77b",
+        "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+        "runId": "run_529f79e3",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:41:09.409Z"
+      },
+      {
+        "id": "event_000398ea",
+        "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+        "runId": "run_529f79e3",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:41:15.040Z"
+      },
+      {
+        "id": "event_ef67eb44",
+        "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+        "runId": "run_529f79e3",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:41:32.113Z"
+      },
+      {
+        "id": "event_c96ae989",
+        "debateId": "eval_later-bedtimes_openai-gpt-4-1",
+        "runId": "run_529f79e3",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:41:43.941Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_f5eef777",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4.1",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should kids get to choose their own bedtime? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should kids get to choose their own bedtime?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_fc5a0155",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4.1",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should kids get to choose their own bedtime? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should kids get to choose their own bedtime?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_74a6e071",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4.1 (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_fe93b8c5",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4.1",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should kids get to choose their own bedtime? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should kids get to choose their own bedtime?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_621bf64d",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4.1",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should kids get to choose their own bedtime? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should kids get to choose their own bedtime?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_16ef05d3",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4.1",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should kids get to choose their own bedtime? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_e2dd9375",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4.1",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should kids get to choose their own bedtime? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_f0b520d7",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4.1 (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Allowing kids to choose their own bedtime can foster a sense of autonomy and responsibility, which is linked to better self-regulation and decision-making skills.",
+        "warrant": "Research in child development shows that when children are given age-appropriate choices, they are more likely to develop independence and internalize healthy habits, making them more likely to manage their own routines effectively.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.7,
+        "id": "claim_74d916e6"
+      },
+      {
+        "side": "pro",
+        "text": "Letting kids set their own bedtime may help them better recognize and respond to their own sleep needs, leading to improved sleep quality and well-being.",
+        "warrant": "When children are allowed to listen to their bodies and adjust their routines, they can learn to identify when they are tired and need rest, which can result in healthier sleep patterns over time.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.68,
+        "id": "claim_4ec78cd8"
+      },
+      {
+        "side": "con",
+        "text": "Allowing kids to choose their own bedtime risks undermining healthy sleep routines, as children often lack the self-regulation needed to prioritize rest over immediate gratification.",
+        "warrant": "Children's cognitive development and impulse control are still maturing, making it difficult for them to consistently make choices that align with long-term health, such as maintaining a regular bedtime.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.7,
+        "id": "claim_fdb9d594"
+      },
+      {
+        "side": "con",
+        "text": "The burden of proof is on those advocating for a change to child-directed bedtimes to show concrete benefits and workable safeguards, which has not been met with specific evidence.",
+        "warrant": "Institutional policies affecting children require clear demonstration of benefits and risk mitigation, not just appealing intentions, to justify departing from established routines.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.75,
+        "id": "claim_4b15d6a0"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should kids get to choose their own bedtime?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_74d916e6",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing kids to choose their own bedtime can foster a sense of autonomy and responsibility, which is linked to better self-regulation and decision-making skills."
+      },
+      {
+        "id": "claim_4ec78cd8",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Letting kids set their own bedtime may help them better recognize and respond to their own sleep needs, leading to improved sleep quality and well-being."
+      },
+      {
+        "id": "claim_fdb9d594",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Allowing kids to choose their own bedtime risks undermining healthy sleep routines, as children often lack the self-regulation needed to prioritize rest over immediate gratification."
+      },
+      {
+        "id": "claim_4b15d6a0",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The burden of proof is on those advocating for a change to child-directed bedtimes to show concrete benefits and workable safeguards, which has not been met with specific evidence."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_b2bd0481",
+        "source": "claim_74d916e6",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_da2fd3a4",
+        "source": "claim_4ec78cd8",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_910a390f",
+        "source": "claim_fdb9d594",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_aecd1f51",
+        "source": "claim_4b15d6a0",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_8ddf206c",
+        "source": "evidence-src-mock-5",
+        "target": "claim_4b15d6a0",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_5b04c130",
+        "source": "evidence-src-mock-6",
+        "target": "claim_74d916e6",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_1fb31303",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_16ef05d3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, kids should get to choose their own bedtime. When kids are allowed to decide, they learn responsibility and self-regulation, which helps them make better choices in the future. Research shows that giving children age-appropriate choices builds independence and helps them develop healthy habits. Also, letting kids listen to their bodies can improve their sleep quality and well-being over time.",
+        "claimIds": [
+          "claim_74d916e6",
+          "claim_4ec78cd8"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_460ef3ff",
+        "createdAt": "2026-05-26T05:41:18.708Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_e2dd9375",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "NO, kids should not get to choose their own bedtime. Kids often don't have enough self-control to pick a bedtime that keeps them healthy, so letting them decide can lead to poor sleep routines and tiredness. The people saying YES need to show clear proof that kids will actually benefit and that there are real safeguards, but so far, specific evidence is missing.",
+        "claimIds": [
+          "claim_fdb9d594",
+          "claim_4b15d6a0"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-5"
+        ],
+        "id": "turn_d19610c0",
+        "createdAt": "2026-05-26T05:41:18.708Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_16ef05d3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "If kids learn to notice when they're tired and choose their own bedtime, how does the NO side explain studies showing this builds self-regulation and healthy habits over time?",
+        "claimIds": [
+          "claim_74d916e6",
+          "claim_4ec78cd8"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_b5b05a6d",
+        "createdAt": "2026-05-26T05:41:21.645Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_e2dd9375",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "You say YES because kids might learn responsibility by choosing their bedtime, but where is the evidence that most kids actually develop better self-control this way? Without clear proof that kids reliably make healthy choices, isn't there a risk of worse sleep habits?",
+        "claimIds": [
+          "claim_74d916e6"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_bec6016b",
+        "createdAt": "2026-05-26T05:41:21.645Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_16ef05d3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side says kids might not always make healthy choices, but research shows that when kids are trusted with age-appropriate decisions, like choosing bedtime, they often learn to listen to their bodies and become more responsible over time. This helps them build good habits and self-control, not just now but for the future.",
+        "claimIds": [
+          "claim_74d916e6",
+          "claim_4ec78cd8"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_fca18563",
+        "createdAt": "2026-05-26T05:41:26.009Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_e2dd9375",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The YES side says kids will learn responsibility by choosing their own bedtime, but there is no strong evidence that kids can reliably set healthy routines on their own. Research shows children often lack the self-control needed to pick a bedtime that supports their health, so changing the rule could lead to worse sleep and tiredness. The YES side has not shown clear benefits or safeguards to protect kids’ well-being.",
+        "claimIds": [
+          "claim_fdb9d594",
+          "claim_4b15d6a0"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-5"
+        ],
+        "id": "turn_1186ae15",
+        "createdAt": "2026-05-26T05:41:26.009Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_16ef05d3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Kids should get to choose their own bedtime because it helps them build responsibility and learn to listen to their bodies. Research shows that when kids make age-appropriate choices, they develop better self-control and healthier habits. Letting kids decide can lead to improved sleep quality and stronger decision-making skills.",
+        "claimIds": [
+          "claim_74d916e6",
+          "claim_4ec78cd8"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_ed07aa31",
+        "createdAt": "2026-05-26T05:41:29.572Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_e2dd9375",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side showed that letting kids pick their own bedtime risks unhealthy sleep because most kids aren't ready to make those choices on their own. The YES side did not provide strong evidence or safeguards to prove this change would be safe or better for kids. For important rules like bedtime, we need clear proof of benefits and ways to prevent harm, which the YES side hasn't shown.",
+        "claimIds": [
+          "claim_fdb9d594",
+          "claim_4b15d6a0"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-5"
+        ],
+        "id": "turn_19f3cb93",
+        "createdAt": "2026-05-26T05:41:29.572Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_f0b520d7",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The YES side showed that letting kids choose their own bedtime could help them build responsibility and recognize their sleep needs, but the evidence was mostly general and did not address how to prevent unhealthy sleep habits. The NO side pointed out that kids often lack the self-control to set a healthy bedtime and argued that changing the rule requires clear proof of benefits and safeguards, which was not fully met. Based on the burden-of-proof standard, the NO side's concerns about risks and lack of concrete safeguards are stronger.",
+        "claimIds": [
+          "claim_74d916e6",
+          "claim_4ec78cd8",
+          "claim_fdb9d594",
+          "claim_4b15d6a0"
+        ],
+        "sourceIds": [
+          "src-mock-6",
+          "src-mock-5"
+        ],
+        "id": "turn_3938c723",
+        "createdAt": "2026-05-26T05:41:32.113Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "conditional_no",
+      "confidence": 0.65,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 6.8,
+          "con": 8.2,
+          "note": "The pro side cited general research about autonomy and self-regulation, but did not provide specific evidence that children reliably make healthy bedtime choices or that such a policy leads to better outcomes. The con side emphasized the lack of concrete proof and referenced the burden-of-proof standard for child-facing policies, which was not sufficiently met by the pro."
+        },
+        {
+          "name": "practicality",
+          "pro": 6.5,
+          "con": 8,
+          "note": "Pro argued that children can learn to self-regulate, but did not address how to ensure kids actually get enough sleep or how to manage inconsistent routines. Con highlighted the practical risk that most children lack the maturity to consistently choose healthy bedtimes, making the policy difficult to administer safely."
+        },
+        {
+          "name": "risk",
+          "pro": 6,
+          "con": 8.5,
+          "note": "Pro did not sufficiently address the risk that children may develop poor sleep habits or suffer from sleep deprivation. Con clearly articulated these risks and argued that the absence of safeguards or proof of benefit makes the change unjustified."
+        },
+        {
+          "name": "fairness",
+          "pro": 7,
+          "con": 7.8,
+          "note": "Pro suggested that letting kids choose is fairer and supports autonomy, but did not show that this outweighs the risk of harm. Con argued that fairness in child policy requires prioritizing health and safety, which was not guaranteed by the pro proposal."
+        },
+        {
+          "name": "reversibility",
+          "pro": 6.5,
+          "con": 7,
+          "note": "Neither side addressed reversibility in detail, but the con position implied that harm from poor sleep routines may not be easily undone, especially if unhealthy habits become entrenched."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "NO: Kids should not get to choose their own bedtime without clear evidence of benefits and safeguards.",
+      "recommendation": "Based on the burden-of-proof standard for child-facing policies, the case for allowing kids to choose their own bedtime does not meet the requirement for concrete benefits or workable safeguards. The evidence for autonomy and self-regulation is general and does not address the concrete risks of poor sleep habits or lack of self-control. The NO side's concerns about health and safety risks, and the lack of specific proof or protections, outweigh the general developmental benefits cited by the YES side.",
+      "strongestPro": [
+        "Allowing kids to choose their own bedtime can foster a sense of autonomy and responsibility, which is linked to better self-regulation and decision-making skills.",
+        "Letting kids set their own bedtime may help them better recognize and respond to their own sleep needs, leading to improved sleep quality and well-being."
+      ],
+      "strongestCon": [
+        "Allowing kids to choose their own bedtime risks undermining healthy sleep routines, as children often lack the self-regulation needed to prioritize rest over immediate gratification.",
+        "The burden of proof is on those advocating for a change to child-directed bedtimes to show concrete benefits and workable safeguards, which has not been met with specific evidence."
+      ],
+      "unresolvedUncertainties": [
+        "Whether there is age-specific or context-specific evidence showing that most children can reliably set healthy bedtimes without adult guidance.",
+        "If any safeguards or hybrid approaches could mitigate the risks while preserving autonomy.",
+        "How the long-term impacts of child-directed bedtimes compare to the risks of inconsistent or insufficient sleep."
+      ],
+      "whatWouldChangeMind": [
+        "Direct evidence from controlled studies or large-scale implementations showing that children who choose their own bedtime have better or equivalent sleep health outcomes compared to those with adult-set routines.",
+        "Demonstration of effective, practical safeguards that ensure children do not develop unhealthy sleep patterns when allowed to choose their bedtime.",
+        "Expert consensus or institutional guidelines supporting child-directed bedtimes as safe and beneficial for most children."
+      ],
+      "confidence": 0.7
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 3038,
+        "promptTokens": 1301,
+        "completionTokens": 235,
+        "estimatedCostUsd": 0.004482,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3038
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 2593,
+        "promptTokens": 1295,
+        "completionTokens": 233,
+        "estimatedCostUsd": 0.004454,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2593
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 2043,
+        "promptTokens": 2113,
+        "completionTokens": 176,
+        "estimatedCostUsd": 0.005634,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2043
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1624,
+        "promptTokens": 2112,
+        "completionTokens": 182,
+        "estimatedCostUsd": 0.00568,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1624
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1185,
+        "promptTokens": 2115,
+        "completionTokens": 138,
+        "estimatedCostUsd": 0.005334,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1185
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1752,
+        "promptTokens": 2106,
+        "completionTokens": 141,
+        "estimatedCostUsd": 0.00534,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1752
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1561,
+        "promptTokens": 2093,
+        "completionTokens": 168,
+        "estimatedCostUsd": 0.00553,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1561
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 2802,
+        "promptTokens": 2088,
+        "completionTokens": 191,
+        "estimatedCostUsd": 0.005704,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2802
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1945,
+        "promptTokens": 2077,
+        "completionTokens": 161,
+        "estimatedCostUsd": 0.005442,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1945
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1618,
+        "promptTokens": 2076,
+        "completionTokens": 184,
+        "estimatedCostUsd": 0.005624,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1618
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 2541,
+        "promptTokens": 2109,
+        "completionTokens": 232,
+        "estimatedCostUsd": 0.006074,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2541
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 8206,
+        "promptTokens": 3591,
+        "completionTokens": 450,
+        "estimatedCostUsd": 0.010782,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 8206
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 3621,
+        "promptTokens": 4068,
+        "completionTokens": 456,
+        "estimatedCostUsd": 0.011784,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3621
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_e890e0a7",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_1d725eb0",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_b8e2e774",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_ccd73239",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 4,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_0d9f93b4",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_9f13644e",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_35b8e59f",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      },
+      {
+        "id": "artifact_82ff3f10",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:41:43.942Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_669648bf",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:41:09.409Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_99d91e13",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:41:09.409Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_a35d48b4",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:41:09.409Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_e2d31fbb",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:41:09.409Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_ddf7a804",
+        "step": "opening",
+        "status": "ok",
+        "message": "4 source-linked claims generated.",
+        "at": "2026-05-26T05:41:15.040Z",
+        "durationMs": 5631
+      },
+      {
+        "id": "trace_83a200c3",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:41:18.708Z",
+        "durationMs": 3668
+      },
+      {
+        "id": "trace_9aa5da22",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:41:21.645Z",
+        "durationMs": 2937
+      },
+      {
+        "id": "trace_95bc4b85",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:41:26.009Z",
+        "durationMs": 4364
+      },
+      {
+        "id": "trace_71d32d3c",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:41:29.572Z",
+        "durationMs": 3563
+      },
+      {
+        "id": "trace_f6743e87",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:41:32.113Z",
+        "durationMs": 2541
+      },
+      {
+        "id": "trace_b4507006",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as conditional_no.",
+        "at": "2026-05-26T05:41:40.319Z",
+        "durationMs": 8206
+      },
+      {
+        "id": "trace_adc0aa2a",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: conditional_no.",
+        "at": "2026-05-26T05:41:43.941Z",
+        "durationMs": 3622
+      },
+      {
+        "id": "trace_f8af5b73",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:41:43.942Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,1048 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:11:52.253Z",
+  "modelId": "anthropic/claude-3.5-haiku",
+  "questionId": "ai-homework",
+  "question": "Should students be allowed to use AI tools for homework?",
+  "run": {
+    "id": "run_b9a9669d",
+    "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:10:56.094Z",
+    "completedAt": "2026-05-26T05:11:52.253Z",
+    "events": [
+      {
+        "id": "event_b29b7957",
+        "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+        "runId": "run_b9a9669d",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:10:56.094Z"
+      },
+      {
+        "id": "event_029a4dd0",
+        "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+        "runId": "run_b9a9669d",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:10:56.095Z"
+      },
+      {
+        "id": "event_1fef91e6",
+        "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+        "runId": "run_b9a9669d",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:10:56.095Z"
+      },
+      {
+        "id": "event_6e84f010",
+        "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+        "runId": "run_b9a9669d",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:11:05.859Z"
+      },
+      {
+        "id": "event_a0425651",
+        "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+        "runId": "run_b9a9669d",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:11:40.356Z"
+      },
+      {
+        "id": "event_1ad7a443",
+        "debateId": "eval_ai-homework_anthropic-claude-3-5-haiku",
+        "runId": "run_b9a9669d",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_f75d95e3",
+        "name": "Strategic Optimist",
+        "model": "anthropic/claude-3.5-haiku",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should students be allowed to use AI tools for homework? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students be allowed to use AI tools for homework?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_50be4220",
+        "name": "Risk Skeptic",
+        "model": "anthropic/claude-3.5-haiku",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students be allowed to use AI tools for homework? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students be allowed to use AI tools for homework?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_e98550bd",
+        "name": "Empirical Referee",
+        "model": "anthropic/claude-3.5-haiku (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_6b0e5829",
+        "name": "Implementation Pragmatist",
+        "model": "anthropic/claude-3.5-haiku",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should students be allowed to use AI tools for homework? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students be allowed to use AI tools for homework?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_a0b43957",
+        "name": "Equity Auditor",
+        "model": "anthropic/claude-3.5-haiku",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should students be allowed to use AI tools for homework? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students be allowed to use AI tools for homework?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_cb1f242d",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "anthropic/claude-3.5-haiku",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should students be allowed to use AI tools for homework? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_96ad514e",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "anthropic/claude-3.5-haiku",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students be allowed to use AI tools for homework? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_799c6fd5",
+        "name": "Neutral Synthesis Judge",
+        "model": "anthropic/claude-3.5-haiku (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Artificial Intelligence Risk Management Framework",
+        "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+        "publisher": "NIST",
+        "snippet": "Defines risk-management practices for trustworthy AI systems.",
+        "quality": "primary"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Business Blog: AI and the claims you make",
+        "url": "https://www.ftc.gov/business-guidance/blog/2023/02/keep-your-ai-claims-check",
+        "publisher": "Federal Trade Commission",
+        "snippet": "Warns businesses to substantiate AI claims and consider consumer protection risks.",
+        "quality": "primary"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "AI tools can enhance student learning by providing personalized assistance and immediate feedback on homework assignments.",
+        "warrant": "Adaptive learning technologies help students understand complex concepts at their own pace and identify knowledge gaps more effectively than traditional methods.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.75,
+        "id": "claim_12d8e6ea"
+      },
+      {
+        "side": "pro",
+        "text": "Allowing AI tools for homework prepares students for future workplace environments where AI collaboration will be increasingly common and essential.",
+        "warrant": "Developing AI literacy and integration skills early helps students become more adaptable and technologically competent professionals.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.72,
+        "id": "claim_0929c9be"
+      },
+      {
+        "side": "pro",
+        "text": "AI homework tools can democratize educational support by providing high-quality learning assistance to students who lack access to traditional tutoring resources.",
+        "warrant": "Technology-enabled learning can help bridge educational inequalities by making sophisticated learning support more widely available.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.68,
+        "id": "claim_f4e40bb1"
+      },
+      {
+        "side": "con",
+        "text": "AI tools for homework create significant academic integrity risks by enabling students to bypass critical learning processes and skill development.",
+        "warrant": "Automated solutions can short-circuit the cognitive engagement necessary for genuine educational growth and understanding.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.82,
+        "id": "claim_dd64792a"
+      },
+      {
+        "side": "con",
+        "text": "Current AI technologies cannot reliably distinguish between genuine student work and AI-generated content, undermining assessment accuracy.",
+        "warrant": "Without robust verification mechanisms, AI tools fundamentally compromise the validity of academic evaluation methods.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.75,
+        "id": "claim_dbd673d1"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should students be allowed to use AI tools for homework?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_12d8e6ea",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "AI tools can enhance student learning by providing personalized assistance and immediate feedback on homework assignments."
+      },
+      {
+        "id": "claim_0929c9be",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing AI tools for homework prepares students for future workplace environments where AI collaboration will be increasingly common and essential."
+      },
+      {
+        "id": "claim_f4e40bb1",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "AI homework tools can democratize educational support by providing high-quality learning assistance to students who lack access to traditional tutoring resources."
+      },
+      {
+        "id": "claim_dd64792a",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "AI tools for homework create significant academic integrity risks by enabling students to bypass critical learning processes and skill development."
+      },
+      {
+        "id": "claim_dbd673d1",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Current AI technologies cannot reliably distinguish between genuine student work and AI-generated content, undermining assessment accuracy."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "NIST",
+        "detail": "Artificial Intelligence Risk Management Framework",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Federal Trade Commission",
+        "detail": "Business Blog: AI and the claims you make",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_ab48b4be",
+        "source": "claim_12d8e6ea",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_14ab1df2",
+        "source": "claim_0929c9be",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_ac422cf9",
+        "source": "claim_f4e40bb1",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_bc5df584",
+        "source": "claim_dd64792a",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_201fb38c",
+        "source": "claim_dbd673d1",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_0b6bff03",
+        "source": "evidence-src-mock-1",
+        "target": "claim_12d8e6ea",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_be08b439",
+        "source": "evidence-src-mock-2",
+        "target": "claim_0929c9be",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_6295e257",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_cb1f242d",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES! AI homework tools can transform learning by giving students personalized help exactly when they need it. Imagine getting instant, tailored explanations that help you understand tough math or science problems right away. These tools can make learning more engaging and help students who might not have extra tutoring resources learn faster and more effectively.",
+        "claimIds": [
+          "claim_12d8e6ea",
+          "claim_f4e40bb1"
+        ],
+        "sourceIds": [
+          "src-mock-1"
+        ],
+        "id": "turn_0cab63e5",
+        "createdAt": "2026-05-26T05:11:13.833Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_96ad514e",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Students should NOT use AI tools for homework because these technologies fundamentally undermine learning. AI can trick students into avoiding critical thinking and skill-building. When students rely on automated solutions, they miss out on the essential cognitive work that helps them truly understand academic concepts.",
+        "claimIds": [
+          "claim_dd64792a",
+          "claim_dbd673d1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_6cfd16ac",
+        "createdAt": "2026-05-26T05:11:13.833Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_cb1f242d",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "How can we ensure AI homework tools actually help students learn, rather than just giving them quick answers? Our YES approach wants to transform learning, not just shortcut it.",
+        "claimIds": [
+          "claim_12d8e6ea",
+          "claim_0929c9be",
+          "claim_f4e40bb1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_fdd0799b",
+        "createdAt": "2026-05-26T05:11:20.694Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_96ad514e",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "What specific, measurable learning outcomes would prove that AI tools genuinely improve student understanding, not just generate quick answers? How can we verify students are truly learning, not just copying?",
+        "claimIds": [
+          "claim_12d8e6ea"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_5acd36f6",
+        "createdAt": "2026-05-26T05:11:20.694Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_cb1f242d",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Our YES approach transforms potential risks into learning opportunities. By teaching responsible AI use, we can help students develop critical thinking skills that verify and improve AI-generated work, turning potential shortcuts into meaningful educational experiences.",
+        "claimIds": [
+          "claim_12d8e6ea",
+          "claim_0929c9be",
+          "claim_f4e40bb1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_d9b23ab6",
+        "createdAt": "2026-05-26T05:11:27.934Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_96ad514e",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The YES side's claims about AI homework tools ignore critical academic integrity risks. Students could easily bypass genuine learning by generating automated responses, which undermines the core purpose of education - developing critical thinking skills and deep understanding.",
+        "claimIds": [
+          "claim_dd64792a",
+          "claim_dbd673d1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_2320570f",
+        "createdAt": "2026-05-26T05:11:27.934Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_cb1f242d",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Our YES evidence shows AI homework tools can transform learning by providing personalized support, building future-ready skills, and making quality educational help accessible to more students. The learning gains and technological preparation outweigh potential risks when implemented thoughtfully.",
+        "claimIds": [
+          "claim_12d8e6ea",
+          "claim_0929c9be",
+          "claim_f4e40bb1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_02435876",
+        "createdAt": "2026-05-26T05:11:35.723Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_96ad514e",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Our evidence shows AI homework tools fundamentally undermine learning by replacing critical thinking with automated shortcuts. Students need genuine cognitive engagement, not easy answers. The risks of academic integrity collapse and skill erosion far outweigh potential conveniences.",
+        "claimIds": [
+          "claim_dd64792a",
+          "claim_dbd673d1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_0aaa0e29",
+        "createdAt": "2026-05-26T05:11:35.723Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_799c6fd5",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "After carefully weighing the evidence, the decision hinges on balancing learning enhancement against academic integrity risks. YES arguments demonstrate potential personalized learning and future skill preparation, but NO arguments reveal critical concerns about genuine understanding and assessment validity. The resolution requires clear safeguards to mitigate potential misuse while preserving educational value.",
+        "claimIds": [
+          "claim_12d8e6ea",
+          "claim_0929c9be",
+          "claim_f4e40bb1",
+          "claim_dd64792a",
+          "claim_dbd673d1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_135ce154",
+        "createdAt": "2026-05-26T05:11:40.356Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "conditional_no",
+      "confidence": 0.72,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.4,
+          "con": 8.1,
+          "note": "Con arguments more convincingly demonstrate academic integrity risks and assessment validity challenges with AI homework tools."
+        },
+        {
+          "name": "practicality",
+          "pro": 7.6,
+          "con": 8.3,
+          "note": "Implementing AI homework tools requires robust verification mechanisms to prevent misuse and maintain educational quality."
+        },
+        {
+          "name": "risk",
+          "pro": 6.5,
+          "con": 8.9,
+          "note": "Significant risks of cognitive skill erosion and compromised learning processes outweigh potential personalization benefits."
+        },
+        {
+          "name": "fairness",
+          "pro": 7.2,
+          "con": 8.5,
+          "note": "Unequal access to AI verification technologies could create new educational inequalities beyond current learning disparities."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.3,
+          "con": 7.8,
+          "note": "Potential negative impacts on student learning are difficult to reverse once AI tools become normalized in educational settings."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "No: AI Homework Tools Undermine Fundamental Learning Processes",
+      "recommendation": "Students should not be allowed to use AI tools for homework due to significant academic integrity risks and potential erosion of critical thinking skills.",
+      "strongestPro": [
+        "AI tools can provide personalized learning assistance and immediate feedback",
+        "These technologies could help prepare students for future AI-integrated workplaces",
+        "AI homework tools might democratize educational support for students without traditional tutoring resources"
+      ],
+      "strongestCon": [
+        "AI tools enable students to bypass essential cognitive skill development",
+        "Current AI technologies cannot reliably distinguish genuine student work from AI-generated content"
+      ],
+      "unresolvedUncertainties": [
+        "How to measure authentic learning when AI tools are present",
+        "Potential long-term cognitive impacts of AI-assisted homework",
+        "Methods for verifying genuine student understanding"
+      ],
+      "whatWouldChangeMind": [
+        "Empirical evidence showing AI tools consistently improve learning outcomes",
+        "Robust verification mechanisms that prevent AI content generation",
+        "Demonstration of AI tools that require substantive student cognitive engagement"
+      ],
+      "confidence": 0.72
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "anthropic",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "stance scout and fast debate turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "anthropic",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": false
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "anthropic",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "YES frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "anthropic",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "NO frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "anthropic",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "scorecard and final synthesis judge",
+        "configured": false
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 5646,
+        "promptTokens": 1164,
+        "completionTokens": 296,
+        "estimatedCostUsd": 0.0021152,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 5646
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 4116,
+        "promptTokens": 1160,
+        "completionTokens": 194,
+        "estimatedCostUsd": 0.001704,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4116
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 4186,
+        "promptTokens": 2063,
+        "completionTokens": 192,
+        "estimatedCostUsd": 0.0024184,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4186
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 3787,
+        "promptTokens": 2066,
+        "completionTokens": 185,
+        "estimatedCostUsd": 0.0023928,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3787
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 3771,
+        "promptTokens": 2068,
+        "completionTokens": 183,
+        "estimatedCostUsd": 0.0023864,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3771
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 3088,
+        "promptTokens": 2057,
+        "completionTokens": 163,
+        "estimatedCostUsd": 0.0022976,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3088
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 3929,
+        "promptTokens": 2068,
+        "completionTokens": 190,
+        "estimatedCostUsd": 0.0024144,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3929
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 3311,
+        "promptTokens": 2049,
+        "completionTokens": 178,
+        "estimatedCostUsd": 0.0023512,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3311
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 3896,
+        "promptTokens": 2050,
+        "completionTokens": 196,
+        "estimatedCostUsd": 0.002424,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3896
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 3891,
+        "promptTokens": 2037,
+        "completionTokens": 180,
+        "estimatedCostUsd": 0.0023496,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3891
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 4633,
+        "promptTokens": 2086,
+        "completionTokens": 238,
+        "estimatedCostUsd": 0.0026208,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4633
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 6290,
+        "promptTokens": 3642,
+        "completionTokens": 337,
+        "estimatedCostUsd": 0.0042616,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6290
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "anthropic/claude-3.5-haiku",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 5605,
+        "promptTokens": 4003,
+        "completionTokens": 303,
+        "estimatedCostUsd": 0.0044144,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 5605
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_09d3c67b",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_2b41a45f",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_0aae2672",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 2,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_035dcbcd",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_14803a1d",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_cbfb40af",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_f2d6187f",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      },
+      {
+        "id": "artifact_59422de7",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:11:52.253Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_ba85e89b",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:10:56.095Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_e73393e5",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:10:56.095Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_8d4432c8",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:10:56.095Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_48b0281a",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:10:56.095Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_88bc98c3",
+        "step": "opening",
+        "status": "ok",
+        "message": "5 source-linked claims generated.",
+        "at": "2026-05-26T05:11:05.859Z",
+        "durationMs": 9764
+      },
+      {
+        "id": "trace_e279d0b3",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:11:13.833Z",
+        "durationMs": 7974
+      },
+      {
+        "id": "trace_404d9b41",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:11:20.694Z",
+        "durationMs": 6861
+      },
+      {
+        "id": "trace_8b310706",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:11:27.934Z",
+        "durationMs": 7240
+      },
+      {
+        "id": "trace_c02d2b8f",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:11:35.723Z",
+        "durationMs": 7789
+      },
+      {
+        "id": "trace_e8260fe3",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:11:40.356Z",
+        "durationMs": 4633
+      },
+      {
+        "id": "trace_6ca8a633",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as conditional_no.",
+        "at": "2026-05-26T05:11:46.646Z",
+        "durationMs": 6290
+      },
+      {
+        "id": "trace_5998fd8c",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: conditional_no.",
+        "at": "2026-05-26T05:11:52.252Z",
+        "durationMs": 5606
+      },
+      {
+        "id": "trace_f5fdd60d",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:11:52.253Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

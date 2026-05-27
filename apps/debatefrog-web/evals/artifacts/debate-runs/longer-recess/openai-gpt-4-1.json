@@ -1,0 +1,1079 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:32:46.673Z",
+  "modelId": "openai/gpt-4.1",
+  "questionId": "longer-recess",
+  "question": "Should schools have longer recess?",
+  "run": {
+    "id": "run_e005a167",
+    "debateId": "eval_longer-recess_openai-gpt-4-1",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:32:19.859Z",
+    "completedAt": "2026-05-26T05:32:46.673Z",
+    "events": [
+      {
+        "id": "event_ffb1d8fa",
+        "debateId": "eval_longer-recess_openai-gpt-4-1",
+        "runId": "run_e005a167",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:32:19.859Z"
+      },
+      {
+        "id": "event_548c6535",
+        "debateId": "eval_longer-recess_openai-gpt-4-1",
+        "runId": "run_e005a167",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:32:19.859Z"
+      },
+      {
+        "id": "event_cd9cf4d1",
+        "debateId": "eval_longer-recess_openai-gpt-4-1",
+        "runId": "run_e005a167",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:32:19.859Z"
+      },
+      {
+        "id": "event_891aed89",
+        "debateId": "eval_longer-recess_openai-gpt-4-1",
+        "runId": "run_e005a167",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:32:24.156Z"
+      },
+      {
+        "id": "event_02939548",
+        "debateId": "eval_longer-recess_openai-gpt-4-1",
+        "runId": "run_e005a167",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:32:37.921Z"
+      },
+      {
+        "id": "event_d12af781",
+        "debateId": "eval_longer-recess_openai-gpt-4-1",
+        "runId": "run_e005a167",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_61d31651",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4.1",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should schools have longer recess? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should schools have longer recess?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_2c2e194e",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4.1",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should schools have longer recess? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should schools have longer recess?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_e4ff788d",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4.1 (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_f0b59f45",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4.1",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should schools have longer recess? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should schools have longer recess?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_65f43324",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4.1",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should schools have longer recess? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should schools have longer recess?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_0a27e19a",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4.1",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should schools have longer recess? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_d76c8809",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4.1",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should schools have longer recess? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_060d133a",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4.1 (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for policy topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Longer recess in schools can improve students' physical health by providing more opportunities for exercise and active play.",
+        "warrant": "Extended recess allows children to engage in physical activities that are essential for healthy growth and can help combat rising rates of childhood obesity.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.85,
+        "id": "claim_4177ca6d"
+      },
+      {
+        "side": "pro",
+        "text": "Increasing recess time can enhance students' focus and academic performance by giving them necessary breaks from classroom instruction.",
+        "warrant": "Research suggests that regular breaks for unstructured play help students return to class more attentive and ready to learn, which can lead to better educational outcomes.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.8,
+        "id": "claim_d44bfa7c"
+      },
+      {
+        "side": "con",
+        "text": "Extending recess time could reduce instructional hours, potentially harming students' academic achievement.",
+        "warrant": "Longer recess means less time for classroom learning, which may negatively impact students' ability to cover required curriculum and meet educational standards.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.8,
+        "id": "claim_e875975e"
+      },
+      {
+        "side": "con",
+        "text": "Longer recess may not benefit all students equally, as some may struggle with unstructured time or lack access to inclusive play opportunities.",
+        "warrant": "Not all students thrive during extended unstructured periods; those with social difficulties or disabilities may feel excluded or unsafe, which could worsen their school experience.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.7,
+        "id": "claim_9cf02739"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should schools have longer recess?",
+        "detail": "Classified as a policy debate."
+      },
+      {
+        "id": "claim_4177ca6d",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Longer recess in schools can improve students' physical health by providing more opportunities for exercise and active play."
+      },
+      {
+        "id": "claim_d44bfa7c",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Increasing recess time can enhance students' focus and academic performance by giving them necessary breaks from classroom instruction."
+      },
+      {
+        "id": "claim_e875975e",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Extending recess time could reduce instructional hours, potentially harming students' academic achievement."
+      },
+      {
+        "id": "claim_9cf02739",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Longer recess may not benefit all students equally, as some may struggle with unstructured time or lack access to inclusive play opportunities."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for policy topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_570ede6a",
+        "source": "claim_4177ca6d",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_187b3ab3",
+        "source": "claim_d44bfa7c",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_caa0df95",
+        "source": "claim_e875975e",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_d4f09101",
+        "source": "claim_9cf02739",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_16ed3a89",
+        "source": "evidence-src-mock-6",
+        "target": "claim_4177ca6d",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_4d7e5650",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_0a27e19a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, schools should have longer recess. More recess gives students extra time for exercise and active play, which helps them stay healthy and strong. Plus, taking longer breaks can help kids focus better and do well in class when they return to learning. Research supports that both physical health and academic performance can improve with more recess time.",
+        "claimIds": [
+          "claim_4177ca6d",
+          "claim_d44bfa7c"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_8716f515",
+        "createdAt": "2026-05-26T05:32:27.196Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_d76c8809",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "NO, schools should not have longer recess. If recess is made longer, there will be less time for classroom learning, which could make it harder for students to cover all their subjects and meet academic goals. Also, not every student enjoys or benefits from more unstructured playtime—some may feel left out or unsafe during longer recess.",
+        "claimIds": [
+          "claim_e875975e",
+          "claim_9cf02739"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_8ea70f51",
+        "createdAt": "2026-05-26T05:32:27.196Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_0a27e19a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "You said longer recess might not help all students equally, but how do you address evidence that more recess helps most students return to class more focused and ready to learn?",
+        "claimIds": [
+          "claim_d44bfa7c",
+          "claim_9cf02739"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_01f3a3f1",
+        "createdAt": "2026-05-26T05:32:30.076Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_d76c8809",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "If schools have longer recess, how will teachers make sure students still have enough time to learn all the subjects they need? The claim that longer recess improves health is important, but what if less class time means students fall behind in reading or math?",
+        "claimIds": [
+          "claim_4177ca6d",
+          "claim_e875975e"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_06e22376",
+        "createdAt": "2026-05-26T05:32:30.076Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_0a27e19a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side says longer recess could hurt learning, but research shows that more playtime actually helps students focus better when they return to class. Longer recess also gives everyone more chances to be active and healthy, which is important for growing bodies.",
+        "claimIds": [
+          "claim_4177ca6d",
+          "claim_d44bfa7c"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_210c5516",
+        "createdAt": "2026-05-26T05:32:33.392Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_d76c8809",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "NO side argues that making recess longer could actually hurt learning, since it would mean less time for important classroom lessons. Also, not every student enjoys or benefits from extra unstructured play—some might feel left out or even unsafe during longer recess periods. These risks show that longer recess is not always better for everyone.",
+        "claimIds": [
+          "claim_e875975e",
+          "claim_9cf02739"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_8bcef3ac",
+        "createdAt": "2026-05-26T05:32:33.392Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_0a27e19a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES to longer recess because it helps kids stay healthy with more active play and gives them brain breaks to focus better in class. Studies show more recess can boost both health and learning.",
+        "claimIds": [
+          "claim_4177ca6d",
+          "claim_d44bfa7c"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_3fd7f3d7",
+        "createdAt": "2026-05-26T05:32:36.105Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_d76c8809",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Say NO to longer recess because it could mean less time for learning important subjects, and some students may not enjoy or benefit from extra unstructured play. The evidence shows these risks could harm students’ academic progress and school experience.",
+        "claimIds": [
+          "claim_e875975e",
+          "claim_9cf02739"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_26d72ab9",
+        "createdAt": "2026-05-26T05:32:36.106Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_060d133a",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "YES argues that longer recess helps students' physical health and focus, supported by evidence that more playtime improves well-being and learning. NO points out that longer recess could reduce classroom time and may not help all students equally, especially those who struggle with unstructured play. The decision depends on whether the benefits to health and attention outweigh possible academic drawbacks and inclusivity concerns.",
+        "claimIds": [
+          "claim_4177ca6d",
+          "claim_d44bfa7c",
+          "claim_e875975e",
+          "claim_9cf02739"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_e407d4bd",
+        "createdAt": "2026-05-26T05:32:37.920Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "mixed",
+      "confidence": 0.55,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.5,
+          "con": 7.5,
+          "note": "Both sides rely on general research and plausible reasoning, but neither provides concrete, topic-specific data about the effects of longer recess on academic achievement or inclusivity. The pro side cites general benefits to health and focus, while the con side raises credible concerns about lost instructional time and uneven benefits."
+        },
+        {
+          "name": "practicality",
+          "pro": 7.5,
+          "con": 7.5,
+          "note": "Implementing longer recess is feasible in principle, but the debate does not address how schools would adjust schedules or curricula to avoid academic loss, nor how they would ensure all students benefit from unstructured time."
+        },
+        {
+          "name": "risk",
+          "pro": 7,
+          "con": 8,
+          "note": "The con side persuasively highlights risks: reduced instructional time and the potential for some students to feel excluded or unsafe. The pro side does not fully address how these risks would be mitigated."
+        },
+        {
+          "name": "fairness",
+          "pro": 7.5,
+          "con": 8,
+          "note": "Con points out that not all students benefit equally from longer recess, especially those with social or developmental challenges. The pro case does not offer solutions for inclusivity, making fairness a stronger point for con."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.5,
+          "con": 7,
+          "note": "While changing recess length is reversible, the debate does not discuss the potential disruption or adjustment costs for schools and students if the policy is later reversed."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Longer recess offers health and focus benefits, but academic and inclusivity risks remain unresolved.",
+      "recommendation": "The verdict is mixed. While longer recess is likely to improve students' physical health and classroom focus, the debate did not adequately address how schools would prevent loss of instructional time or ensure all students—including those with social or developmental challenges—benefit equally. Without concrete evidence that these risks can be managed, a clear YES or NO is not justified.",
+      "strongestPro": [
+        "Longer recess in schools can improve students' physical health by providing more opportunities for exercise and active play.",
+        "Increasing recess time can enhance students' focus and academic performance by giving them necessary breaks from classroom instruction."
+      ],
+      "strongestCon": [
+        "Extending recess time could reduce instructional hours, potentially harming students' academic achievement.",
+        "Longer recess may not benefit all students equally, as some may struggle with unstructured time or lack access to inclusive play opportunities."
+      ],
+      "unresolvedUncertainties": [
+        "Whether schools can extend recess without sacrificing essential instructional time or academic standards.",
+        "How schools would ensure that longer recess is inclusive and safe for students with social, developmental, or physical challenges.",
+        "Lack of topic-specific, comparative data on the net effects of longer recess on both academic achievement and student well-being."
+      ],
+      "whatWouldChangeMind": [
+        "Robust, comparative studies showing that longer recess does not negatively impact academic achievement or curriculum coverage.",
+        "Evidence of effective strategies for making longer recess inclusive and beneficial for all student groups.",
+        "Clear policy models demonstrating how schools can balance increased recess with academic requirements."
+      ],
+      "confidence": 0.55
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 2079,
+        "promptTokens": 1231,
+        "completionTokens": 195,
+        "estimatedCostUsd": 0.004022,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2079
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 2217,
+        "promptTokens": 1225,
+        "completionTokens": 197,
+        "estimatedCostUsd": 0.004026,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2217
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1627,
+        "promptTokens": 1959,
+        "completionTokens": 169,
+        "estimatedCostUsd": 0.00527,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1627
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1413,
+        "promptTokens": 1948,
+        "completionTokens": 165,
+        "estimatedCostUsd": 0.005216,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1413
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1089,
+        "promptTokens": 1959,
+        "completionTokens": 138,
+        "estimatedCostUsd": 0.005022,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1089
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1789,
+        "promptTokens": 1951,
+        "completionTokens": 150,
+        "estimatedCostUsd": 0.005102,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1789
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1591,
+        "promptTokens": 1949,
+        "completionTokens": 154,
+        "estimatedCostUsd": 0.00513,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1591
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1724,
+        "promptTokens": 1939,
+        "completionTokens": 163,
+        "estimatedCostUsd": 0.005182,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1724
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1142,
+        "promptTokens": 1933,
+        "completionTokens": 140,
+        "estimatedCostUsd": 0.004986,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1142
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1569,
+        "promptTokens": 1927,
+        "completionTokens": 143,
+        "estimatedCostUsd": 0.004998,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1569
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1814,
+        "promptTokens": 1959,
+        "completionTokens": 193,
+        "estimatedCostUsd": 0.005462,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1814
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 4372,
+        "promptTokens": 3278,
+        "completionTokens": 400,
+        "estimatedCostUsd": 0.009756,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4372
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4.1",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 4377,
+        "promptTokens": 3676,
+        "completionTokens": 370,
+        "estimatedCostUsd": 0.010312,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4377
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_fd25be31",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_e76c3740",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_2fca2d0f",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_e6f8afc9",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 4,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_076fbabb",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_c8fc78c3",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_b012d5a3",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      },
+      {
+        "id": "artifact_9ea803a3",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:32:46.672Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_8f42bf01",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as policy.",
+        "at": "2026-05-26T05:32:19.859Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_3d637e41",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:32:19.859Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_39ec1bbe",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:32:19.859Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_0d05dcf6",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:32:19.859Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_d4dc5c8e",
+        "step": "opening",
+        "status": "ok",
+        "message": "4 source-linked claims generated.",
+        "at": "2026-05-26T05:32:24.156Z",
+        "durationMs": 4297
+      },
+      {
+        "id": "trace_9454cca5",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:32:27.196Z",
+        "durationMs": 3040
+      },
+      {
+        "id": "trace_63de47c2",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:32:30.076Z",
+        "durationMs": 2880
+      },
+      {
+        "id": "trace_b34f228b",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:32:33.392Z",
+        "durationMs": 3316
+      },
+      {
+        "id": "trace_b1d75e17",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:32:36.106Z",
+        "durationMs": 2714
+      },
+      {
+        "id": "trace_1756eeb8",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:32:37.921Z",
+        "durationMs": 1815
+      },
+      {
+        "id": "trace_54ee8a96",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as mixed.",
+        "at": "2026-05-26T05:32:42.295Z",
+        "durationMs": 4373
+      },
+      {
+        "id": "trace_2a31c690",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: mixed.",
+        "at": "2026-05-26T05:32:46.672Z",
+        "durationMs": 4377
+      },
+      {
+        "id": "trace_f9cc6d87",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:32:46.672Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

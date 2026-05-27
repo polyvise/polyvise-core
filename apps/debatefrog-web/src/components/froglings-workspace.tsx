@@ -21,6 +21,7 @@ const INTRO_SEEN_KEY = "froglings:intro-seen";
 const MODEL_SETTINGS_KEY = "froglings:model-settings:v3";
 const USER_PREFERENCES_KEY = "froglings:user-preferences";
 const isPreviewDeploy = process.env.NEXT_PUBLIC_DEPLOY_CHANNEL === "preview";
+const showApiDebugDetails = process.env.NODE_ENV !== "production";
 
 import {
   createContext,
@@ -88,6 +89,9 @@ type StartCountdownCue = {
 
 const START_SEQUENCE_MIN_MS = 5500;
 const START_COUNTDOWN_TITLE_DELAY_MS = 650;
+const SLOW_FROG_NOTICE_MS = 4000;
+const VERY_SLOW_FROG_NOTICE_MS = 12000;
+const UNUSUAL_FROG_NOTICE_MS = 25000;
 const START_COUNTDOWN_CUES: StartCountdownCue[] = [
   { delayMs: 700, frequency: 660, durationMs: 120 },
   { delayMs: 2100, frequency: 660, durationMs: 120 },
@@ -136,11 +140,11 @@ const friendlyStage: Record<DebateStatus, string> = {
   queued: "the frogs are getting ready",
   framing: "the frogs are reading the question",
   researching: "the frogs are looking up facts",
-  debating: "the frogs are arguing!",
+  debating: "the frogs are debating",
   judging: "the judge frog is thinking",
   complete: "debate finished",
-  failed: "uh oh — the frogs slipped off the lily pad",
-  partial: "the frogs only got part way"
+  failed: "uh oh - the frogs slipped off the lily pad",
+  partial: "uh oh - the frogs slipped off the lily pad"
 };
 
 /**
@@ -281,9 +285,12 @@ function liveReducer(state: FroglingsLiveState | null, action: LiveAction): Frog
         });
       }
       return { ...state, modelSnapshots: upsertModelSnapshot(state.modelSnapshots, event.snapshot) };
-    case "complete":
+  case "complete":
       return { ...state, status: "complete", done: true };
     case "error":
+      if (state.turns.length > 0 || state.scorecard || state.summary) {
+        return { ...state, status: "partial", done: true, errorMessage: event.message };
+      }
       return { ...state, status: "failed", done: true, errorMessage: event.message };
     default:
       return state;
@@ -319,7 +326,7 @@ function isBackupSnapshot(snapshot: ModelSnapshot): boolean {
   );
 }
 
-function buildApiCallTimings(live: FroglingsLiveState | null): ApiCallTiming[] {
+function buildApiCallTimings(live: FroglingsLiveState | null, debugDetails = false): ApiCallTiming[] {
   if (!live) return [];
   const evidenceProvider = live.sources.find((source) => source.retrievedVia !== "mock")?.retrievedVia;
 
@@ -349,8 +356,8 @@ function buildApiCallTimings(live: FroglingsLiveState | null): ApiCallTiming[] {
         children: shouldShowAttempts
           ? attempts.map((attempt) => ({
               id: `${snapshot.id}-${attempt.mode}-${attempt.attempt}-${attempt.status}`,
-              label: labelForAttemptMode(attempt.mode),
-              detail: detailForAttempt(attempt),
+              label: labelForAttempt(attempt, debugDetails),
+              detail: detailForAttempt(attempt, debugDetails),
               durationMs: attempt.durationMs,
               status: attempt.status
             }))
@@ -376,21 +383,52 @@ function labelForApiSnapshot(snapshot: ModelSnapshot): string {
   return labelForModelId(snapshot.model);
 }
 
-function labelForAttemptMode(mode: "json_schema" | "json_object"): string {
-  return mode === "json_schema" ? "strict schema" : "live JSON retry";
+function labelForAttempt(
+  attempt: NonNullable<ModelSnapshot["attempts"]>[number],
+  debugDetails: boolean
+): string {
+  if (!debugDetails) return `attempt ${attempt.attempt}`;
+  const mode = attempt.mode === "json_schema" ? "strict schema" : "live JSON";
+  return `attempt ${attempt.attempt}: ${mode}`;
 }
 
-function detailForAttempt(attempt: NonNullable<ModelSnapshot["attempts"]>[number]): string {
+function detailForAttempt(
+  attempt: NonNullable<ModelSnapshot["attempts"]>[number],
+  debugDetails: boolean
+): string {
   if (attempt.status === "ok") {
-    return attempt.mode === "json_object" ? "completed with live model" : "completed";
+    return "completed";
   }
-  return `failed: ${friendlyAttemptError(attempt.message)}`;
+  return debugDetails
+    ? `failed: ${friendlyAttemptError(attempt.message)}`
+    : `failed: ${publicAttemptError(attempt.message)}`;
 }
 
 function friendlyAttemptError(message: string | undefined): string {
   if (!message) return "provider error";
   if (message.toLowerCase() === "provider returned error") return "provider error";
   return message;
+}
+
+function publicAttemptError(message: string | undefined): string {
+  const normalized = message?.toLowerCase() ?? "";
+  if (
+    normalized.includes("timeout") ||
+    normalized.includes("timed out") ||
+    normalized.includes("abort")
+  ) {
+    return "remote service timed out";
+  }
+  if (normalized.includes("rate") || normalized.includes("429")) {
+    return "remote service rate limited the request";
+  }
+  if (normalized.includes("network") || normalized.includes("fetch")) {
+    return "network request failed";
+  }
+  if (normalized.includes("json") || normalized.includes("validation")) {
+    return "model response could not be parsed";
+  }
+  return "remote service returned an error";
 }
 
 function labelForModelId(id: string): string {
@@ -418,9 +456,18 @@ type FrogSoundsCtx = {
   play: (side: "pro" | "con" | "judge", options?: { random?: boolean }) => void;
   stop: (side: "pro" | "con" | "judge") => void;
   beep: (options: { frequency: number; durationMs: number; delayMs?: number; gain?: number }) => void;
+  startIntro: () => void;
+  stopIntro: () => void;
 };
 
-const noopSounds: FrogSoundsCtx = { ready: false, play: () => {}, stop: () => {}, beep: () => {} };
+const noopSounds: FrogSoundsCtx = {
+  ready: false,
+  play: () => {},
+  stop: () => {},
+  beep: () => {},
+  startIntro: () => {},
+  stopIntro: () => {}
+};
 const FrogSoundsContext = createContext<FrogSoundsCtx>(noopSounds);
 
 // -------------------------------------------------------------------------
@@ -442,8 +489,15 @@ export function FroglingsWorkspace() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const sounds = useFrogSounds();
   const soundControls = useMemo(
-    () => ({ ready: sounds.ready, play: sounds.play, stop: sounds.stop, beep: sounds.beep }),
-    [sounds.ready, sounds.play, sounds.stop, sounds.beep]
+    () => ({
+      ready: sounds.ready,
+      play: sounds.play,
+      stop: sounds.stop,
+      beep: sounds.beep,
+      startIntro: sounds.startIntro,
+      stopIntro: sounds.stopIntro
+    }),
+    [sounds.ready, sounds.play, sounds.stop, sounds.beep, sounds.startIntro, sounds.stopIntro]
   );
   // Show the intro on first session only. We default to false on the
   // server (so the overlay never SSRs and flashes), then flip to true
@@ -719,7 +773,7 @@ export function FroglingsWorkspace() {
       />
       <FroglingsControlPanel
         open={controlPanelOpen}
-        apiCalls={buildApiCallTimings(live)}
+        apiCalls={buildApiCallTimings(live, showApiDebugDetails)}
         modelOptions={modelOptions}
         modelOptionsError={modelOptionsError}
         selections={modelSelections}
@@ -1050,6 +1104,12 @@ function FroglingsControlPanel({
                 >
                   Reset to defaults
                 </button>
+                <Link
+                  href={"/models" as Route}
+                  className="block w-full rounded-lg border border-mint/20 bg-mint/10 px-3 py-2 text-center text-xs font-black text-mint transition hover:bg-mint/15"
+                >
+                  Compare models
+                </Link>
               </div>
             ) : (
               <div className="mt-3 flex items-center gap-2 text-xs text-white/70">
@@ -1362,16 +1422,12 @@ function FroglingsLive({
     preferences.openingSplash,
     countdownStarted
   );
+  const slowWait = useSlowFrogWait(live, staged, showStartSequence);
 
   return (
     <div className="mt-6 space-y-5">
       <QuestionBanner live={live} staged={staged} showStartSequence={showStartSequence} />
-      {live.status === "failed" ? (
-        <div className="rounded-xl border border-berry/40 bg-berry/10 px-4 py-3 text-sm text-berry">
-          {live.errorMessage ?? DEBATE_UNAVAILABLE_MESSAGE}
-        </div>
-      ) : null}
-      {(live.backupReasons ?? []).length > 0 ? <BackupAnswersNotice /> : null}
+      {(live.backupReasons ?? []).length > 0 && !showStartSequence ? <BackupAnswersNotice /> : null}
       {showStartSequence ? (
         <DebateStartSequence live={live} countdownStarted={countdownStarted} />
       ) : null}
@@ -1383,12 +1439,158 @@ function FroglingsLive({
             readyForVerdict={staged.readyForVerdict}
             visibleTurns={staged.visibleTurns}
           />
+          <SlowFrogWaitNotice wait={slowWait} />
           <Rounds live={live} visibleTurns={staged.visibleTurns} onTurnComplete={staged.showNextTurn} />
           <Verdict live={live} readyForVerdict={staged.readyForVerdict} />
         </>
       ) : null}
     </div>
   );
+}
+
+type SlowFrogWaitState = {
+  visible: boolean;
+  level: "normal" | "long" | "unusual";
+  elapsedMs: number;
+  side: "pro" | "con" | "judge";
+  title: string;
+  body: string;
+};
+
+function useSlowFrogWait(
+  live: FroglingsLiveState,
+  staged: ReturnType<typeof useStagedFroglingsTurns>,
+  showStartSequence: boolean
+): SlowFrogWaitState {
+  const [progressStartedAt, setProgressStartedAt] = useState(() => Date.now());
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  const progressKey = [
+    live.debateId,
+    live.status,
+    live.turns.length,
+    live.scorecard ? "scorecard" : "no-scorecard",
+    live.summary ? "summary" : "no-summary",
+    live.done ? "done" : "running",
+    staged.visibleTurns.length,
+    staged.readyForVerdict ? "ready" : "not-ready"
+  ].join("|");
+
+  useEffect(() => {
+    const timestamp = Date.now();
+    setProgressStartedAt(timestamp);
+    setNowMs(timestamp);
+  }, [progressKey]);
+
+  useEffect(() => {
+    if (live.done || live.status === "complete" || live.status === "failed" || live.status === "partial") {
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 500);
+
+    return () => window.clearInterval(timer);
+  }, [live.done, live.status]);
+
+  const elapsedMs = nowMs - progressStartedAt;
+  const waitingForDebateTurn =
+    live.status === "debating" &&
+    !showStartSequence &&
+    !staged.isReplayingTurns &&
+    !staged.isFinishingLastTurn &&
+    !hasAllDebateTurns(live.turns);
+  const waitingForJudge =
+    live.status === "judging" &&
+    !showStartSequence &&
+    staged.readyForVerdict &&
+    (!live.summary || !live.scorecard);
+  const visible =
+    elapsedMs >= SLOW_FROG_NOTICE_MS &&
+    !live.done &&
+    live.status !== "complete" &&
+    live.status !== "failed" &&
+    (waitingForDebateTurn || waitingForJudge);
+
+  const level =
+    elapsedMs >= UNUSUAL_FROG_NOTICE_MS
+      ? "unusual"
+      : elapsedMs >= VERY_SLOW_FROG_NOTICE_MS
+        ? "long"
+        : "normal";
+  const side = waitingForJudge ? "judge" : nextExpectedFrogSide(live.turns);
+
+  return {
+    visible,
+    level,
+    elapsedMs,
+    side,
+    ...slowFrogWaitCopy({ level, side, waitingForJudge })
+  };
+}
+
+function SlowFrogWaitNotice({ wait }: { wait: SlowFrogWaitState }) {
+  if (!wait.visible) return null;
+
+  return (
+    <section className="hop-in rounded-2xl border border-leaf/30 bg-mint/45 p-4 shadow-sm" aria-live="polite">
+      <div className="flex items-center gap-3">
+        <div className="relative shrink-0">
+          <FunFrog mood={wait.side} size={48} bob speaking={wait.level !== "normal"} />
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-panel shadow-sm">
+            <Loader2 className="h-3 w-3 animate-spin text-leaf" />
+          </span>
+        </div>
+        <div className="min-w-0">
+          <div className="text-sm font-black text-pond">{wait.title}</div>
+          <div className="mt-0.5 text-xs leading-relaxed text-ink/70">{wait.body}</div>
+        </div>
+      </div>
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-pond/10">
+        <div
+          className="h-full rounded-full bg-leaf transition-all duration-500"
+          style={{ width: `${Math.min(100, Math.max(18, (wait.elapsedMs / UNUSUAL_FROG_NOTICE_MS) * 100))}%` }}
+        />
+      </div>
+    </section>
+  );
+}
+
+function slowFrogWaitCopy({
+  level,
+  side,
+  waitingForJudge
+}: {
+  level: SlowFrogWaitState["level"];
+  side: SlowFrogWaitState["side"];
+  waitingForJudge: boolean;
+}): Pick<SlowFrogWaitState, "title" | "body"> {
+  const frogName = waitingForJudge
+    ? "The judge frog"
+    : side === "pro"
+      ? "Yes Frog"
+      : "No Frog";
+
+  if (level === "unusual") {
+    return {
+      title: `${frogName} is slower than usual.`,
+      body: "The debate is still running. If the AI model fails, Debatefrog will retry or show a try-again message."
+    };
+  }
+
+  if (level === "long") {
+    return {
+      title: `${frogName} is still thinking.`,
+      body: "This answer is taking a little longer than usual, so the lily pad is holding the next turn."
+    };
+  }
+
+  return {
+    title: `${frogName} is thinking this one through...`,
+    body: waitingForJudge
+      ? "The judge is checking both sides before picking a winner."
+      : "Some questions need a few extra seconds before the next frog hops in."
+  };
 }
 
 function useStartSequenceVisibility(
@@ -1537,17 +1739,20 @@ function froglingsStageCopy(
   live: FroglingsLiveState,
   staged: ReturnType<typeof useStagedFroglingsTurns>
 ) {
+  if (live.status === "partial" || live.status === "failed") {
+    return friendlyStage[live.status];
+  }
+
   if (staged.hasTurns && !staged.readyForVerdict) {
-    if (staged.isReplayingTurns) return "the frogs are taking turns";
-    if (staged.isFinishingLastTurn) return "the last frog is finishing up";
+    return "the frogs are debating";
   }
 
   if (live.status === "debating" && !staged.hasTurns) {
-    return "the frogs are getting their arguments ready";
+    return "the frogs are debating";
   }
 
   if (live.status === "complete" && (live.backupReasons ?? []).length > 0) {
-    return "finished with backup answers";
+    return "debate finished";
   }
 
   return friendlyStage[live.status];
@@ -1558,11 +1763,8 @@ function BackupAnswersNotice() {
     <section className="flex items-start gap-3 rounded-2xl border border-mud/20 bg-cream/80 p-4 text-sm text-mud shadow-sm">
       <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-berry" aria-hidden="true" />
       <div>
-        <div className="font-black text-pond">Backup answers are showing.</div>
-        <p className="mt-1 leading-relaxed text-ink/70">
-          The live model or search setup did not answer in this dev run, so Debatefrog used local
-          backup notes. The debate can still play through, but these answers are less specific.
-        </p>
+        <div className="font-black text-pond">Dev backup answers are showing.</div>
+        <p className="mt-1 leading-relaxed text-ink/70">Live APIs are off or unavailable in this dev run.</p>
       </div>
     </section>
   );
@@ -1620,6 +1822,14 @@ function DebateStartSequence({
 
     return () => window.clearTimeout(timer);
   }, [countdownStarted, live.debateId]);
+
+  useEffect(() => {
+    if (!sounds.ready) return;
+    sounds.startIntro();
+    return () => {
+      sounds.stopIntro();
+    };
+  }, [sounds]);
 
   useEffect(() => {
     if (!countdownStarted || hasPlayedCueRef.current || !sounds.ready) return;
@@ -2013,6 +2223,12 @@ function Verdict({
   if (!readyForVerdict) return null;
 
   if (!live.summary || !live.scorecard) {
+    if (live.status === "failed" && live.turns.length === 0) {
+      return null;
+    }
+    if (live.status === "debating" && !hasAllDebateTurns(live.turns)) {
+      return null;
+    }
     if (live.status === "debating" || live.status === "judging") {
       const isJudging = live.status === "judging";
       return (
@@ -2042,7 +2258,7 @@ function Verdict({
         <section className="rounded-2xl border border-berry/30 bg-lily/30 p-5 shadow-lily">
           <div className="flex items-center gap-3 text-sm text-mud/70">
             <FunFrog mood="judge" size={48} />
-            The judge frog could not pick a winner this time.
+            {live.errorMessage ?? "The judge frog could not pick a winner this time."}
           </div>
         </section>
       );
@@ -2110,6 +2326,21 @@ function orderedFroglingsTurns(turns: RoundTurn[]) {
     });
 }
 
+function hasAllDebateTurns(turns: RoundTurn[]) {
+  const debateTurns = orderedFroglingsTurns(turns);
+  const rounds = new Set(debateTurns.map((turn) => turn.round));
+  const hasBothSidesByRound = ["opening", "cross_examination", "rebuttal", "closing"].every((round) => {
+    const turnsForRound = debateTurns.filter((turn) => turn.round === round);
+    return turnsForRound.some((turn) => turn.side === "pro") && turnsForRound.some((turn) => turn.side === "con");
+  });
+  return rounds.size >= 4 && hasBothSidesByRound;
+}
+
+function nextExpectedFrogSide(turns: RoundTurn[]): "pro" | "con" {
+  const count = orderedFroglingsTurns(turns).length;
+  return count % 2 === 0 ? "pro" : "con";
+}
+
 function froglingsBubbleText(turn: RoundTurn) {
   const text = simplifyForKids(stripSpeakerPrefix(turn.content, turn.agentName));
   const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map((sentence) => sentence.trim()) ?? [text];
@@ -2142,10 +2373,10 @@ function simplifyForKids(content: string) {
     .replace(/\byou says\b/g, "you said")
     .replace(/["“]Resolved:\s*([^"”]+?)\.?["”]/gi, (_match, question: string) => `"${froglingsQuestionText(question)}"`)
     .replace(/\bResolved:\s*/gi, "")
-    .replace(/^The (?:YES side|affirmative) case for ["“][^"”]+["”]\s+(?:is grounded in|starts with (?:this claim|the claim that):?)\s*/i, "The YES frog says ")
-    .replace(/^The (?:YES side|affirmative) case .*? starts with (?:this claim|the claim that):?\s*/i, "The YES frog says ")
-    .replace(/^The (?:NO side|negative) case (?:against ["“][^"”]+["”]\s+)?(?:challenges the question by )?(?:asserting|saying|arguing):?\s*(?:that\s*)?/i, "The NO frog says ")
-    .replace(/^The (?:NO side|negative) case challenges the question by (?:asserting|saying|arguing):?\s*/i, "The NO frog says ")
+    .replace(/^The (?:YES side|affirmative) case for ["“][^"”]+["”]\s+(?:is grounded in|starts with (?:this claim|the claim that):?)\s*/i, "The green frog says ")
+    .replace(/^The (?:YES side|affirmative) case .*? starts with (?:this claim|the claim that):?\s*/i, "The green frog says ")
+    .replace(/^The (?:NO side|negative) case (?:against ["“][^"”]+["”]\s+)?(?:challenges the question by )?(?:asserting|saying|arguing):?\s*(?:that\s*)?/i, "The pink frog says ")
+    .replace(/^The (?:NO side|negative) case challenges the question by (?:asserting|saying|arguing):?\s*/i, "The pink frog says ")
     .replace(/\bpro side's\b/gi, "YES side's")
     .replace(/\bcon side's\b/gi, "NO side's")
     .replace(/\bpro side\b/gi, "YES side")
@@ -2204,7 +2435,7 @@ function froglingsVerdictCopy(scorecard: Scorecard, topicKind?: TopicKind) {
     case "lean_yes":
       return {
         headline: "The judge gives this one to YES.",
-        body: "The YES frog made the stronger case, but the NO frog still raised some things to watch."
+        body: "The green frog made the stronger case, but the pink frog still raised some things to watch."
       };
     case "conditional_yes":
       return {
@@ -2214,7 +2445,7 @@ function froglingsVerdictCopy(scorecard: Scorecard, topicKind?: TopicKind) {
     case "lean_no":
       return {
         headline: "The judge gives this one to NO.",
-        body: "The NO frog made the stronger case, though the YES frog had some good reasons too."
+        body: "The pink frog made the stronger case, though the green frog had some good reasons too."
       };
     case "conditional_no":
       return {
@@ -2237,30 +2468,30 @@ function froglingsVerdictTopicCopy(topicKind?: TopicKind) {
       return {
         conditionalYesHeadline: "The judge says: probably YES, with care.",
         conditionalYesBody:
-          "The YES frog made the stronger case, but the idea would need clear rules and checks along the way.",
+          "The green frog made the stronger case, but the idea would need clear rules and checks along the way.",
         conditionalNoHeadline: "The judge says: probably NO, unless things change.",
         conditionalNoBody:
-          "The NO frog made the stronger case for now. Better evidence or a safer plan could change the answer."
+          "The pink frog made the stronger case for now. Better evidence or a safer plan could change the answer."
       };
     case "empirical":
     case "comparison":
       return {
         conditionalYesHeadline: "The judge says: probably YES.",
         conditionalYesBody:
-          "The YES frog made the stronger case from the evidence shown, though the answer is not completely certain.",
+          "The green frog made the stronger case from the evidence shown, though the answer is not completely certain.",
         conditionalNoHeadline: "The judge says: probably NO.",
         conditionalNoBody:
-          "The NO frog made the stronger case from the evidence shown, though the answer is not completely certain."
+          "The pink frog made the stronger case from the evidence shown, though the answer is not completely certain."
       };
     case "value":
     default:
       return {
         conditionalYesHeadline: "The judge says: probably YES.",
         conditionalYesBody:
-          "The YES frog made the stronger case, but the answer depends on which reasons matter most.",
+          "The green frog made the stronger case, but the answer depends on which reasons matter most.",
         conditionalNoHeadline: "The judge says: probably NO.",
         conditionalNoBody:
-          "The NO frog made the stronger case, but the answer depends on which reasons matter most."
+          "The pink frog made the stronger case, but the answer depends on which reasons matter most."
       };
   }
 }

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "longer-recess",
+    "question": "Should schools have longer recess?",
+    "tags": ["school", "policy", "kid-friendly"],
+    "why": "A core Debatefrog prompt with plausible arguments on both sides."
+  },
+  {
+    "id": "kids-voting",
+    "question": "Should kids be allowed to vote in political elections?",
+    "tags": ["civics", "high-stakes-adjacent", "policy"],
+    "why": "Tests whether the judge can confidently choose NO when democratic legitimacy and maturity arguments matter."
+  },
+  {
+    "id": "video-games-exercise",
+    "question": "Should video games count as exercise?",
+    "tags": ["health", "definition", "kid-friendly"],
+    "why": "Tests definition handling and whether models distinguish active games from ordinary games."
+  },
+  {
+    "id": "pets-at-school",
+    "question": "Should pets be allowed at school?",
+    "tags": ["school", "risk", "policy"],
+    "why": "Tests practical risk reasoning around allergies, safety, disruption, and accommodations."
+  },
+  {
+    "id": "homework-banned",
+    "question": "Should homework be banned?",
+    "tags": ["school", "policy", "tradeoffs"],
+    "why": "A familiar debate that should produce balanced arguments without overclaiming."
+  },
+  {
+    "id": "school-uniforms",
+    "question": "Should students have to wear school uniforms?",
+    "tags": ["school", "fairness", "policy"],
+    "why": "Tests fairness, identity, cost, and classroom-focus tradeoffs."
+  },
+  {
+    "id": "four-day-school-week",
+    "question": "Should schools switch to a four-day week?",
+    "tags": ["school", "policy", "logistics"],
+    "why": "Tests practical implementation reasoning and family impact."
+  },
+  {
+    "id": "phones-at-school",
+    "question": "Should students be allowed to use phones during school?",
+    "tags": ["school", "technology", "policy"],
+    "why": "Tests nuance around emergency access, distraction, learning tools, and enforcement."
+  },
+  {
+    "id": "zoos",
+    "question": "Should zoos exist?",
+    "tags": ["ethics", "animals", "conservation"],
+    "why": "Tests ethical tradeoffs and evidence-grounded conservation claims."
+  },
+  {
+    "id": "ai-homework",
+    "question": "Should students be allowed to use AI tools for homework?",
+    "tags": ["technology", "school", "policy"],
+    "why": "Tests current-topic reasoning, integrity concerns, and constructive use policies."
+  },
+  {
+    "id": "later-bedtimes",
+    "question": "Should kids get to choose their own bedtime?",
+    "tags": ["family", "health", "kid-friendly"],
+    "why": "Tests child-friendly judgment around autonomy, sleep, and responsibility."
+  },
+  {
+    "id": "dessert-breakfast",
+    "question": "Should dessert be allowed for breakfast?",
+    "tags": ["silly", "health", "kid-friendly"],
+    "why": "Tests playful tone while still making a sensible health argument."
+  }
+]

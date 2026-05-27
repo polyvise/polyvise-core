@@ -1,0 +1,1086 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:49:14.761Z",
+  "modelId": "openai/gpt-4o",
+  "questionId": "zoos",
+  "question": "Should zoos exist?",
+  "run": {
+    "id": "run_ea39b6e6",
+    "debateId": "eval_zoos_openai-gpt-4o",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:48:54.122Z",
+    "completedAt": "2026-05-26T05:49:14.761Z",
+    "events": [
+      {
+        "id": "event_b583c5e7",
+        "debateId": "eval_zoos_openai-gpt-4o",
+        "runId": "run_ea39b6e6",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:48:54.122Z"
+      },
+      {
+        "id": "event_1f60189c",
+        "debateId": "eval_zoos_openai-gpt-4o",
+        "runId": "run_ea39b6e6",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:48:54.122Z"
+      },
+      {
+        "id": "event_22fd21a2",
+        "debateId": "eval_zoos_openai-gpt-4o",
+        "runId": "run_ea39b6e6",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:48:54.123Z"
+      },
+      {
+        "id": "event_f568d20b",
+        "debateId": "eval_zoos_openai-gpt-4o",
+        "runId": "run_ea39b6e6",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:48:57.396Z"
+      },
+      {
+        "id": "event_fffe68eb",
+        "debateId": "eval_zoos_openai-gpt-4o",
+        "runId": "run_ea39b6e6",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:49:10.448Z"
+      },
+      {
+        "id": "event_1c323bd9",
+        "debateId": "eval_zoos_openai-gpt-4o",
+        "runId": "run_ea39b6e6",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_1ad98431",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4o",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should zoos exist? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should zoos exist?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_16af0ee8",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4o",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should zoos exist? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should zoos exist?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_b25dff93",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4o (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_12d062bd",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4o",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should zoos exist? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should zoos exist?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_91bba971",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4o",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should zoos exist? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should zoos exist?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_b3c6d721",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4o",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should zoos exist? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_c4326f7d",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4o",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should zoos exist? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_e6a88a07",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4o (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Zoos play a crucial role in the conservation of endangered species.",
+        "warrant": "Zoos provide controlled environments where endangered species can be bred and studied, increasing their chances of survival.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.85,
+        "id": "claim_3234e279"
+      },
+      {
+        "side": "pro",
+        "text": "Zoos offer educational opportunities that foster public awareness about wildlife and conservation.",
+        "warrant": "By providing interactive exhibits and educational programs, zoos help visitors learn about animal behavior and the importance of preserving natural habitats.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.82,
+        "id": "claim_69844fa5"
+      },
+      {
+        "side": "con",
+        "text": "Zoos can negatively impact animal welfare by confining animals to unnatural habitats.",
+        "warrant": "Animals in zoos often live in environments that do not meet their natural needs, leading to physical and psychological stress.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_08f15fa1"
+      },
+      {
+        "side": "con",
+        "text": "Zoos may divert resources away from more effective conservation efforts.",
+        "warrant": "Funding and attention given to zoos could be better allocated to in-situ conservation projects that protect animals in their natural habitats.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_9e1c2126"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should zoos exist?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_3234e279",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Zoos play a crucial role in the conservation of endangered species."
+      },
+      {
+        "id": "claim_69844fa5",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Zoos offer educational opportunities that foster public awareness about wildlife and conservation."
+      },
+      {
+        "id": "claim_08f15fa1",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Zoos can negatively impact animal welfare by confining animals to unnatural habitats."
+      },
+      {
+        "id": "claim_9e1c2126",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Zoos may divert resources away from more effective conservation efforts."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_cf64a3fa",
+        "source": "claim_3234e279",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_2dc082ee",
+        "source": "claim_69844fa5",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_f2a87a6f",
+        "source": "claim_08f15fa1",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_b1fdd65d",
+        "source": "claim_9e1c2126",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_73cfec9d",
+        "source": "evidence-src-mock-6",
+        "target": "claim_3234e279",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_ff3af782",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_b3c6d721",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Zoos should exist because they play a crucial role in the conservation of endangered species. They provide controlled environments where endangered species can be bred and studied, increasing their chances of survival. Additionally, zoos offer educational opportunities that foster public awareness about wildlife and conservation, helping visitors learn about animal behavior and the importance of preserving natural habitats.",
+        "claimIds": [
+          "claim_3234e279",
+          "claim_69844fa5"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_ff841b27",
+        "createdAt": "2026-05-26T05:49:00.223Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_c4326f7d",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "I believe NO. Zoos can harm animal welfare by keeping animals in environments that don't meet their natural needs, causing stress. Additionally, resources used for zoos might be better spent on conservation efforts that protect animals in their natural habitats.",
+        "claimIds": [
+          "claim_08f15fa1",
+          "claim_9e1c2126"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_de85f964",
+        "createdAt": "2026-05-26T05:49:00.223Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_b3c6d721",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Zoos play a crucial role in the conservation of endangered species by providing controlled environments where they can be bred and studied. How do you address the importance of this conservation effort?",
+        "claimIds": [
+          "claim_3234e279"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_45df4c34",
+        "createdAt": "2026-05-26T05:49:02.665Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_c4326f7d",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "How can zoos claim to effectively conserve endangered species when animals often suffer from stress due to unnatural habitats?",
+        "claimIds": [
+          "claim_08f15fa1"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_cbdacb3d",
+        "createdAt": "2026-05-26T05:49:02.665Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_b3c6d721",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "While the NO side points out concerns about animal welfare, the YES side argues that zoos play a crucial role in conserving endangered species. Zoos provide controlled environments for breeding and studying these animals, which increases their survival chances. Additionally, zoos offer educational programs that raise public awareness about wildlife and conservation, fostering a deeper understanding of the importance of preserving natural habitats.",
+        "claimIds": [
+          "claim_3234e279",
+          "claim_69844fa5"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_c22f01cb",
+        "createdAt": "2026-05-26T05:49:05.629Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_c4326f7d",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "While zoos claim to help endangered species, they often confine animals to unnatural habitats, causing stress and harm. Resources could be better used for conservation efforts in the wild, where animals can thrive naturally.",
+        "claimIds": [
+          "claim_08f15fa1",
+          "claim_9e1c2126"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_2a5c50d6",
+        "createdAt": "2026-05-26T05:49:05.629Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_b3c6d721",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Zoos are essential for conserving endangered species by providing safe environments for breeding and research. They also educate the public about wildlife and the importance of conservation, fostering a deeper understanding and commitment to protecting natural habitats. Vote YES for zoos as they play a vital role in both conservation and education.",
+        "claimIds": [
+          "claim_3234e279",
+          "claim_69844fa5"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_d3e9aa20",
+        "createdAt": "2026-05-26T05:49:08.558Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_c4326f7d",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Zoos often confine animals to spaces that don't meet their natural needs, causing stress and harm. Additionally, resources spent on zoos could be better used for conservation efforts in the wild, where animals can thrive in their natural habitats. These issues highlight why zoos may not be the best solution for animal welfare and conservation. Vote NO if you believe in prioritizing animal well-being and effective conservation.",
+        "claimIds": [
+          "claim_08f15fa1",
+          "claim_9e1c2126"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_a37d372b",
+        "createdAt": "2026-05-26T05:49:08.558Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_e6a88a07",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The decision on whether zoos should exist hinges on weighing their conservation and educational benefits against potential animal welfare concerns and resource allocation issues. The YES side highlights that zoos help conserve endangered species and educate the public, while the NO side points out that zoos might harm animal welfare and divert resources from more effective conservation efforts.",
+        "claimIds": [
+          "claim_3234e279",
+          "claim_69844fa5",
+          "claim_08f15fa1",
+          "claim_9e1c2126"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_31e7fafd",
+        "createdAt": "2026-05-26T05:49:10.448Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "mixed",
+      "confidence": 0.65,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 8.5,
+          "con": 8,
+          "note": "Both sides present strong arguments; the pro side emphasizes conservation and education, while the con side highlights animal welfare and resource allocation."
+        },
+        {
+          "name": "practicality",
+          "pro": 8.5,
+          "con": 7.5,
+          "note": "The pro side argues effectively for the practicality of zoos in conservation, but the con side raises valid concerns about resource distribution."
+        },
+        {
+          "name": "risk",
+          "pro": 7.5,
+          "con": 8.5,
+          "note": "The con side effectively highlights the risks to animal welfare and potential misallocation of resources."
+        },
+        {
+          "name": "fairness",
+          "pro": 8,
+          "con": 8,
+          "note": "Both sides present fair arguments; the debate hinges on the value placed on conservation versus animal welfare."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.5,
+          "con": 7.5,
+          "note": "Both sides present arguments that could be revisited if new evidence or perspectives emerge."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Zoos' existence hinges on balancing conservation benefits with animal welfare concerns.",
+      "recommendation": "The verdict is mixed. Zoos contribute to conservation and education, but they also raise significant animal welfare and resource allocation concerns.",
+      "strongestPro": [
+        "Zoos play a crucial role in the conservation of endangered species.",
+        "Zoos offer educational opportunities that foster public awareness about wildlife and conservation."
+      ],
+      "strongestCon": [
+        "Zoos can negatively impact animal welfare by confining animals to unnatural habitats.",
+        "Zoos may divert resources away from more effective conservation efforts."
+      ],
+      "unresolvedUncertainties": [
+        "The extent to which zoos' educational impact translates into effective conservation actions.",
+        "The long-term welfare implications for animals kept in zoos versus those in natural habitats."
+      ],
+      "whatWouldChangeMind": [
+        "Evidence showing zoos significantly improve the survival rates of endangered species compared to in-situ conservation.",
+        "Data demonstrating that zoos' educational programs lead to substantial increases in conservation funding or policy changes."
+      ],
+      "confidence": 0.65
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 1737,
+        "promptTokens": 1228,
+        "completionTokens": 179,
+        "estimatedCostUsd": 0.00486,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1737
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 1535,
+        "promptTokens": 1222,
+        "completionTokens": 162,
+        "estimatedCostUsd": 0.004675,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1535
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1439,
+        "promptTokens": 1881,
+        "completionTokens": 167,
+        "estimatedCostUsd": 0.0063725,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1439
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1386,
+        "promptTokens": 1886,
+        "completionTokens": 140,
+        "estimatedCostUsd": 0.006115,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1386
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1092,
+        "promptTokens": 1885,
+        "completionTokens": 128,
+        "estimatedCostUsd": 0.0059925,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1092
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1349,
+        "promptTokens": 1876,
+        "completionTokens": 105,
+        "estimatedCostUsd": 0.00574,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1349
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1457,
+        "promptTokens": 1878,
+        "completionTokens": 176,
+        "estimatedCostUsd": 0.006455,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1457
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1507,
+        "promptTokens": 1876,
+        "completionTokens": 135,
+        "estimatedCostUsd": 0.00604,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1507
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1409,
+        "promptTokens": 1862,
+        "completionTokens": 158,
+        "estimatedCostUsd": 0.006235,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1409
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1518,
+        "promptTokens": 1864,
+        "completionTokens": 172,
+        "estimatedCostUsd": 0.00638,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1518
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1890,
+        "promptTokens": 1894,
+        "completionTokens": 210,
+        "estimatedCostUsd": 0.006835,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1890
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 2270,
+        "promptTokens": 3322,
+        "completionTokens": 304,
+        "estimatedCostUsd": 0.011345,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2270
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 2042,
+        "promptTokens": 3593,
+        "completionTokens": 248,
+        "estimatedCostUsd": 0.0114625,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2042
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_23c34398",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_6d308dc7",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_dce853a4",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_9f052516",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 4,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_628b85ad",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_044b34bd",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_1eeb33e5",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      },
+      {
+        "id": "artifact_e578c494",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:49:14.761Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_afceff98",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:48:54.122Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_1416d510",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:48:54.122Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_e59cbac0",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:48:54.123Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_322863a0",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:48:54.123Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_737dc7e1",
+        "step": "opening",
+        "status": "ok",
+        "message": "4 source-linked claims generated.",
+        "at": "2026-05-26T05:48:57.396Z",
+        "durationMs": 3273
+      },
+      {
+        "id": "trace_46c7c12e",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:49:00.223Z",
+        "durationMs": 2827
+      },
+      {
+        "id": "trace_20c0e06f",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:49:02.665Z",
+        "durationMs": 2442
+      },
+      {
+        "id": "trace_7bed40a2",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:49:05.629Z",
+        "durationMs": 2964
+      },
+      {
+        "id": "trace_e9c35348",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:49:08.558Z",
+        "durationMs": 2929
+      },
+      {
+        "id": "trace_9c745418",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:49:10.448Z",
+        "durationMs": 1890
+      },
+      {
+        "id": "trace_c6c1702f",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as mixed.",
+        "at": "2026-05-26T05:49:12.718Z",
+        "durationMs": 2270
+      },
+      {
+        "id": "trace_c7296193",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: mixed.",
+        "at": "2026-05-26T05:49:14.761Z",
+        "durationMs": 2043
+      },
+      {
+        "id": "trace_67aff175",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:49:14.761Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

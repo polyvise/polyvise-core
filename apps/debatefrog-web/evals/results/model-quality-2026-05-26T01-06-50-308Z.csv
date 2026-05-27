@@ -1,0 +1,8 @@
+model_id,label,provider,evaluated,question_count,average_quality,average_latency_ms,latency_p50_ms,latency_p90_ms,average_cost_usd,success_rate,retry_rate,failure_count,notes
+google/gemini-2.5-flash,Gemini 2.5 Flash,Google,true,12,85.090564,23681.666667,22926,25317,0.019335,1,0,0,Evaluation completed.
+openai/gpt-4o-mini,GPT 4o Mini,Openai,true,12,86.053481,53755.75,51954,62636,0.005701,1,0,0,Evaluation completed.
+openai/gpt-4.1,GPT 4.1,Openai,true,12,87.265197,33599.5,31959,38537,0.074289,1,0,0,Evaluation completed.
+openai/gpt-4o,GPT 4o,Openai,true,12,86.099221,26160.666667,24301,29970,0.094042,1,0,0,Evaluation completed.
+google/gemini-2.5-pro,Gemini 2.5 Pro,Google,true,12,,,,,,0,,12,Not scored because the AI provider quota limit was reached during this run.
+anthropic/claude-3.5-haiku,Claude 3.5 Haiku,Anthropic,true,12,,,,,,0,,12,Not scored because the AI provider quota limit was reached during this run.
+anthropic/claude-3.5-sonnet,Claude 3.5 Sonnet,Anthropic,true,12,,,,,,0,,12,Some evaluation questions failed: AI provider has no endpoint for this model.

@@ -1,0 +1,1133 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:23:29.371Z",
+  "modelId": "openai/gpt-4o-mini",
+  "questionId": "school-uniforms",
+  "question": "Should students have to wear school uniforms?",
+  "run": {
+    "id": "run_39203bd9",
+    "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:22:32.095Z",
+    "completedAt": "2026-05-26T05:23:29.371Z",
+    "events": [
+      {
+        "id": "event_cf650669",
+        "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+        "runId": "run_39203bd9",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:22:32.095Z"
+      },
+      {
+        "id": "event_1dbb6794",
+        "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+        "runId": "run_39203bd9",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:22:32.095Z"
+      },
+      {
+        "id": "event_6d579cc9",
+        "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+        "runId": "run_39203bd9",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:22:32.096Z"
+      },
+      {
+        "id": "event_604d1602",
+        "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+        "runId": "run_39203bd9",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:22:42.717Z"
+      },
+      {
+        "id": "event_325f3bc1",
+        "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+        "runId": "run_39203bd9",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:23:16.072Z"
+      },
+      {
+        "id": "event_643b5acd",
+        "debateId": "eval_school-uniforms_openai-gpt-4o-mini",
+        "runId": "run_39203bd9",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_42a111a0",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4o-mini",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should students have to wear school uniforms? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students have to wear school uniforms?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_6ce78ec4",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4o-mini",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students have to wear school uniforms? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students have to wear school uniforms?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_e3d688df",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4o-mini (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_42014a68",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4o-mini",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should students have to wear school uniforms? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students have to wear school uniforms?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_edda0371",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4o-mini",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should students have to wear school uniforms? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students have to wear school uniforms?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_57787db3",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4o-mini",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should students have to wear school uniforms? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_d425c9cb",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4o-mini",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students have to wear school uniforms? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_2b78bcfa",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4o-mini (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Implementing school uniforms can reduce peer pressure related to clothing choices, fostering a more inclusive environment.",
+        "warrant": "Research indicates that uniforms can minimize socioeconomic disparities among students, leading to improved social interactions.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.75,
+        "id": "claim_093e7401"
+      },
+      {
+        "side": "pro",
+        "text": "School uniforms can enhance student focus by reducing distractions associated with fashion competition.",
+        "warrant": "Studies show that when students wear uniforms, they tend to concentrate more on their studies rather than on their attire.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.7,
+        "id": "claim_d322a659"
+      },
+      {
+        "side": "pro",
+        "text": "Uniforms can promote school spirit and a sense of belonging among students.",
+        "warrant": "When students wear the same attire, it can foster a collective identity and pride in their school.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.68,
+        "id": "claim_a9e70a86"
+      },
+      {
+        "side": "con",
+        "text": "The current approach to school attire allows for greater individual expression and comfort among students.",
+        "warrant": "Allowing students to choose their clothing can lead to increased self-esteem and personal identity development.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.8,
+        "id": "claim_cbef081e"
+      },
+      {
+        "side": "con",
+        "text": "Mandatory school uniforms can create financial burdens for families, especially those with multiple children.",
+        "warrant": "The cost of uniforms can add up, making it difficult for low-income families to afford necessary clothing.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.75,
+        "id": "claim_efcf2a71"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should students have to wear school uniforms?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_093e7401",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Implementing school uniforms can reduce peer pressure related to clothing choices, fostering a more inclusive environment."
+      },
+      {
+        "id": "claim_d322a659",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "School uniforms can enhance student focus by reducing distractions associated with fashion competition."
+      },
+      {
+        "id": "claim_a9e70a86",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Uniforms can promote school spirit and a sense of belonging among students."
+      },
+      {
+        "id": "claim_cbef081e",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The current approach to school attire allows for greater individual expression and comfort among students."
+      },
+      {
+        "id": "claim_efcf2a71",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Mandatory school uniforms can create financial burdens for families, especially those with multiple children."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_a8d5e224",
+        "source": "claim_093e7401",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_c95ea443",
+        "source": "claim_d322a659",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_37dcafd7",
+        "source": "claim_a9e70a86",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_51d4edec",
+        "source": "claim_cbef081e",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_b2f69dfe",
+        "source": "claim_efcf2a71",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_f48d610d",
+        "source": "evidence-src-mock-2",
+        "target": "claim_a9e70a86",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_5bba9fb9",
+        "source": "evidence-src-mock-4",
+        "target": "claim_093e7401",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_e1ebb952",
+        "source": "evidence-src-mock-5",
+        "target": "claim_d322a659",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_efe609c9",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_57787db3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Implementing school uniforms can reduce peer pressure related to clothing choices, fostering a more inclusive environment. Research shows that uniforms minimize socioeconomic disparities among students, leading to improved social interactions. Additionally, uniforms can enhance student focus by reducing distractions associated with fashion competition, allowing students to concentrate more on their studies.",
+        "claimIds": [
+          "claim_093e7401",
+          "claim_d322a659",
+          "claim_a9e70a86"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-2"
+        ],
+        "id": "turn_ecbb0f88",
+        "createdAt": "2026-05-26T05:22:51.004Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_d425c9cb",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "I think NO. The current approach to school attire allows for greater individual expression and comfort among students, which can boost self-esteem. Additionally, mandatory uniforms can create financial burdens for families, especially those with multiple children.",
+        "claimIds": [
+          "claim_cbef081e",
+          "claim_efcf2a71"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_18351dd3",
+        "createdAt": "2026-05-26T05:22:51.004Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_57787db3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Strategic Optimist: The NO frog needs to explain how allowing individual clothing choices can outweigh the benefits of school uniforms, which enhance focus and reduce distractions from fashion competition.",
+        "claimIds": [
+          "claim_d322a659",
+          "claim_efcf2a71"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_dccf7746",
+        "createdAt": "2026-05-26T05:22:59.154Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_d425c9cb",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The YES side must clarify how uniforms will effectively reduce peer pressure. Without specific evidence, the claim that uniforms foster inclusivity may not hold true.",
+        "claimIds": [
+          "claim_093e7401"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_ebf29ad9",
+        "createdAt": "2026-05-26T05:22:59.154Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_57787db3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "While the NO side mentions individual expression, uniforms can actually enhance focus and reduce distractions, allowing students to concentrate on learning. Additionally, uniforms help create a sense of belonging, which is crucial for a positive school environment.",
+        "claimIds": [
+          "claim_093e7401",
+          "claim_d322a659",
+          "claim_a9e70a86"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-2"
+        ],
+        "id": "turn_6763ab0f",
+        "createdAt": "2026-05-26T05:23:05.385Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_d425c9cb",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The current approach allows students to express themselves and feel comfortable. Uniforms can limit this individuality, which is important for self-esteem.",
+        "claimIds": [
+          "claim_cbef081e",
+          "claim_efcf2a71"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_7610246f",
+        "createdAt": "2026-05-26T05:23:05.385Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_57787db3",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Implementing school uniforms reduces peer pressure and creates a more inclusive environment, allowing students to focus on learning rather than fashion. This fosters a sense of belonging and school spirit, which are crucial for student engagement and success.",
+        "claimIds": [
+          "claim_093e7401",
+          "claim_d322a659",
+          "claim_a9e70a86"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-2"
+        ],
+        "id": "turn_df4db124",
+        "createdAt": "2026-05-26T05:23:12.913Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_d425c9cb",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Mandatory school uniforms limit individual expression, which is crucial for students' self-esteem and identity development. Additionally, the financial burden of purchasing specific uniforms can strain families, especially those with multiple children.",
+        "claimIds": [
+          "claim_cbef081e",
+          "claim_efcf2a71"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_4cebe646",
+        "createdAt": "2026-05-26T05:23:12.913Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_2b78bcfa",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The evidence shows that implementing school uniforms can reduce peer pressure and enhance focus, but it also raises concerns about individual expression and financial burdens. The decision hinges on weighing these factors.",
+        "claimIds": [
+          "claim_093e7401",
+          "claim_d322a659",
+          "claim_cbef081e",
+          "claim_efcf2a71"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_5383129e",
+        "createdAt": "2026-05-26T05:23:16.072Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "conditional_no",
+      "confidence": 0.67,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.3,
+          "con": 7.8,
+          "note": "Both sides need evidence that directly speaks to Should students have to wear school uniforms?."
+        },
+        {
+          "name": "practicality",
+          "pro": 8,
+          "con": 7.6,
+          "note": "The pro case strengthens when it defines the comparison standard and applies it consistently."
+        },
+        {
+          "name": "risk",
+          "pro": 6.5,
+          "con": 8.6,
+          "note": "The con case is strongest when it exposes overbroad definitions or weak evidence transfer."
+        },
+        {
+          "name": "fairness",
+          "pro": 7.1,
+          "con": 8.1,
+          "note": "The judgment should not privilege a familiar or attractive framing over the strongest evidence without saying so."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.8,
+          "con": 7.4,
+          "note": "The verdict can change if the controlling metric changes."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "The answer depends on how the key standard is measured for Should students have to wear school uniforms?.",
+      "recommendation": "The verdict is conditional no. The strongest answer should name the controlling standard, weigh the best pro and con evidence, and explain which dimensions matter most.",
+      "strongestPro": [
+        "Implementing school uniforms can reduce peer pressure related to clothing choices, fostering a more inclusive environment.",
+        "School uniforms can enhance student focus by reducing distractions associated with fashion competition.",
+        "Uniforms can promote school spirit and a sense of belonging among students."
+      ],
+      "strongestCon": [
+        "The current approach to school attire allows for greater individual expression and comfort among students.",
+        "Mandatory school uniforms can create financial burdens for families, especially those with multiple children."
+      ],
+      "unresolvedUncertainties": [
+        "Which definition or standard should control the verdict.",
+        "Whether broad appeal should count as much as deeper expert or institutional support.",
+        "Whether the cited evidence compares both sides using the same standard."
+      ],
+      "whatWouldChangeMind": [
+        "Comparative citation, curriculum, or practice data that strongly favors one side.",
+        "Evidence that one side shaped later fields or public understanding more deeply than currently shown.",
+        "A clearer definition of the controlling standard that changes which evidence matters most."
+      ],
+      "confidence": 0.67
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 6459,
+        "promptTokens": 1298,
+        "completionTokens": 262,
+        "estimatedCostUsd": 0.0003519,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6459
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 4160,
+        "promptTokens": 1292,
+        "completionTokens": 178,
+        "estimatedCostUsd": 0.0003006,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4160
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 4098,
+        "promptTokens": 2069,
+        "completionTokens": 183,
+        "estimatedCostUsd": 0.00042015,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4098
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 4188,
+        "promptTokens": 2059,
+        "completionTokens": 150,
+        "estimatedCostUsd": 0.00039885,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4188
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 4635,
+        "promptTokens": 2061,
+        "completionTokens": 160,
+        "estimatedCostUsd": 0.00040515,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4635
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 3513,
+        "promptTokens": 2060,
+        "completionTokens": 111,
+        "estimatedCostUsd": 0.0003756,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3513
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 4114,
+        "promptTokens": 2065,
+        "completionTokens": 170,
+        "estimatedCostUsd": 0.00041175,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4114
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 2116,
+        "promptTokens": 2051,
+        "completionTokens": 134,
+        "estimatedCostUsd": 0.00038805,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2116
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 3480,
+        "promptTokens": 2049,
+        "completionTokens": 168,
+        "estimatedCostUsd": 0.00040815,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3480
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 4046,
+        "promptTokens": 2039,
+        "completionTokens": 145,
+        "estimatedCostUsd": 0.00039285,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4046
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 3158,
+        "promptTokens": 2079,
+        "completionTokens": 161,
+        "estimatedCostUsd": 0.00040845,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3158
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 6366,
+        "promptTokens": 3399,
+        "completionTokens": 279,
+        "estimatedCostUsd": 0.00067725,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6366
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 6931,
+        "promptTokens": 3678,
+        "completionTokens": 300,
+        "estimatedCostUsd": 0.0007317,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6931
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_2cd42f7a",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_c3d50d5a",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_afd5e19c",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_eb3dbed3",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_e7e230d1",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_5d75842b",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_fafebe2a",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      },
+      {
+        "id": "artifact_371b8931",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:23:29.371Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_7ba14b23",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:22:32.095Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_17afd8c7",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:22:32.095Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_d3fc9147",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:22:32.096Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_e0a71b87",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:22:32.096Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_ee874410",
+        "step": "opening",
+        "status": "ok",
+        "message": "5 source-linked claims generated.",
+        "at": "2026-05-26T05:22:42.717Z",
+        "durationMs": 10621
+      },
+      {
+        "id": "trace_db7bc6cb",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:22:51.004Z",
+        "durationMs": 8287
+      },
+      {
+        "id": "trace_226ce4a6",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:22:59.154Z",
+        "durationMs": 8150
+      },
+      {
+        "id": "trace_879513d6",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:23:05.385Z",
+        "durationMs": 6231
+      },
+      {
+        "id": "trace_74b44a8a",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:23:12.913Z",
+        "durationMs": 7528
+      },
+      {
+        "id": "trace_026ac483",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:23:16.072Z",
+        "durationMs": 3159
+      },
+      {
+        "id": "trace_e7b32440",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as conditional_no.",
+        "at": "2026-05-26T05:23:22.438Z",
+        "durationMs": 6366
+      },
+      {
+        "id": "trace_ad409b90",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: conditional_no.",
+        "at": "2026-05-26T05:23:29.370Z",
+        "durationMs": 6932
+      },
+      {
+        "id": "trace_ba4efd67",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:23:29.371Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

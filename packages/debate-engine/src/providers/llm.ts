@@ -89,16 +89,18 @@ export class OpenRouterLlmProvider implements LlmProvider {
       throw new Error("OPENROUTER_API_KEY is required when POLYVISE_ENABLE_MOCK_LLM=false.");
     }
 
+    const useStrictSchema = this.config.useStrictJsonSchema && Boolean(request.jsonSchema);
+
     try {
       return await this.completeStructuredWithRetry<T>(
         request,
         model,
         started,
-        Boolean(request.jsonSchema),
+        useStrictSchema,
         attempts
       );
     } catch (error) {
-      if (!request.jsonSchema) {
+      if (!useStrictSchema) {
         throw error;
       }
 
@@ -135,12 +137,21 @@ export class OpenRouterLlmProvider implements LlmProvider {
         };
       } catch (error) {
         lastError = error;
+        const durationMs = Date.now() - attemptStarted;
         attempts.push({
           attempt,
           mode,
           status: "failed",
-          durationMs: Date.now() - attemptStarted,
-          message: error instanceof Error ? error.message : "OpenRouter request failed."
+          durationMs,
+          message: error instanceof Error ? sanitizeProviderMessage(error.message) : "AI model request failed."
+        });
+        logOpenRouterAttemptFailure({
+          error,
+          model,
+          role: request.role,
+          mode,
+          attempt,
+          durationMs
         });
         if (attempt >= this.config.llmMaxAttempts || !isRetriableOpenRouterError(error)) {
           break;
@@ -149,7 +160,17 @@ export class OpenRouterLlmProvider implements LlmProvider {
       }
     }
 
-    throw lastError;
+    const message = lastError instanceof Error ? sanitizeProviderMessage(lastError.message) : "AI model request failed.";
+    throw new LlmProviderFailure(message, {
+      id: `openrouter-${request.role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
+      provider: "openrouter",
+      model,
+      role: request.role,
+      configured: true,
+      latencyMs: Date.now() - started,
+      failure: message,
+      attempts: [...attempts]
+    });
   }
 
   private async completeStructured<T>(
@@ -176,11 +197,18 @@ export class OpenRouterLlmProvider implements LlmProvider {
             {
               role: "system",
               content:
-                "You are one step in a structured multi-agent debate workflow. Return only valid JSON matching the requested schema. Do not include markdown."
+                "You are one step in a structured multi-agent debate workflow. Return exactly one valid JSON object matching the requested schema. Do not include markdown. Use enum values exactly as written."
             },
             {
               role: "user",
-              content: `Role: ${request.role}\nSchema: ${request.schemaName}\nDraft context JSON:\n${request.prompt}`
+              content: [
+                `Role: ${request.role}`,
+                `Schema name: ${request.schemaName}`,
+                request.jsonSchema
+                  ? `Required JSON Schema:\n${JSON.stringify(request.jsonSchema, null, 2)}`
+                  : "Required JSON Schema: Return the requested JSON object.",
+                `Draft context JSON:\n${request.prompt}`
+              ].join("\n\n")
             }
           ],
           max_tokens: this.config.llmMaxTokens,
@@ -214,7 +242,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
 
       const content = payload.choices?.[0]?.message?.content;
       if (!content) {
-        throw new Error(payload.choices?.[0]?.message?.refusal ?? "OpenRouter returned an empty response.");
+        throw new Error(payload.choices?.[0]?.message?.refusal ?? "AI model returned an empty response.");
       }
 
       return {
@@ -263,12 +291,76 @@ class OpenRouterRequestError extends Error {
   }
 }
 
+export class LlmProviderFailure extends Error {
+  constructor(
+    message: string,
+    readonly snapshot: ModelSnapshot
+  ) {
+    super(message);
+  }
+}
+
 function isRetriableOpenRouterError(error: unknown): boolean {
   if (error instanceof OpenRouterRequestError) {
     return error.status === 408 || error.status === 409 || error.status === 429 || error.status >= 500;
   }
 
-  return error instanceof TypeError || (error instanceof Error && error.name === "AbortError");
+  return (
+    error instanceof SyntaxError ||
+    error instanceof TypeError ||
+    (error instanceof Error && (error.name === "AbortError" || error.message.includes("empty response")))
+  );
+}
+
+function logOpenRouterAttemptFailure({
+  error,
+  model,
+  role,
+  mode,
+  attempt,
+  durationMs
+}: {
+  error: unknown;
+  model: string;
+  role: string;
+  mode: "json_schema" | "json_object";
+  attempt: number;
+  durationMs: number;
+}) {
+  const status = error instanceof OpenRouterRequestError ? error.status : undefined;
+  const message = error instanceof Error ? sanitizeProviderMessage(error.message) : "unknown provider error";
+  console.warn("[debatefrog.llm.attempt_failed]", {
+    attempt,
+    durationMs,
+    mode,
+    model,
+    role,
+    status,
+    retriable: isRetriableOpenRouterError(error),
+    reason: classifyOpenRouterFailure(error),
+    message
+  });
+}
+
+function classifyOpenRouterFailure(error: unknown): string {
+  if (error instanceof OpenRouterRequestError) {
+    if (error.status === 408) return "timeout";
+    if (error.status === 409) return "upstream conflict";
+    if (error.status === 429) return "rate limited";
+    if (error.status === 401 || error.status === 403) return "provider authorization or quota error";
+    if (error.status >= 500) return "upstream service error";
+    return "provider returned error";
+  }
+  if (error instanceof Error && error.name === "AbortError") return "timeout";
+  if (error instanceof SyntaxError) return "invalid JSON";
+  if (error instanceof TypeError) return "network error";
+  return "unknown provider error";
+}
+
+function sanitizeProviderMessage(message: string): string {
+  return message
+    .replace(/https:\/\/openrouter\.ai\/workspaces\/[^\s"')]+/g, "the provider dashboard")
+    .replace(/sk-or-v1-[a-zA-Z0-9_-]+/g, "[redacted-api-key]");
 }
 
 function delay(ms: number): Promise<void> {

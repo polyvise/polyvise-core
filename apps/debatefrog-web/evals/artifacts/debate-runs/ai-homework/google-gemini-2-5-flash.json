@@ -1,0 +1,1073 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T04:57:22.509Z",
+  "modelId": "google/gemini-2.5-flash",
+  "questionId": "ai-homework",
+  "question": "Should students be allowed to use AI tools for homework?",
+  "run": {
+    "id": "run_8b4f4aad",
+    "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+    "status": "complete",
+    "startedAt": "2026-05-26T04:56:56.781Z",
+    "completedAt": "2026-05-26T04:57:22.509Z",
+    "events": [
+      {
+        "id": "event_9ef21013",
+        "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+        "runId": "run_8b4f4aad",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T04:56:56.781Z"
+      },
+      {
+        "id": "event_7487640e",
+        "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+        "runId": "run_8b4f4aad",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T04:56:56.781Z"
+      },
+      {
+        "id": "event_a628f282",
+        "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+        "runId": "run_8b4f4aad",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T04:56:56.782Z"
+      },
+      {
+        "id": "event_6360706b",
+        "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+        "runId": "run_8b4f4aad",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T04:57:01.255Z"
+      },
+      {
+        "id": "event_f1288a45",
+        "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+        "runId": "run_8b4f4aad",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T04:57:15.262Z"
+      },
+      {
+        "id": "event_e6c46266",
+        "debateId": "eval_ai-homework_google-gemini-2-5-flash",
+        "runId": "run_8b4f4aad",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_02f5fb3d",
+        "name": "Strategic Optimist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should students be allowed to use AI tools for homework? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students be allowed to use AI tools for homework?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_e974b8da",
+        "name": "Risk Skeptic",
+        "model": "google/gemini-2.5-flash",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students be allowed to use AI tools for homework? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students be allowed to use AI tools for homework?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_08882cc1",
+        "name": "Empirical Referee",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_9065b30f",
+        "name": "Implementation Pragmatist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should students be allowed to use AI tools for homework? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should students be allowed to use AI tools for homework?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_57b6f041",
+        "name": "Equity Auditor",
+        "model": "google/gemini-2.5-flash",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should students be allowed to use AI tools for homework? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should students be allowed to use AI tools for homework?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_ffca4aff",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "google/gemini-2.5-flash",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should students be allowed to use AI tools for homework? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_c9db1505",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "google/gemini-2.5-flash",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should students be allowed to use AI tools for homework? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_ebb6dd59",
+        "name": "Neutral Synthesis Judge",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Artificial Intelligence Risk Management Framework",
+        "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+        "publisher": "NIST",
+        "snippet": "Defines risk-management practices for trustworthy AI systems.",
+        "quality": "primary"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Business Blog: AI and the claims you make",
+        "url": "https://www.ftc.gov/business-guidance/blog/2023/02/keep-your-ai-claims-check",
+        "publisher": "Federal Trade Commission",
+        "snippet": "Warns businesses to substantiate AI claims and consider consumer protection risks.",
+        "quality": "primary"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Allowing students to use AI tools for homework can be a good idea if the benefits are clearly explained and supported by evidence, such as the scope and mechanisms outlined in the \"Artificial Intelligence Risk Management Framework.\"",
+        "warrant": "The \"Artificial Intelligence Risk Management Framework\" can help demonstrate the real-world reach and operational aspects that support the YES position for allowing AI tools in homework.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.72,
+        "id": "claim_42ad8046"
+      },
+      {
+        "side": "pro",
+        "text": "The benefits of allowing students to use AI tools for homework must reach a significant number of students and be substantial enough to justify the change, considering potential consumer protection risks as highlighted by the Federal Trade Commission.",
+        "warrant": "A strong YES case should consider both direct effects and important downstream consequences, while also addressing potential risks to students, similar to how the Federal Trade Commission advises businesses to substantiate AI claims and consider consumer protection.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.68,
+        "id": "claim_8ccffef2"
+      },
+      {
+        "side": "pro",
+        "text": "Evidence should demonstrate that allowing AI tools for homework would improve the educational experience more than maintaining the current status quo, potentially by aligning with risk-management practices for trustworthy AI systems.",
+        "warrant": "Downstream effects and the overall improvement of the school day, supported by frameworks like the \"Artificial Intelligence Risk Management Framework,\" are crucial when evaluating the contested resolution.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.64,
+        "id": "claim_ea2212ea"
+      },
+      {
+        "side": "con",
+        "text": "Allowing students to use AI tools for homework may not work better than current approaches, and the YES side must substantiate claims that it would.",
+        "warrant": "The Federal Trade Commission warns businesses to substantiate AI claims and consider consumer protection risks, which applies to claims about the benefits of AI in education.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.7,
+        "id": "claim_bd99be54"
+      },
+      {
+        "side": "con",
+        "text": "The appealing intentions of allowing AI tools for homework must be separated from actual proven benefits and workable safeguards.",
+        "warrant": "NIST's framework for trustworthy AI systems emphasizes risk-management practices, suggesting that the mere appeal of a technology does not equate to its proven utility or safety.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.66,
+        "id": "claim_b3a62245"
+      },
+      {
+        "side": "con",
+        "text": "The permissibility of AI tools for homework depends on which aspects of the question are prioritized, such as educational outcomes versus potential risks.",
+        "warrant": "The Federal Trade Commission's guidance on AI claims implies that different dimensions of a technology's impact need to be considered, rather than a single, overarching judgment.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.74,
+        "id": "claim_9ec9320c"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should students be allowed to use AI tools for homework?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_42ad8046",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing students to use AI tools for homework can be a good idea if the benefits are clearly explained and supported by evidence, such as the scope and mechanisms outlined in the \"Artificial Intelligence Risk Management Framework.\""
+      },
+      {
+        "id": "claim_8ccffef2",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "The benefits of allowing students to use AI tools for homework must reach a significant number of students and be substantial enough to justify the change, considering potential consumer protection risks as highlighted by the Federal Trade Commission."
+      },
+      {
+        "id": "claim_ea2212ea",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Evidence should demonstrate that allowing AI tools for homework would improve the educational experience more than maintaining the current status quo, potentially by aligning with risk-management practices for trustworthy AI systems."
+      },
+      {
+        "id": "claim_bd99be54",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Allowing students to use AI tools for homework may not work better than current approaches, and the YES side must substantiate claims that it would."
+      },
+      {
+        "id": "claim_b3a62245",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The appealing intentions of allowing AI tools for homework must be separated from actual proven benefits and workable safeguards."
+      },
+      {
+        "id": "claim_9ec9320c",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The permissibility of AI tools for homework depends on which aspects of the question are prioritized, such as educational outcomes versus potential risks."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "NIST",
+        "detail": "Artificial Intelligence Risk Management Framework",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Federal Trade Commission",
+        "detail": "Business Blog: AI and the claims you make",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_25ef1100",
+        "source": "claim_42ad8046",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_86c6cf28",
+        "source": "claim_8ccffef2",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_850f4169",
+        "source": "claim_ea2212ea",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_50b0d15f",
+        "source": "claim_bd99be54",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_e84f0c11",
+        "source": "claim_b3a62245",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_f6a78438",
+        "source": "claim_9ec9320c",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_3fc9565f",
+        "source": "evidence-src-mock-1",
+        "target": "claim_42ad8046",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_9f25829f",
+        "source": "evidence-src-mock-2",
+        "target": "claim_8ccffef2",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_5d0fbcaf",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_ffca4aff",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, students should be allowed to use AI tools for homework. Allowing students to use AI tools for homework can be a good idea if the benefits are clearly explained and supported by evidence, such as the scope and mechanisms outlined in the \"Artificial Intelligence Risk Management Framework.\" The benefits must reach a significant number of students and be substantial enough to justify the change, considering potential consumer protection risks.",
+        "claimIds": [
+          "claim_42ad8046",
+          "claim_8ccffef2"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_61bc0331",
+        "createdAt": "2026-05-26T04:57:04.935Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_c9db1505",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that allowing students to use AI tools for homework may not be better than what we do now. The YES side needs to show clear proof that it would work better and that the benefits are real, not just good intentions. The Federal Trade Commission warns that claims about AI need to be proven, and the NIST framework highlights the importance of managing risks for trustworthy AI systems.",
+        "claimIds": [
+          "claim_bd99be54",
+          "claim_b3a62245",
+          "claim_9ec9320c"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_29d4f8f8",
+        "createdAt": "2026-05-26T04:57:04.935Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_ffca4aff",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side claims that the appealing intentions of allowing AI tools for homework must be separated from actual proven benefits and workable safeguards (claim_b3a62245). However, the YES side argues that allowing students to use AI tools for homework can be a good idea if the benefits are clearly explained and supported by evidence, such as the scope and mechanisms outlined in the \"Artificial Intelligence Risk Management Framework\" (claim_42ad8046). How does the NO side reconcile their concern about intentions with the YES side's focus on evidence-based benefits from a framework designed for trustworthy AI systems?",
+        "claimIds": [
+          "claim_b3a62245",
+          "claim_42ad8046"
+        ],
+        "sourceIds": [
+          "src-mock-1"
+        ],
+        "id": "turn_d8325a36",
+        "createdAt": "2026-05-26T04:57:07.661Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_c9db1505",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that the appealing intentions of allowing AI tools for homework must be separated from actual proven benefits and workable safeguards, as emphasized by NIST's framework for trustworthy AI systems. How does the YES side plan to demonstrate these proven benefits and safeguards, beyond just stating that the benefits should be clearly explained?",
+        "claimIds": [
+          "claim_b3a62245",
+          "claim_42ad8046"
+        ],
+        "sourceIds": [
+          "src-mock-1"
+        ],
+        "id": "turn_ae433ca9",
+        "createdAt": "2026-05-26T04:57:07.661Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_ffca4aff",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side suggests that AI tools may not work better than current approaches, but the YES side believes that allowing students to use AI tools for homework can be a good idea if the benefits are clearly explained and supported by evidence, such as the scope and mechanisms outlined in the \"Artificial Intelligence Risk Management Framework.\" These benefits must reach a significant number of students and be substantial enough to justify the change, considering potential consumer protection risks as highlighted by the Federal Trade Commission.",
+        "claimIds": [
+          "claim_42ad8046",
+          "claim_8ccffef2",
+          "claim_ea2212ea"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_ef9d9ce0",
+        "createdAt": "2026-05-26T04:57:10.620Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_c9db1505",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that simply wanting to use AI tools for homework isn't enough; the YES side must prove real benefits and safety measures. The Federal Trade Commission warns that claims about AI must be backed up, and the NIST framework shows that trustworthy AI needs good risk management. The YES side has not shown that AI tools for homework would work better than what we do now.",
+        "claimIds": [
+          "claim_bd99be54",
+          "claim_b3a62245",
+          "claim_9ec9320c"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_f223275e",
+        "createdAt": "2026-05-26T04:57:10.620Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_ffca4aff",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The YES side has shown that allowing students to use AI tools for homework can be a good idea, especially when considering the benefits outlined by the \"Artificial Intelligence Risk Management Framework.\" These benefits must be substantial and reach many students, while also addressing potential consumer protection risks, as highlighted by the Federal Trade Commission. Vote YES if you believe the evidence supports improving the educational experience with AI tools.",
+        "claimIds": [
+          "claim_42ad8046",
+          "claim_8ccffef2",
+          "claim_ea2212ea"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_99ab6cce",
+        "createdAt": "2026-05-26T04:57:13.600Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_c9db1505",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side has shown that allowing AI tools for homework may not work better than current approaches, and the YES side has not fully substantiated its claims, as highlighted by the Federal Trade Commission's warnings about AI claims. The appealing intentions of using AI must be separated from proven benefits and workable safeguards, as emphasized by NIST's risk-management practices. Therefore, vote NO.",
+        "claimIds": [
+          "claim_bd99be54",
+          "claim_b3a62245",
+          "claim_9ec9320c"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_aaef71b1",
+        "createdAt": "2026-05-26T04:57:13.600Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_ebb6dd59",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The YES side must show that allowing AI tools for homework offers clear benefits and workable safeguards, as suggested by the NIST framework, and that these benefits are substantial enough to justify the change, considering potential consumer protection risks highlighted by the FTC. The NO side argues that the YES side has not yet substantiated these claims and that appealing intentions are not enough without proven benefits and safeguards.",
+        "claimIds": [
+          "claim_42ad8046",
+          "claim_8ccffef2",
+          "claim_ea2212ea",
+          "claim_bd99be54",
+          "claim_b3a62245",
+          "claim_9ec9320c"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2"
+        ],
+        "id": "turn_98fd65f1",
+        "createdAt": "2026-05-26T04:57:15.262Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.7,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 5,
+          "con": 8,
+          "note": "The pro side relies on general statements about benefits being 'clearly explained and supported by evidence' and 'substantial enough to justify the change', without providing specific evidence of these benefits in the context of AI tools for homework. The con side effectively uses the FTC and NIST sources to highlight the burden of proof on the pro side to substantiate claims and manage risks, which the pro side did not meet with specific evidence."
+        },
+        {
+          "name": "practicality",
+          "pro": 4,
+          "con": 7,
+          "note": "The pro side's arguments for allowing AI tools are framed as conditional ('if the benefits are clearly explained') but do not offer practical mechanisms or examples of how these benefits would be realized or how the 'scope and mechanisms' of the NIST framework would apply to homework use. The con side's focus on the need for 'proven benefits and workable safeguards' directly challenges the practicality of implementing such a policy without concrete plans."
+        },
+        {
+          "name": "risk",
+          "pro": 4,
+          "con": 8,
+          "note": "The pro side acknowledges 'potential consumer protection risks' but does not elaborate on how these would be mitigated or managed in practice. The con side effectively uses the NIST framework to emphasize the need for 'risk-management practices for trustworthy AI systems' and the FTC's warnings about substantiating AI claims, implying that the risks are significant and require specific, proven safeguards, which the pro side failed to provide."
+        },
+        {
+          "name": "fairness",
+          "pro": 5,
+          "con": 7,
+          "note": "The pro side's argument that benefits 'must reach a significant number of students' touches on fairness, but without specific examples or a plan, it remains an assertion. The con side's emphasis on separating 'appealing intentions' from 'actual proven benefits and workable safeguards' implicitly addresses fairness by demanding that any policy change must genuinely benefit students and not just sound good, preventing potential negative impacts from unproven tools."
+        },
+        {
+          "name": "reversibility",
+          "pro": 5,
+          "con": 6,
+          "note": "Neither side directly addressed the reversibility of allowing AI tools for homework. However, the con side's consistent demand for 'proven benefits and workable safeguards' and its skepticism about unsubstantiated claims indirectly suggests that without such proof, the potential for negative, difficult-to-reverse consequences is higher, making a cautious approach more prudent."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Insufficient Evidence to Justify Allowing AI Tools for Homework",
+      "recommendation": "The verdict is NO. While the potential benefits of AI tools in education are appealing, the PRO side failed to provide concrete evidence of proven benefits and workable safeguards that outweigh the risks and implementation burdens. The CON side effectively highlighted the necessity for substantiated claims and robust risk management, which were not adequately addressed.",
+      "strongestPro": [
+        "Allowing students to use AI tools for homework can be a good idea if the benefits are clearly explained and supported by evidence, such as the scope and mechanisms outlined in the \"Artificial Intelligence Risk Management Framework.\"",
+        "The benefits of allowing students to use AI tools for homework must reach a significant number of students and be substantial enough to justify the change, considering potential consumer protection risks as highlighted by the Federal Trade Commission."
+      ],
+      "strongestCon": [
+        "Allowing students to use AI tools for homework may not work better than current approaches, and the YES side must substantiate claims that it would, as warned by the Federal Trade Commission regarding AI claims.",
+        "The appealing intentions of allowing AI tools for homework must be separated from actual proven benefits and workable safeguards, as emphasized by NIST's framework for trustworthy AI systems."
+      ],
+      "unresolvedUncertainties": [
+        "The specific educational benefits that AI tools would provide for homework remain undefined and unsubstantiated.",
+        "The practical mechanisms for implementing and managing AI tools for homework, including how to mitigate consumer protection risks and ensure trustworthy AI systems, were not presented.",
+        "How the educational experience would demonstrably improve more than maintaining the current status quo was not detailed with evidence."
+      ],
+      "whatWouldChangeMind": [
+        "Specific, evidence-based studies demonstrating significant and widespread educational benefits of AI tools for homework.",
+        "A detailed plan outlining workable safeguards and risk management practices for AI tools in an educational context, aligned with frameworks like NIST's.",
+        "Clear evidence that the proposed AI tools for homework would improve the educational experience more than existing methods, addressing potential consumer protection risks."
+      ],
+      "confidence": 0.7
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "stance scout and fast debate turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": false
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "YES frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "NO frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard and final synthesis judge",
+        "configured": false
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 2498,
+        "promptTokens": 1125,
+        "completionTokens": 403,
+        "estimatedCostUsd": 0.001345,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2498
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 1974,
+        "promptTokens": 1118,
+        "completionTokens": 350,
+        "estimatedCostUsd": 0.0012104,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1974
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1468,
+        "promptTokens": 2280,
+        "completionTokens": 204,
+        "estimatedCostUsd": 0.001194,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1468
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 2212,
+        "promptTokens": 2278,
+        "completionTokens": 222,
+        "estimatedCostUsd": 0.0012384,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2212
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1517,
+        "promptTokens": 2284,
+        "completionTokens": 248,
+        "estimatedCostUsd": 0.0013052,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1517
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1207,
+        "promptTokens": 2294,
+        "completionTokens": 188,
+        "estimatedCostUsd": 0.0011582,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1207
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1461,
+        "promptTokens": 2263,
+        "completionTokens": 233,
+        "estimatedCostUsd": 0.0012614,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1461
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1498,
+        "promptTokens": 2266,
+        "completionTokens": 223,
+        "estimatedCostUsd": 0.0012373,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1498
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1351,
+        "promptTokens": 2248,
+        "completionTokens": 216,
+        "estimatedCostUsd": 0.0012144,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1351
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1628,
+        "promptTokens": 2255,
+        "completionTokens": 221,
+        "estimatedCostUsd": 0.001229,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1628
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1661,
+        "promptTokens": 2301,
+        "completionTokens": 255,
+        "estimatedCostUsd": 0.0013278,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1661
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 4277,
+        "promptTokens": 4172,
+        "completionTokens": 616,
+        "estimatedCostUsd": 0.0027916,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4277
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 2969,
+        "promptTokens": 4900,
+        "completionTokens": 472,
+        "estimatedCostUsd": 0.00265,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2969
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_7ec7a022",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_77c22d12",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_33fc3a22",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 2,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_82e2c533",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_a4257ba8",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_a3d3fe90",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_74061d58",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      },
+      {
+        "id": "artifact_027af22f",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T04:57:22.509Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_7e78cdc0",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T04:56:56.781Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_5ba17c75",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T04:56:56.782Z",
+        "durationMs": 1
+      },
+      {
+        "id": "trace_3a420220",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T04:56:56.782Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_00869f76",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T04:56:56.782Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_7bf9bf0d",
+        "step": "opening",
+        "status": "ok",
+        "message": "6 source-linked claims generated.",
+        "at": "2026-05-26T04:57:01.255Z",
+        "durationMs": 4473
+      },
+      {
+        "id": "trace_d3a36f31",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T04:57:04.935Z",
+        "durationMs": 3680
+      },
+      {
+        "id": "trace_ff8910b7",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T04:57:07.661Z",
+        "durationMs": 2726
+      },
+      {
+        "id": "trace_4609302f",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T04:57:10.620Z",
+        "durationMs": 2959
+      },
+      {
+        "id": "trace_48c16154",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T04:57:13.600Z",
+        "durationMs": 2980
+      },
+      {
+        "id": "trace_fab57eea",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T04:57:15.262Z",
+        "durationMs": 1662
+      },
+      {
+        "id": "trace_1a90bfe6",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T04:57:19.539Z",
+        "durationMs": 4277
+      },
+      {
+        "id": "trace_4d65d8a1",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T04:57:22.509Z",
+        "durationMs": 2970
+      },
+      {
+        "id": "trace_ab03895f",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T04:57:22.509Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

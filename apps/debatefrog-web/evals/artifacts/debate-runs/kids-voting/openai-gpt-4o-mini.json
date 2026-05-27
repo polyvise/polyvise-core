@@ -1,0 +1,1219 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:17:55.826Z",
+  "modelId": "openai/gpt-4o-mini",
+  "questionId": "kids-voting",
+  "question": "Should kids be allowed to vote in political elections?",
+  "run": {
+    "id": "run_d0220d56",
+    "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:16:37.129Z",
+    "completedAt": "2026-05-26T05:17:55.826Z",
+    "events": [
+      {
+        "id": "event_e1431919",
+        "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+        "runId": "run_d0220d56",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:16:37.129Z"
+      },
+      {
+        "id": "event_56c99fbe",
+        "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+        "runId": "run_d0220d56",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:16:37.129Z"
+      },
+      {
+        "id": "event_44325116",
+        "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+        "runId": "run_d0220d56",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:16:37.129Z"
+      },
+      {
+        "id": "event_1394bb53",
+        "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+        "runId": "run_d0220d56",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:16:57.365Z"
+      },
+      {
+        "id": "event_36a9b347",
+        "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+        "runId": "run_d0220d56",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:17:37.906Z"
+      },
+      {
+        "id": "event_05d96054",
+        "debateId": "eval_kids-voting_openai-gpt-4o-mini",
+        "runId": "run_d0220d56",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_16e3a996",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4o-mini",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should kids be allowed to vote in political elections? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should kids be allowed to vote in political elections?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_50eedb48",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4o-mini",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should kids be allowed to vote in political elections? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should kids be allowed to vote in political elections?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_612b6bdf",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4o-mini (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_9d4ad66c",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4o-mini",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should kids be allowed to vote in political elections? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should kids be allowed to vote in political elections?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_f571ac2b",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4o-mini",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should kids be allowed to vote in political elections? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should kids be allowed to vote in political elections?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_c0f8cae2",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4o-mini",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should kids be allowed to vote in political elections? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_238fe4cd",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4o-mini",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should kids be allowed to vote in political elections? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_1c95dcfa",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4o-mini (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Allowing kids to vote in political elections empowers them and fosters civic engagement from a young age.",
+        "warrant": "Research shows that early engagement in political processes leads to lifelong voting habits and civic participation.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.7,
+        "id": "claim_74a1afb3"
+      },
+      {
+        "side": "pro",
+        "text": "Kids have unique perspectives on issues that affect their future, such as education and climate change.",
+        "warrant": "Involving children in voting allows for a broader representation of interests in political decision-making.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.75,
+        "id": "claim_ef59fdec"
+      },
+      {
+        "side": "pro",
+        "text": "Voting can be a valuable educational tool that teaches children about democracy and their rights.",
+        "warrant": "Participating in elections can enhance children's understanding of political systems and their role within them.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.68,
+        "id": "claim_77db30bc"
+      },
+      {
+        "side": "pro",
+        "text": "Allowing kids to vote can lead to policy changes that prioritize youth issues, such as mental health and education reform.",
+        "warrant": "When children have a voice in elections, politicians are more likely to address issues that matter to younger generations.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.72,
+        "id": "claim_7312996b"
+      },
+      {
+        "side": "con",
+        "text": "Kids may lack the necessary maturity to make informed voting decisions.",
+        "warrant": "Research indicates that cognitive development continues into the late teens, suggesting that younger children may not have the capacity to understand complex political issues.",
+        "evidenceSourceIds": [],
+        "confidence": 0.7,
+        "id": "claim_fd45cedf"
+      },
+      {
+        "side": "con",
+        "text": "Allowing kids to vote could lead to undue influence from adults.",
+        "warrant": "Younger voters may be more susceptible to manipulation by parents or guardians, undermining the integrity of their voting choices.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_25426ba6"
+      },
+      {
+        "side": "con",
+        "text": "The current voting age is established to ensure that voters have a certain level of civic knowledge and responsibility.",
+        "warrant": "Maintaining the voting age at 18 helps ensure that voters have a basic understanding of political systems and civic duties.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_54e42bc4"
+      },
+      {
+        "side": "con",
+        "text": "Voting at a young age may lead to a lack of accountability for political decisions.",
+        "warrant": "If children vote, they may not fully grasp the consequences of their choices, leading to decisions that do not reflect the long-term interests of society.",
+        "evidenceSourceIds": [],
+        "confidence": 0.72,
+        "id": "claim_f2027cff"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should kids be allowed to vote in political elections?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_74a1afb3",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing kids to vote in political elections empowers them and fosters civic engagement from a young age."
+      },
+      {
+        "id": "claim_ef59fdec",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Kids have unique perspectives on issues that affect their future, such as education and climate change."
+      },
+      {
+        "id": "claim_77db30bc",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Voting can be a valuable educational tool that teaches children about democracy and their rights."
+      },
+      {
+        "id": "claim_7312996b",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing kids to vote can lead to policy changes that prioritize youth issues, such as mental health and education reform."
+      },
+      {
+        "id": "claim_fd45cedf",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Kids may lack the necessary maturity to make informed voting decisions."
+      },
+      {
+        "id": "claim_25426ba6",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Allowing kids to vote could lead to undue influence from adults."
+      },
+      {
+        "id": "claim_54e42bc4",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The current voting age is established to ensure that voters have a certain level of civic knowledge and responsibility."
+      },
+      {
+        "id": "claim_f2027cff",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Voting at a young age may lead to a lack of accountability for political decisions."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_e70941f2",
+        "source": "claim_74a1afb3",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_d480cb5c",
+        "source": "claim_ef59fdec",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_6d238a84",
+        "source": "claim_77db30bc",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_c250cbc2",
+        "source": "claim_7312996b",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_f2315abc",
+        "source": "claim_fd45cedf",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_ef00212f",
+        "source": "claim_25426ba6",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_6a4d37a7",
+        "source": "claim_54e42bc4",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_6184d3bd",
+        "source": "claim_f2027cff",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_5a450b16",
+        "source": "evidence-src-mock-1",
+        "target": "claim_7312996b",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_d81a30f3",
+        "source": "evidence-src-mock-2",
+        "target": "claim_77db30bc",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_3152c471",
+        "source": "evidence-src-mock-4",
+        "target": "claim_ef59fdec",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_f6b814af",
+        "source": "evidence-src-mock-5",
+        "target": "claim_74a1afb3",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_d06b50de",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_c0f8cae2",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Allowing kids to vote empowers them and encourages civic engagement from a young age. Research shows that early involvement in political processes leads to lifelong voting habits and civic participation, as highlighted by the Ohio State Democracy Institute.",
+        "claimIds": [
+          "claim_74a1afb3",
+          "claim_ef59fdec",
+          "claim_77db30bc",
+          "claim_7312996b"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-5",
+          "src-mock-2"
+        ],
+        "id": "turn_7d317a64",
+        "createdAt": "2026-05-26T05:17:04.951Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_238fe4cd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "I think NO. Kids may lack the necessary maturity to make informed voting decisions. Research shows that cognitive development continues into the late teens, suggesting younger children may not understand complex political issues.",
+        "claimIds": [
+          "claim_fd45cedf",
+          "claim_25426ba6",
+          "claim_54e42bc4"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_80f39694",
+        "createdAt": "2026-05-26T05:17:04.951Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_c0f8cae2",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Kids have unique perspectives on issues like education and climate change. How can we ignore their voices in decisions that shape their future?",
+        "claimIds": [
+          "claim_ef59fdec"
+        ],
+        "sourceIds": [
+          "src-mock-4"
+        ],
+        "id": "turn_eeae6cfe",
+        "createdAt": "2026-05-26T05:17:12.372Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_238fe4cd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Kids may not have the maturity to make informed voting choices. How can we ensure they understand complex political issues before voting?",
+        "claimIds": [
+          "claim_fd45cedf",
+          "claim_25426ba6"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_3ff9ab31",
+        "createdAt": "2026-05-26T05:17:12.372Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_c0f8cae2",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "While concerns about maturity and influence are valid, allowing kids to vote empowers them and encourages civic engagement. Research shows that early participation leads to lifelong voting habits, and kids have unique perspectives on issues like education and climate change that deserve representation.",
+        "claimIds": [
+          "claim_74a1afb3",
+          "claim_ef59fdec",
+          "claim_77db30bc",
+          "claim_7312996b"
+        ],
+        "sourceIds": [
+          "src-mock-5",
+          "src-mock-4",
+          "src-mock-2",
+          "src-mock-1"
+        ],
+        "id": "turn_3ace1456",
+        "createdAt": "2026-05-26T05:17:21.963Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_238fe4cd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Kids may not have the maturity needed to make informed voting choices, which can lead to poor decisions that don't reflect society's best interests. Additionally, allowing kids to vote could expose them to undue influence from adults, compromising their independence in decision-making.",
+        "claimIds": [
+          "claim_fd45cedf",
+          "claim_25426ba6",
+          "claim_54e42bc4",
+          "claim_f2027cff"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_6e5f59d4",
+        "createdAt": "2026-05-26T05:17:21.963Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_c0f8cae2",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Allowing kids to vote empowers them and fosters civic engagement. Research shows that early involvement leads to lifelong voting habits. Kids have unique perspectives on issues like education and climate change, ensuring their voices are heard. Voting also serves as a valuable educational tool, enhancing their understanding of democracy. When kids vote, politicians prioritize youth issues, leading to necessary reforms.",
+        "claimIds": [
+          "claim_74a1afb3",
+          "claim_ef59fdec",
+          "claim_77db30bc",
+          "claim_7312996b"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-4"
+        ],
+        "id": "turn_6b21924a",
+        "createdAt": "2026-05-26T05:17:30.911Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_238fe4cd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Kids may not have the maturity to understand complex political issues, which can lead to poor decision-making. Additionally, allowing them to vote could expose them to undue influence from adults, undermining their independence. The current voting age ensures that voters possess a basic level of civic knowledge and responsibility, which is crucial for making informed choices.",
+        "claimIds": [
+          "claim_fd45cedf",
+          "claim_25426ba6",
+          "claim_54e42bc4"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_3aa1e4ea",
+        "createdAt": "2026-05-26T05:17:30.911Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_1c95dcfa",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The decision hinges on whether kids can demonstrate sufficient maturity and understanding to vote responsibly. YES must show that kids' perspectives lead to significant benefits, while NO must illustrate the risks of manipulation and lack of accountability.",
+        "claimIds": [
+          "claim_74a1afb3",
+          "claim_ef59fdec",
+          "claim_77db30bc",
+          "claim_7312996b",
+          "claim_fd45cedf",
+          "claim_25426ba6",
+          "claim_54e42bc4",
+          "claim_f2027cff"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-4"
+        ],
+        "id": "turn_cfbc92bc",
+        "createdAt": "2026-05-26T05:17:37.906Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.7,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.5,
+          "con": 8,
+          "note": "The con side presents stronger evidence regarding the maturity and understanding required for informed voting, while the pro side lacks direct evidence linking children's voting to significant societal benefits."
+        },
+        {
+          "name": "practicality",
+          "pro": 7,
+          "con": 7.5,
+          "note": "The practicality of implementing a voting system for children raises concerns about their ability to engage meaningfully in the process."
+        },
+        {
+          "name": "risk",
+          "pro": 6,
+          "con": 8.5,
+          "note": "The risks associated with children's voting, including potential manipulation by adults and lack of accountability, are significant and well-articulated by the con side."
+        },
+        {
+          "name": "fairness",
+          "pro": 7,
+          "con": 7.8,
+          "note": "While the pro side argues for representation, the fairness of allowing children to vote without adequate maturity and understanding is a critical concern."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.5,
+          "con": 7,
+          "note": "The decision to allow children to vote could have long-term implications that are difficult to reverse if negative outcomes arise."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "The case against allowing kids to vote in political elections is stronger due to concerns about maturity and accountability.",
+      "recommendation": "Lean NO on allowing kids to vote in political elections, as the risks and maturity concerns outweigh the potential benefits.",
+      "strongestPro": [
+        "Allowing kids to vote in political elections empowers them and fosters civic engagement from a young age.",
+        "Kids have unique perspectives on issues that affect their future, such as education and climate change.",
+        "Voting can be a valuable educational tool that teaches children about democracy and their rights.",
+        "Allowing kids to vote can lead to policy changes that prioritize youth issues, such as mental health and education reform."
+      ],
+      "strongestCon": [
+        "Kids may lack the necessary maturity to make informed voting decisions.",
+        "Allowing kids to vote could lead to undue influence from adults.",
+        "The current voting age is established to ensure that voters have a certain level of civic knowledge and responsibility.",
+        "Voting at a young age may lead to a lack of accountability for political decisions."
+      ],
+      "unresolvedUncertainties": [
+        "Which definition or standard should control the verdict.",
+        "Whether broad appeal should count as much as deeper expert or institutional support.",
+        "Whether the cited evidence compares both sides using the same standard."
+      ],
+      "whatWouldChangeMind": [
+        "Comparative citation, curriculum, or practice data that strongly favors one side.",
+        "Evidence that one side shaped later fields or public understanding more deeply than currently shown.",
+        "A clearer definition of the controlling standard that changes which evidence matters most."
+      ],
+      "confidence": 0.7
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 12578,
+        "promptTokens": 1338,
+        "completionTokens": 354,
+        "estimatedCostUsd": 0.0004131,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 12578
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 7656,
+        "promptTokens": 1332,
+        "completionTokens": 328,
+        "estimatedCostUsd": 0.0003966,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 7656
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 4705,
+        "promptTokens": 2389,
+        "completionTokens": 179,
+        "estimatedCostUsd": 0.00046575,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4705
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 2880,
+        "promptTokens": 2379,
+        "completionTokens": 134,
+        "estimatedCostUsd": 0.00043725,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2880
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 3772,
+        "promptTokens": 2389,
+        "completionTokens": 120,
+        "estimatedCostUsd": 0.00043035,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3772
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 3648,
+        "promptTokens": 2393,
+        "completionTokens": 113,
+        "estimatedCostUsd": 0.00042675,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3648
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 6180,
+        "promptTokens": 2399,
+        "completionTokens": 194,
+        "estimatedCostUsd": 0.00047625,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6180
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 3409,
+        "promptTokens": 2390,
+        "completionTokens": 156,
+        "estimatedCostUsd": 0.0004521,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3409
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 5264,
+        "promptTokens": 2383,
+        "completionTokens": 207,
+        "estimatedCostUsd": 0.00048165,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 5264
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 3683,
+        "promptTokens": 2378,
+        "completionTokens": 162,
+        "estimatedCostUsd": 0.0004539,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3683
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 6994,
+        "promptTokens": 2428,
+        "completionTokens": 213,
+        "estimatedCostUsd": 0.000492,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6994
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 8041,
+        "promptTokens": 3910,
+        "completionTokens": 333,
+        "estimatedCostUsd": 0.0007863,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 8041
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 9876,
+        "promptTokens": 4301,
+        "completionTokens": 356,
+        "estimatedCostUsd": 0.00085875,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 9876
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_efe13f4e",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_04e2675a",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_e9c00d43",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_9ed35f0d",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 8,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_4e773e96",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_aafc76c6",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_920b98cf",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      },
+      {
+        "id": "artifact_6046c117",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:17:55.826Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_28b0c4f0",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:16:37.129Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_1a96a43b",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:16:37.129Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_fc9adea2",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:16:37.129Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_a2286f4b",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:16:37.129Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_c0d30cf8",
+        "step": "opening",
+        "status": "ok",
+        "message": "8 source-linked claims generated.",
+        "at": "2026-05-26T05:16:57.365Z",
+        "durationMs": 20236
+      },
+      {
+        "id": "trace_aadc751c",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:17:04.951Z",
+        "durationMs": 7586
+      },
+      {
+        "id": "trace_558a23f8",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:17:12.372Z",
+        "durationMs": 7421
+      },
+      {
+        "id": "trace_e378e87b",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:17:21.963Z",
+        "durationMs": 9591
+      },
+      {
+        "id": "trace_4e8220f9",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:17:30.911Z",
+        "durationMs": 8948
+      },
+      {
+        "id": "trace_0664f576",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:17:37.906Z",
+        "durationMs": 6995
+      },
+      {
+        "id": "trace_1acac597",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T05:17:45.948Z",
+        "durationMs": 8042
+      },
+      {
+        "id": "trace_f600c5c5",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T05:17:55.826Z",
+        "durationMs": 9878
+      },
+      {
+        "id": "trace_1591a603",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:17:55.826Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

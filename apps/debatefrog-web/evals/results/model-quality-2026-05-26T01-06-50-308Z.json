@@ -1,0 +1,1444 @@
+{
+  "schemaVersion": 1,
+  "status": "partial",
+  "generatedAt": "2026-05-26T01:06:50.308Z",
+  "questionSet": {
+    "path": "apps/debatefrog-web/evals/questions.json",
+    "count": 12
+  },
+  "summary": {
+    "bestQualityModelId": "openai/gpt-4.1",
+    "fastestModelId": "google/gemini-2.5-flash",
+    "lowestCostModelId": "openai/gpt-4o-mini",
+    "notes": [
+      "Quality is a heuristic score from structured Debatefrog outputs, not a human gold-standard rating.",
+      "This run used fixed evidence so model quality comparisons are not confounded by web search rate limits or changing search results.",
+      "Latency is noisy and depends on time of day, provider routing, network conditions, retries, and prompt difficulty.",
+      "Run this evaluation quarterly or after changing model options, prompts, or judging criteria.",
+      "This run became partial when the AI provider quota limit was reached. Models after that point should be re-run before comparing them."
+    ]
+  },
+  "models": [
+    {
+      "id": "google/gemini-2.5-flash",
+      "label": "Gemini 2.5 Flash",
+      "provider": "Google",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": 85.09056410135587,
+      "averageLatencyMs": 23681.666666666668,
+      "latencyP50Ms": 22926,
+      "latencyP90Ms": 25317,
+      "averageCostUsd": 0.0193353475,
+      "successRate": 1,
+      "retryRate": 0,
+      "failureCount": 0,
+      "dimensions": {
+        "completeness": 100,
+        "balance": 100,
+        "evidenceUse": 100,
+        "readability": 94.29389282742606,
+        "decisiveness": 64.16666666666667,
+        "specificity": 35.85862796881695
+      },
+      "notes": "Evaluation completed.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "ok",
+          "quality": 85.14287704918033,
+          "latencyMs": 21530,
+          "costUsd": 0.0184464,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 95.8891393442623,
+            "decisiveness": 60,
+            "specificity": 38.57581967213115
+          }
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "ok",
+          "quality": 86.0188597285068,
+          "latencyMs": 24815,
+          "costUsd": 0.0207779,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 91.36787330316743,
+            "decisiveness": 75,
+            "specificity": 35
+          }
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "ok",
+          "quality": 83.68842966751919,
+          "latencyMs": 22868,
+          "costUsd": 0.0187542,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.273273657289,
+            "decisiveness": 55,
+            "specificity": 36.1764705882353
+          }
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "ok",
+          "quality": 87.7603745819398,
+          "latencyMs": 22101,
+          "costUsd": 0.019132700000000002,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.55585284280937,
+            "decisiveness": 80,
+            "specificity": 38.79598662207358
+          }
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "ok",
+          "quality": 84.19476557863503,
+          "latencyMs": 22926,
+          "costUsd": 0.019256999999999996,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.59821958456973,
+            "decisiveness": 55,
+            "specificity": 38.27893175074184
+          }
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "ok",
+          "quality": 85.12636625261347,
+          "latencyMs": 27225,
+          "costUsd": 0.01893236,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 99.77461566842948,
+            "decisiveness": 55,
+            "specificity": 39.017341040462426
+          }
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "ok",
+          "quality": 86.67148387096775,
+          "latencyMs": 23742,
+          "costUsd": 0.020640799999999997,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 95.72903225806454,
+            "decisiveness": 70,
+            "specificity": 39.67741935483871
+          }
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "ok",
+          "quality": 83.09291295938105,
+          "latencyMs": 22719,
+          "costUsd": 0.0186794,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.5495164410058,
+            "decisiveness": 55,
+            "specificity": 30.464216634429402
+          }
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "ok",
+          "quality": 83.62978571428572,
+          "latencyMs": 22416,
+          "costUsd": 0.0190237,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 92.13928571428572,
+            "decisiveness": 55,
+            "specificity": 37.05357142857143
+          }
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "ok",
+          "quality": 83.9771316296863,
+          "latencyMs": 23374,
+          "costUsd": 0.01850271,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 87.89934506503444,
+            "decisiveness": 70,
+            "specificity": 29.38026013771997
+          }
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "ok",
+          "quality": 86.0593127753304,
+          "latencyMs": 25147,
+          "costUsd": 0.021024200000000003,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.47312775330397,
+            "decisiveness": 70,
+            "specificity": 36.740088105726876
+          }
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "ok",
+          "quality": 85.72446940822468,
+          "latencyMs": 25317,
+          "costUsd": 0.0188528,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 97.27743229689068,
+            "decisiveness": 70,
+            "specificity": 31.143430290872615
+          }
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-4o-mini",
+      "label": "GPT 4o Mini",
+      "provider": "Openai",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": 86.0534811146495,
+      "averageLatencyMs": 53755.75,
+      "latencyP50Ms": 51954,
+      "latencyP90Ms": 62636,
+      "averageCostUsd": 0.005701387500000001,
+      "successRate": 1,
+      "retryRate": 0,
+      "failureCount": 0,
+      "dimensions": {
+        "completeness": 100,
+        "balance": 100,
+        "evidenceUse": 100,
+        "readability": 93.40540051476269,
+        "decisiveness": 65.96296296296296,
+        "specificity": 41.95573012480457
+      },
+      "notes": "Evaluation completed.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "ok",
+          "quality": 83.89185714285715,
+          "latencyMs": 48575,
+          "costUsd": 0.0055125,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 89.16785714285714,
+            "decisiveness": 55,
+            "specificity": 42.32142857142857
+          }
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "ok",
+          "quality": 86.74616838995568,
+          "latencyMs": 62636,
+          "costUsd": 0.0060804000000000006,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 96.70841949778435,
+            "decisiveness": 65,
+            "specificity": 44.09158050221566
+          }
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "ok",
+          "quality": 86.43434822804315,
+          "latencyMs": 51615,
+          "costUsd": 0.005518650000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.78305084745764,
+            "decisiveness": 67,
+            "specificity": 42.06471494607088
+          }
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "ok",
+          "quality": 86.686891966759,
+          "latencyMs": 67966,
+          "costUsd": 0.0064203,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.82216066481996,
+            "decisiveness": 70,
+            "specificity": 41.96675900277008
+          }
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "ok",
+          "quality": 85.96102174285225,
+          "latencyMs": 47782,
+          "costUsd": 0.005796900000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 91.89861325115564,
+            "decisiveness": 66.22222222222223,
+            "specificity": 42.75808936825886
+          }
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "ok",
+          "quality": 86.78113385826771,
+          "latencyMs": 52073,
+          "costUsd": 0.0060075,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 90.9716535433071,
+            "decisiveness": 67,
+            "specificity": 48.89763779527559
+          }
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "ok",
+          "quality": 85.90193468118196,
+          "latencyMs": 53984,
+          "costUsd": 0.005677649999999999,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 95.86531881804045,
+            "decisiveness": 66,
+            "specificity": 38.0248833592535
+          }
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "ok",
+          "quality": 85.69333742331288,
+          "latencyMs": 51954,
+          "costUsd": 0.005136900000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 90.52239263803682,
+            "decisiveness": 67,
+            "specificity": 41.64110429447853
+          }
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "ok",
+          "quality": 86.36385585585586,
+          "latencyMs": 48630,
+          "costUsd": 0.0056223,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.70540540540541,
+            "decisiveness": 67,
+            "specificity": 42.792792792792795
+          }
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "ok",
+          "quality": 86.38923526638378,
+          "latencyMs": 53337,
+          "costUsd": 0.0053892,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.07298444130129,
+            "decisiveness": 67.33333333333333,
+            "specificity": 42.22065063649222
+          }
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "ok",
+          "quality": 85.87382159624413,
+          "latencyMs": 51132,
+          "costUsd": 0.0057567,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 95.22253521126763,
+            "decisiveness": 67,
+            "specificity": 37.55868544600939
+          }
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "ok",
+          "quality": 85.91816722408026,
+          "latencyMs": 55385,
+          "costUsd": 0.005497650000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.12441471571907,
+            "decisiveness": 67,
+            "specificity": 39.130434782608695
+          }
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-4.1",
+      "label": "GPT 4.1",
+      "provider": "Openai",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": 87.26519652260932,
+      "averageLatencyMs": 33599.5,
+      "latencyP50Ms": 31959,
+      "latencyP90Ms": 38537,
+      "averageCostUsd": 0.07428916666666667,
+      "successRate": 1,
+      "retryRate": 0,
+      "failureCount": 0,
+      "dimensions": {
+        "completeness": 100,
+        "balance": 100,
+        "evidenceUse": 100,
+        "readability": 96.69968866001801,
+        "decisiveness": 67.66666666666667,
+        "specificity": 45.14223574052235
+      },
+      "notes": "Evaluation completed.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "ok",
+          "quality": 86.05664946889226,
+          "latencyMs": 30389,
+          "costUsd": 0.073048,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 97.30682852807286,
+            "decisiveness": 55,
+            "specificity": 48.48254931714719
+          }
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "ok",
+          "quality": 87.31550813178899,
+          "latencyMs": 31959,
+          "costUsd": 0.079392,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.96223369141211,
+            "decisiveness": 70,
+            "specificity": 45.1539338654504
+          }
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "ok",
+          "quality": 85.22138842975208,
+          "latencyMs": 43763,
+          "costUsd": 0.073368,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 98.71322314049587,
+            "decisiveness": 55,
+            "specificity": 40.90909090909091
+          }
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "ok",
+          "quality": 89.38373529411764,
+          "latencyMs": 31711,
+          "costUsd": 0.08096800000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 95.84411764705882,
+            "decisiveness": 78,
+            "specificity": 50.919117647058826
+          }
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "ok",
+          "quality": 87.41743089430895,
+          "latencyMs": 25147,
+          "costUsd": 0.072152,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 98.11707317073171,
+            "decisiveness": 70,
+            "specificity": 42.27642276422764
+          }
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "ok",
+          "quality": 86.18373684210525,
+          "latencyMs": 31759,
+          "costUsd": 0.074616,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 95.33421052631579,
+            "decisiveness": 65,
+            "specificity": 41.64473684210526
+          }
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "ok",
+          "quality": 88.08643137254903,
+          "latencyMs": 30644,
+          "costUsd": 0.07573400000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 98.80000000000001,
+            "decisiveness": 70,
+            "specificity": 46.27450980392157
+          }
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "ok",
+          "quality": 87.85045306633292,
+          "latencyMs": 38537,
+          "costUsd": 0.070028,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 96.64105131414269,
+            "decisiveness": 72,
+            "specificity": 45.05632040050063
+          }
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "ok",
+          "quality": 87.92401173020528,
+          "latencyMs": 33018,
+          "costUsd": 0.071728,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 96.70615835777127,
+            "decisiveness": 70,
+            "specificity": 47.50733137829912
+          }
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "ok",
+          "quality": 86.09983601879242,
+          "latencyMs": 33106,
+          "costUsd": 0.071204,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.20086305898731,
+            "decisiveness": 65,
+            "specificity": 43.48355663824604
+          }
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "ok",
+          "quality": 88.45062529832936,
+          "latencyMs": 36605,
+          "costUsd": 0.0771,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 97.99809069212412,
+            "decisiveness": 72,
+            "specificity": 47.792362768496425
+          }
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "ok",
+          "quality": 87.19255172413793,
+          "latencyMs": 36556,
+          "costUsd": 0.07213199999999999,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 96.77241379310345,
+            "decisiveness": 70,
+            "specificity": 42.20689655172414
+          }
+        }
+      ]
+    },
+    {
+      "id": "openai/gpt-4o",
+      "label": "GPT 4o",
+      "provider": "Openai",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": 86.09922113203875,
+      "averageLatencyMs": 26160.666666666668,
+      "latencyP50Ms": 24301,
+      "latencyP90Ms": 29970,
+      "averageCostUsd": 0.094041875,
+      "successRate": 1,
+      "retryRate": 0,
+      "failureCount": 0,
+      "dimensions": {
+        "completeness": 100,
+        "balance": 100,
+        "evidenceUse": 100,
+        "readability": 93.85401679980254,
+        "decisiveness": 66.91666666666667,
+        "specificity": 40.816036505264506
+      },
+      "notes": "Evaluation completed.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "ok",
+          "quality": 85.03911111111113,
+          "latencyMs": 25283,
+          "costUsd": 0.0934025,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 92.05000000000001,
+            "decisiveness": 55,
+            "specificity": 47.22222222222222
+          }
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "ok",
+          "quality": 85.85966451612903,
+          "latencyMs": 23424,
+          "costUsd": 0.09861500000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.43741935483871,
+            "decisiveness": 68,
+            "specificity": 37.354838709677416
+          }
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "ok",
+          "quality": 86.82740828402368,
+          "latencyMs": 22901,
+          "costUsd": 0.09244000000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.15946745562131,
+            "decisiveness": 80,
+            "specificity": 33.72781065088758
+          }
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "ok",
+          "quality": 86.62140569877883,
+          "latencyMs": 24301,
+          "costUsd": 0.10295999999999998,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.30067842605158,
+            "decisiveness": 72,
+            "specificity": 40.09497964721845
+          }
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "ok",
+          "quality": 86.33463900414938,
+          "latencyMs": 24223,
+          "costUsd": 0.097875,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 91.5551867219917,
+            "decisiveness": 72,
+            "specificity": 40.04149377593361
+          }
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "ok",
+          "quality": 85.79403381014303,
+          "latencyMs": 25912,
+          "costUsd": 0.10087,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 92.9404421326398,
+            "decisiveness": 67,
+            "specificity": 39.596879063719115
+          }
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "ok",
+          "quality": 86.35150453172204,
+          "latencyMs": 28914,
+          "costUsd": 0.09064749999999999,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.91480362537766,
+            "decisiveness": 68,
+            "specificity": 41.46525679758308
+          }
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "ok",
+          "quality": 86.24113394018205,
+          "latencyMs": 23766,
+          "costUsd": 0.08913750000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 92.81170351105332,
+            "decisiveness": 68,
+            "specificity": 41.93758127438232
+          }
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "ok",
+          "quality": 84.94498113207547,
+          "latencyMs": 23879,
+          "costUsd": 0.08777499999999999,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 94.80943396226417,
+            "decisiveness": 55,
+            "specificity": 43.39622641509434
+          }
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "ok",
+          "quality": 84.523608531995,
+          "latencyMs": 35724,
+          "costUsd": 0.08953000000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 93.91794228356338,
+            "decisiveness": 55,
+            "specificity": 41.40526976160602
+          }
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "ok",
+          "quality": 86.5510534351145,
+          "latencyMs": 25631,
+          "costUsd": 0.09805000000000001,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 96.54427480916031,
+            "decisiveness": 68,
+            "specificity": 39.88549618320611
+          }
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "ok",
+          "quality": 88.1021095890411,
+          "latencyMs": 29970,
+          "costUsd": 0.08719999999999999,
+          "retryCount": 0,
+          "failureReason": null,
+          "dimensions": {
+            "completeness": 100,
+            "balance": 100,
+            "evidenceUse": 100,
+            "readability": 96.8068493150685,
+            "decisiveness": 75,
+            "specificity": 43.66438356164384
+          }
+        }
+      ]
+    },
+    {
+      "id": "google/gemini-2.5-pro",
+      "label": "Gemini 2.5 Pro",
+      "provider": "Google",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": null,
+      "averageLatencyMs": null,
+      "latencyP50Ms": null,
+      "latencyP90Ms": null,
+      "averageCostUsd": null,
+      "successRate": 0,
+      "retryRate": null,
+      "failureCount": 12,
+      "dimensions": null,
+      "notes": "Not scored because the AI provider quota limit was reached during this run.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "Unexpected end of JSON input",
+          "dimensions": null
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI model returned an empty response.",
+          "dimensions": null
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        }
+      ]
+    },
+    {
+      "id": "anthropic/claude-3.5-haiku",
+      "label": "Claude 3.5 Haiku",
+      "provider": "Anthropic",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": null,
+      "averageLatencyMs": null,
+      "latencyP50Ms": null,
+      "latencyP90Ms": null,
+      "averageCostUsd": null,
+      "successRate": 0,
+      "retryRate": null,
+      "failureCount": 12,
+      "dimensions": null,
+      "notes": "Not scored because the AI provider quota limit was reached during this run.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider quota limit exceeded.",
+          "dimensions": null
+        }
+      ]
+    },
+    {
+      "id": "anthropic/claude-3.5-sonnet",
+      "label": "Claude 3.5 Sonnet",
+      "provider": "Anthropic",
+      "evaluated": true,
+      "questionCount": 12,
+      "averageQuality": null,
+      "averageLatencyMs": null,
+      "latencyP50Ms": null,
+      "latencyP90Ms": null,
+      "averageCostUsd": null,
+      "successRate": 0,
+      "retryRate": null,
+      "failureCount": 12,
+      "dimensions": null,
+      "notes": "Some evaluation questions failed: AI provider has no endpoint for this model.",
+      "runs": [
+        {
+          "questionId": "longer-recess",
+          "question": "Should schools have longer recess?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "kids-voting",
+          "question": "Should kids be allowed to vote in political elections?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "video-games-exercise",
+          "question": "Should video games count as exercise?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "pets-at-school",
+          "question": "Should pets be allowed at school?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "homework-banned",
+          "question": "Should homework be banned?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "school-uniforms",
+          "question": "Should students have to wear school uniforms?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "four-day-school-week",
+          "question": "Should schools switch to a four-day week?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "phones-at-school",
+          "question": "Should students be allowed to use phones during school?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "zoos",
+          "question": "Should zoos exist?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "ai-homework",
+          "question": "Should students be allowed to use AI tools for homework?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "later-bedtimes",
+          "question": "Should kids get to choose their own bedtime?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        },
+        {
+          "questionId": "dessert-breakfast",
+          "question": "Should dessert be allowed for breakfast?",
+          "status": "failed",
+          "quality": null,
+          "latencyMs": null,
+          "costUsd": null,
+          "retryCount": 0,
+          "failureReason": "AI provider has no endpoint for this model.",
+          "dimensions": null
+        }
+      ]
+    }
+  ]
+}

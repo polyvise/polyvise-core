@@ -1,0 +1,1194 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T04:52:50.533Z",
+  "modelId": "google/gemini-2.5-flash",
+  "questionId": "pets-at-school",
+  "question": "Should pets be allowed at school?",
+  "run": {
+    "id": "run_755ffb30",
+    "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+    "status": "complete",
+    "startedAt": "2026-05-26T04:52:26.576Z",
+    "completedAt": "2026-05-26T04:52:50.533Z",
+    "events": [
+      {
+        "id": "event_03addd41",
+        "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+        "runId": "run_755ffb30",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T04:52:26.576Z"
+      },
+      {
+        "id": "event_387e87ef",
+        "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+        "runId": "run_755ffb30",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T04:52:26.576Z"
+      },
+      {
+        "id": "event_199ad7ed",
+        "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+        "runId": "run_755ffb30",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T04:52:26.576Z"
+      },
+      {
+        "id": "event_37c3f47d",
+        "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+        "runId": "run_755ffb30",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T04:52:31.786Z"
+      },
+      {
+        "id": "event_70a959b0",
+        "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+        "runId": "run_755ffb30",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T04:52:44.561Z"
+      },
+      {
+        "id": "event_d04c738c",
+        "debateId": "eval_pets-at-school_google-gemini-2-5-flash",
+        "runId": "run_755ffb30",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_9d0bf9c1",
+        "name": "Strategic Optimist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should pets be allowed at school? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should pets be allowed at school?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_ac0a081a",
+        "name": "Risk Skeptic",
+        "model": "google/gemini-2.5-flash",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should pets be allowed at school? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should pets be allowed at school?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_465c341c",
+        "name": "Empirical Referee",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_d1865fc9",
+        "name": "Implementation Pragmatist",
+        "model": "google/gemini-2.5-flash",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should pets be allowed at school? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should pets be allowed at school?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_8bf3e493",
+        "name": "Equity Auditor",
+        "model": "google/gemini-2.5-flash",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should pets be allowed at school? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should pets be allowed at school?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_993de562",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "google/gemini-2.5-flash",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should pets be allowed at school? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_f77c709f",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "google/gemini-2.5-flash",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should pets be allowed at school? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_8dabc5a2",
+        "name": "Neutral Synthesis Judge",
+        "model": "google/gemini-2.5-flash (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Allowing pets in schools can foster a positive learning environment by providing emotional support and reducing stress for students.",
+        "warrant": "Pets have been shown to have a calming effect and can contribute to a more engaging and supportive atmosphere, which can improve student well-being and academic focus.",
+        "evidenceSourceIds": [],
+        "confidence": 0.6,
+        "id": "claim_54c94804"
+      },
+      {
+        "side": "pro",
+        "text": "Integrating pets into the school setting can teach students responsibility, empathy, and respect for living creatures.",
+        "warrant": "Caring for pets, even on a limited basis, provides practical lessons in animal welfare and can develop important social-emotional skills in children.",
+        "evidenceSourceIds": [],
+        "confidence": 0.6,
+        "id": "claim_cb2a4e66"
+      },
+      {
+        "side": "pro",
+        "text": "Pets in schools can offer unique educational opportunities, such as hands-on learning in biology or animal behavior, enhancing the curriculum.",
+        "warrant": "Direct interaction with animals can make abstract concepts more tangible and engaging, providing a memorable and effective learning experience.",
+        "evidenceSourceIds": [],
+        "confidence": 0.55,
+        "id": "claim_cb1c18ee"
+      },
+      {
+        "side": "con",
+        "text": "Allowing pets in schools could introduce significant health risks, such as allergies and hygiene concerns, which could negatively impact students and staff.",
+        "warrant": "The presence of animals can trigger allergic reactions in sensitive individuals and may introduce sanitation challenges in a school environment.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_3d860481"
+      },
+      {
+        "side": "con",
+        "text": "Pets in schools could create safety issues, including the potential for bites or fear/phobias among students, leading to an unsafe learning environment.",
+        "warrant": "Even well-behaved animals can be unpredictable, and some students may have phobias or past negative experiences with animals, causing distress or physical harm.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_38788993"
+      },
+      {
+        "side": "con",
+        "text": "The presence of pets could lead to distractions in the classroom, hindering the educational process and requiring additional supervision from staff.",
+        "warrant": "Animals, by their nature, can be a source of distraction for students, diverting attention from lessons and requiring teachers to manage both students and pets.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_01522650"
+      },
+      {
+        "side": "con",
+        "text": "Allowing pets in schools raises liability concerns for the school district in the event of an incident involving an animal.",
+        "warrant": "Schools could face legal and financial responsibility for any injuries or damages caused by pets on school grounds.",
+        "evidenceSourceIds": [],
+        "confidence": 0.7,
+        "id": "claim_9a6798d8"
+      },
+      {
+        "side": "con",
+        "text": "Implementing a pet-friendly policy could create unequal access for students, as not all students may be comfortable or able to interact with animals.",
+        "warrant": "Students with allergies, phobias, or cultural objections to certain animals may be disadvantaged or excluded from activities if pets are broadly allowed.",
+        "evidenceSourceIds": [],
+        "confidence": 0.65,
+        "id": "claim_a18b7403"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should pets be allowed at school?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_54c94804",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Allowing pets in schools can foster a positive learning environment by providing emotional support and reducing stress for students."
+      },
+      {
+        "id": "claim_cb2a4e66",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Integrating pets into the school setting can teach students responsibility, empathy, and respect for living creatures."
+      },
+      {
+        "id": "claim_cb1c18ee",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Pets in schools can offer unique educational opportunities, such as hands-on learning in biology or animal behavior, enhancing the curriculum."
+      },
+      {
+        "id": "claim_3d860481",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Allowing pets in schools could introduce significant health risks, such as allergies and hygiene concerns, which could negatively impact students and staff."
+      },
+      {
+        "id": "claim_38788993",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Pets in schools could create safety issues, including the potential for bites or fear/phobias among students, leading to an unsafe learning environment."
+      },
+      {
+        "id": "claim_01522650",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "The presence of pets could lead to distractions in the classroom, hindering the educational process and requiring additional supervision from staff."
+      },
+      {
+        "id": "claim_9a6798d8",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Allowing pets in schools raises liability concerns for the school district in the event of an incident involving an animal."
+      },
+      {
+        "id": "claim_a18b7403",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Implementing a pet-friendly policy could create unequal access for students, as not all students may be comfortable or able to interact with animals."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_962a1bdd",
+        "source": "claim_54c94804",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_cdee1987",
+        "source": "claim_cb2a4e66",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_9d0cc9d3",
+        "source": "claim_cb1c18ee",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_8bc63741",
+        "source": "claim_3d860481",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_96b63f30",
+        "source": "claim_38788993",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_c231b5a0",
+        "source": "claim_01522650",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_6e65234c",
+        "source": "claim_9a6798d8",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_a1b36863",
+        "source": "claim_a18b7403",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_29ab8820",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_993de562",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, pets should be allowed at school. Allowing pets in schools can foster a positive learning environment by providing emotional support and reducing stress for students. Furthermore, integrating pets into the school setting can teach students responsibility, empathy, and respect for living creatures. Finally, pets in schools can offer unique educational opportunities, such as hands-on learning in biology or animal behavior, enhancing the curriculum.",
+        "claimIds": [
+          "claim_54c94804",
+          "claim_cb2a4e66",
+          "claim_cb1c18ee"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_7358e576",
+        "createdAt": "2026-05-26T04:52:34.439Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_f77c709f",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that allowing pets in schools introduces significant health risks like allergies and hygiene concerns, potentially harming students and staff. Furthermore, pets could create safety issues, including bites or fear among students, making the learning environment unsafe. These risks outweigh any perceived benefits.",
+        "claimIds": [
+          "claim_3d860481",
+          "claim_38788993"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_1c8e9b74",
+        "createdAt": "2026-05-26T04:52:34.439Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_993de562",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO frog mentioned that pets in schools could create safety issues, including the potential for bites or fear/phobias among students. However, the YES frog believes that integrating pets into the school setting can teach students responsibility, empathy, and respect for living creatures. How does the NO frog reconcile these potential safety issues with the significant educational benefits of teaching responsibility and empathy through pet interaction?",
+        "claimIds": [
+          "claim_cb2a4e66",
+          "claim_38788993"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_503c5408",
+        "createdAt": "2026-05-26T04:52:37.029Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_f77c709f",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side argues that pets could be a distraction in the classroom, hindering learning and requiring more supervision. If pets are meant to foster a positive learning environment by reducing stress, how do you plan to prevent them from becoming a distraction instead of a benefit?",
+        "claimIds": [
+          "claim_01522650",
+          "claim_54c94804"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_71b341f8",
+        "createdAt": "2026-05-26T04:52:37.029Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_993de562",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO side mentions health risks like allergies and safety concerns, but the YES side believes that the positive learning environment, emotional support, and opportunities for teaching responsibility and empathy outweigh these concerns. We can manage these risks with proper planning, allowing students to gain valuable experiences.",
+        "claimIds": [
+          "claim_54c94804",
+          "claim_cb2a4e66",
+          "claim_cb1c18ee"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_f01540fe",
+        "createdAt": "2026-05-26T04:52:39.898Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_f77c709f",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side has shown that allowing pets in schools introduces serious health risks like allergies and hygiene concerns, safety issues like bites and phobias, and distractions that hinder learning. These concrete problems outweigh the YES side's claims about emotional support and responsibility, especially since pets also create liability and unequal access for students.",
+        "claimIds": [
+          "claim_3d860481",
+          "claim_38788993",
+          "claim_01522650",
+          "claim_9a6798d8",
+          "claim_a18b7403",
+          "claim_54c94804",
+          "claim_cb2a4e66"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_68fb5558",
+        "createdAt": "2026-05-26T04:52:39.898Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_993de562",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The YES side has shown that allowing pets in school can create a positive learning environment by offering emotional support, teaching responsibility and empathy, and providing unique educational opportunities. These benefits for students' well-being and learning are compelling reasons to support the YES side.",
+        "claimIds": [
+          "claim_54c94804",
+          "claim_cb2a4e66",
+          "claim_cb1c18ee"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_ce85f876",
+        "createdAt": "2026-05-26T04:52:42.652Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_f77c709f",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "The NO side has shown that allowing pets in schools introduces significant health risks like allergies, safety issues such as bites, and distractions that hinder learning. Furthermore, it raises liability concerns for schools and creates unequal access for students. These risks outweigh the proposed benefits.",
+        "claimIds": [
+          "claim_3d860481",
+          "claim_38788993",
+          "claim_01522650",
+          "claim_9a6798d8",
+          "claim_a18b7403"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_0383cf08",
+        "createdAt": "2026-05-26T04:52:42.652Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_8dabc5a2",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The YES side argues that pets offer emotional support, teach responsibility, and provide educational opportunities. The NO side raises concerns about allergies, safety risks like bites, classroom distractions, liability, and unequal access for students. The NO side's concerns about health, safety, and equity are significant and were not fully addressed by the YES side's arguments for general benefits.",
+        "claimIds": [
+          "claim_54c94804",
+          "claim_cb2a4e66",
+          "claim_cb1c18ee",
+          "claim_3d860481",
+          "claim_38788993",
+          "claim_01522650",
+          "claim_9a6798d8",
+          "claim_a18b7403"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_1e13bd7c",
+        "createdAt": "2026-05-26T04:52:44.561Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.75,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 4,
+          "con": 8,
+          "note": "The YES side presented general benefits of pets (emotional support, responsibility, education) without specific evidence on how these would be realized in a school setting or how they would outweigh the risks. The NO side presented concrete risks (allergies, safety, distraction, liability, unequal access) which are inherent to allowing pets in schools."
+        },
+        {
+          "name": "practicality",
+          "pro": 3,
+          "con": 8,
+          "note": "The YES side did not address the practical challenges of managing pets in a school environment, such as supervision, waste management, or integration into daily school routines. The NO side highlighted practical issues like distractions and the need for additional supervision."
+        },
+        {
+          "name": "risk",
+          "pro": 2,
+          "con": 9,
+          "note": "The NO side effectively articulated significant risks including health concerns (allergies, hygiene), safety concerns (bites, phobias), and liability issues. The YES side's general claim that 'we can manage these risks with proper planning' was insufficient to counter these specific and high-impact risks, especially in a child-facing institution."
+        },
+        {
+          "name": "fairness",
+          "pro": 3,
+          "con": 8,
+          "note": "The NO side raised a strong point about unequal access for students with allergies, phobias, or cultural objections, which was not adequately addressed by the YES side. Allowing pets broadly could disadvantage a segment of the student population."
+        },
+        {
+          "name": "reversibility",
+          "pro": 5,
+          "con": 6,
+          "note": "While a policy allowing pets could theoretically be reversed, the immediate negative impacts (e.g., allergic reactions, incidents) are not easily reversible once they occur. The YES side did not offer any specific mechanisms for managing or reversing negative outcomes."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Significant health, safety, and equity risks outweigh the general benefits of allowing pets in schools.",
+      "recommendation": "NO, pets should not be broadly allowed at school.",
+      "strongestPro": [
+        "Allowing pets in schools can foster a positive learning environment by providing emotional support and reducing stress for students.",
+        "Integrating pets into the school setting can teach students responsibility, empathy, and respect for living creatures.",
+        "Pets in schools can offer unique educational opportunities, such as hands-on learning in biology or animal behavior, enhancing the curriculum."
+      ],
+      "strongestCon": [
+        "Allowing pets in schools could introduce significant health risks, such as allergies and hygiene concerns, which could negatively impact students and staff.",
+        "Pets in schools could create safety issues, including the potential for bites or fear/phobias among students, leading to an unsafe learning environment.",
+        "The presence of pets could lead to distractions in the classroom, hindering the educational process and requiring additional supervision from staff.",
+        "Allowing pets in schools raises liability concerns for the school district in the event of an incident involving an animal.",
+        "Implementing a pet-friendly policy could create unequal access for students, as not all students may be comfortable or able to interact with animals."
+      ],
+      "unresolvedUncertainties": [
+        "The specific types of pets being considered (e.g., classroom pets vs. personal pets) and the extent of their presence in schools were not fully defined.",
+        "The feasibility and effectiveness of proposed risk mitigation strategies (e.g., 'proper planning') were not detailed or evidenced by the pro side."
+      ],
+      "whatWouldChangeMind": [
+        "Concrete evidence of successful, long-term programs in similar school environments that effectively mitigate all identified health, safety, and equity risks while demonstrating the claimed benefits.",
+        "Specific, actionable policy frameworks that address liability, supervision, and unequal access for all students, including those with allergies or phobias.",
+        "Empirical data showing that the educational and emotional benefits of pets in schools demonstrably outweigh the documented risks and implementation burdens."
+      ],
+      "confidence": 0.75
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "stance scout and fast debate turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": false
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "YES frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "NO frog claims and turns",
+        "configured": false
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "google",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard and final synthesis judge",
+        "configured": false
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 2064,
+        "promptTokens": 1546,
+        "completionTokens": 290,
+        "estimatedCostUsd": 0.0011888,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2064
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 3144,
+        "promptTokens": 1538,
+        "completionTokens": 487,
+        "estimatedCostUsd": 0.0016789,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3144
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 1290,
+        "promptTokens": 2772,
+        "completionTokens": 201,
+        "estimatedCostUsd": 0.0013341,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1290
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1362,
+        "promptTokens": 2779,
+        "completionTokens": 167,
+        "estimatedCostUsd": 0.0012512,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1362
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1317,
+        "promptTokens": 2770,
+        "completionTokens": 191,
+        "estimatedCostUsd": 0.0013085,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1317
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1272,
+        "promptTokens": 2778,
+        "completionTokens": 167,
+        "estimatedCostUsd": 0.0012509,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1272
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1402,
+        "promptTokens": 2771,
+        "completionTokens": 179,
+        "estimatedCostUsd": 0.0012788,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1402
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1466,
+        "promptTokens": 2800,
+        "completionTokens": 248,
+        "estimatedCostUsd": 0.00146,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1466
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1441,
+        "promptTokens": 2756,
+        "completionTokens": 175,
+        "estimatedCostUsd": 0.0012643,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1441
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1313,
+        "promptTokens": 2789,
+        "completionTokens": 207,
+        "estimatedCostUsd": 0.0013542,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1313
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1908,
+        "promptTokens": 2838,
+        "completionTokens": 268,
+        "estimatedCostUsd": 0.0015214,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1908
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 3056,
+        "promptTokens": 4809,
+        "completionTokens": 490,
+        "estimatedCostUsd": 0.0026677,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3056
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "google/gemini-2.5-flash",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 2914,
+        "promptTokens": 5389,
+        "completionTokens": 483,
+        "estimatedCostUsd": 0.0028242,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2914
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_ddeefc5a",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_fea55914",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_6440b2de",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_87ff0c6e",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 8,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_0c5c71b5",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_338f98f9",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_d46e2dfa",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      },
+      {
+        "id": "artifact_0b7ea5dc",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T04:52:50.533Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_cd66fb3b",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T04:52:26.576Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_9451c26c",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T04:52:26.576Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_03eb3f9b",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T04:52:26.576Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_145efe37",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T04:52:26.577Z",
+        "durationMs": 1
+      },
+      {
+        "id": "trace_6efb4045",
+        "step": "opening",
+        "status": "ok",
+        "message": "8 source-linked claims generated.",
+        "at": "2026-05-26T04:52:31.786Z",
+        "durationMs": 5209
+      },
+      {
+        "id": "trace_ea1c1093",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T04:52:34.439Z",
+        "durationMs": 2652
+      },
+      {
+        "id": "trace_ebcbec57",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T04:52:37.029Z",
+        "durationMs": 2590
+      },
+      {
+        "id": "trace_11e02dc1",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T04:52:39.898Z",
+        "durationMs": 2869
+      },
+      {
+        "id": "trace_0e15c9a6",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T04:52:42.652Z",
+        "durationMs": 2754
+      },
+      {
+        "id": "trace_5d543865",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T04:52:44.561Z",
+        "durationMs": 1909
+      },
+      {
+        "id": "trace_1e823337",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T04:52:47.619Z",
+        "durationMs": 3058
+      },
+      {
+        "id": "trace_2b7bc421",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T04:52:50.533Z",
+        "durationMs": 2914
+      },
+      {
+        "id": "trace_ed224088",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T04:52:50.533Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

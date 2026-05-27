@@ -1,0 +1,1128 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:24:48.328Z",
+  "modelId": "openai/gpt-4o-mini",
+  "questionId": "four-day-school-week",
+  "question": "Should schools switch to a four-day week?",
+  "run": {
+    "id": "run_eac276da",
+    "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:23:48.331Z",
+    "completedAt": "2026-05-26T05:24:48.328Z",
+    "events": [
+      {
+        "id": "event_a648ee9f",
+        "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+        "runId": "run_eac276da",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:23:48.331Z"
+      },
+      {
+        "id": "event_9ab52641",
+        "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+        "runId": "run_eac276da",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:23:48.331Z"
+      },
+      {
+        "id": "event_10d76b3a",
+        "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+        "runId": "run_eac276da",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:23:48.331Z"
+      },
+      {
+        "id": "event_d548065e",
+        "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+        "runId": "run_eac276da",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:23:58.429Z"
+      },
+      {
+        "id": "event_ff41182a",
+        "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+        "runId": "run_eac276da",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:24:34.271Z"
+      },
+      {
+        "id": "event_3ee999b5",
+        "debateId": "eval_four-day-school-week_openai-gpt-4o-mini",
+        "runId": "run_eac276da",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_30d661c3",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4o-mini",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should schools switch to a four-day week? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should schools switch to a four-day week?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_66757144",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4o-mini",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should schools switch to a four-day week? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should schools switch to a four-day week?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_f9c187ff",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4o-mini (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_9ffb70bf",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4o-mini",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should schools switch to a four-day week? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should schools switch to a four-day week?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_666ce6f1",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4o-mini",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should schools switch to a four-day week? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a decision question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should schools switch to a four-day week?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_0c735d9a",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4o-mini",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should schools switch to a four-day week? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_60b5f571",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4o-mini",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should schools switch to a four-day week? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_25f09574",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4o-mini (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for decision topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Switching to a four-day school week can lead to improved student well-being and mental health.",
+        "warrant": "Research indicates that a shorter school week can reduce stress and burnout among students, leading to better overall mental health.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.75,
+        "id": "claim_455dac6d"
+      },
+      {
+        "side": "pro",
+        "text": "A four-day week allows for longer weekends, which can enhance family time and extracurricular involvement.",
+        "warrant": "Extended weekends provide students with more opportunities to engage in family activities and pursue interests outside of school.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.7,
+        "id": "claim_f1dc9af7"
+      },
+      {
+        "side": "pro",
+        "text": "Schools that have adopted a four-day week report increased attendance and engagement from students.",
+        "warrant": "Improved attendance rates are often linked to a more balanced school schedule that accommodates students' needs.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.68,
+        "id": "claim_ae85a169"
+      },
+      {
+        "side": "con",
+        "text": "Switching to a four-day week may lead to increased stress for students and teachers due to compressed schedules.",
+        "warrant": "Research indicates that longer school days can result in fatigue and reduced effectiveness in learning.",
+        "evidenceSourceIds": [
+          "src-mock-4"
+        ],
+        "confidence": 0.8,
+        "id": "claim_0c1ba40d"
+      },
+      {
+        "side": "con",
+        "text": "A four-day school week could negatively impact students' access to meals and support services that are typically provided during the school week.",
+        "warrant": "Many students rely on school meals, and fewer days could exacerbate food insecurity.",
+        "evidenceSourceIds": [
+          "src-mock-5"
+        ],
+        "confidence": 0.75,
+        "id": "claim_66d81cf8"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should schools switch to a four-day week?",
+        "detail": "Classified as a decision debate."
+      },
+      {
+        "id": "claim_455dac6d",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Switching to a four-day school week can lead to improved student well-being and mental health."
+      },
+      {
+        "id": "claim_f1dc9af7",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "A four-day week allows for longer weekends, which can enhance family time and extracurricular involvement."
+      },
+      {
+        "id": "claim_ae85a169",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Schools that have adopted a four-day week report increased attendance and engagement from students."
+      },
+      {
+        "id": "claim_0c1ba40d",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Switching to a four-day week may lead to increased stress for students and teachers due to compressed schedules."
+      },
+      {
+        "id": "claim_66d81cf8",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "A four-day school week could negatively impact students' access to meals and support services that are typically provided during the school week."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for decision topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_f15b927d",
+        "source": "claim_455dac6d",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_ca1adee7",
+        "source": "claim_f1dc9af7",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_c1e9778d",
+        "source": "claim_ae85a169",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_e3e4ff13",
+        "source": "claim_0c1ba40d",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_ddf9c38a",
+        "source": "claim_66d81cf8",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_351d6965",
+        "source": "evidence-src-mock-2",
+        "target": "claim_ae85a169",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_6a504217",
+        "source": "evidence-src-mock-4",
+        "target": "claim_455dac6d",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_2930e275",
+        "source": "evidence-src-mock-5",
+        "target": "claim_f1dc9af7",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_84dd5288",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_0c735d9a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "YES, switching to a four-day school week can improve student well-being and mental health. Research shows that a shorter week reduces stress and burnout, leading to better mental health outcomes. Additionally, longer weekends enhance family time and extracurricular involvement, allowing students to engage more fully in their interests. Schools that have made this change report increased attendance and engagement, indicating that a balanced schedule meets students' needs.",
+        "claimIds": [
+          "claim_455dac6d",
+          "claim_f1dc9af7",
+          "claim_ae85a169"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-2"
+        ],
+        "id": "turn_6ea136d1",
+        "createdAt": "2026-05-26T05:24:06.578Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_60b5f571",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "I think NO. Switching to a four-day week may lead to increased stress for students and teachers due to compressed schedules. Research shows that longer school days can result in fatigue and reduced effectiveness in learning.",
+        "claimIds": [
+          "claim_0c1ba40d",
+          "claim_66d81cf8"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_a607bb49",
+        "createdAt": "2026-05-26T05:24:06.578Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_0c735d9a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "The NO frog should consider how a four-day week can improve student well-being by reducing stress and burnout. Can you explain how that concern outweighs the benefits of better mental health?",
+        "claimIds": [
+          "claim_455dac6d",
+          "claim_0c1ba40d"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-2"
+        ],
+        "id": "turn_9c1e0ac6",
+        "createdAt": "2026-05-26T05:24:14.417Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_60b5f571",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Switching to a four-day week may lead to increased stress for students and teachers due to compressed schedules. What specific evidence supports that a shorter week improves mental health?",
+        "claimIds": [
+          "claim_0c1ba40d"
+        ],
+        "sourceIds": [
+          "src-mock-4"
+        ],
+        "id": "turn_9e08a88b",
+        "createdAt": "2026-05-26T05:24:14.417Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_0c735d9a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "While concerns about stress are valid, evidence shows that a four-day week can actually improve student well-being and reduce burnout, leading to better mental health overall.",
+        "claimIds": [
+          "claim_455dac6d",
+          "claim_ae85a169"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-2"
+        ],
+        "id": "turn_2295e27e",
+        "createdAt": "2026-05-26T05:24:20.543Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_60b5f571",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Switching to a four-day week could lead to increased stress for students and teachers due to longer school days, which may reduce learning effectiveness. Additionally, fewer school days might limit access to meals and support services that many students rely on.",
+        "claimIds": [
+          "claim_0c1ba40d",
+          "claim_66d81cf8"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_cfcca440",
+        "createdAt": "2026-05-26T05:24:20.543Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_0c735d9a",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Switching to a four-day school week can significantly enhance student well-being and mental health, as research shows it reduces stress and burnout. Additionally, longer weekends foster family time and extracurricular involvement, enriching students' lives outside of school. Schools that have made this switch report higher attendance and engagement, demonstrating that a balanced schedule meets students' needs effectively.",
+        "claimIds": [
+          "claim_455dac6d",
+          "claim_f1dc9af7",
+          "claim_ae85a169"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5",
+          "src-mock-2"
+        ],
+        "id": "turn_848b08c2",
+        "createdAt": "2026-05-26T05:24:29.540Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_60b5f571",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Switching to a four-day week may increase stress for students and teachers due to longer school days, which can lead to fatigue and hinder learning effectiveness. Additionally, fewer school days could limit access to essential meals and support services, exacerbating food insecurity for many students.",
+        "claimIds": [
+          "claim_0c1ba40d",
+          "claim_66d81cf8"
+        ],
+        "sourceIds": [
+          "src-mock-4",
+          "src-mock-5"
+        ],
+        "id": "turn_fde70a42",
+        "createdAt": "2026-05-26T05:24:29.540Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_25f09574",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "The decision hinges on the evidence presented. YES must demonstrate that a four-day week significantly enhances student well-being and engagement, while NO should illustrate potential drawbacks such as increased stress and reduced access to meals.",
+        "claimIds": [
+          "claim_455dac6d",
+          "claim_f1dc9af7",
+          "claim_ae85a169",
+          "claim_0c1ba40d",
+          "claim_66d81cf8"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-4"
+        ],
+        "id": "turn_059f830c",
+        "createdAt": "2026-05-26T05:24:34.271Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "conditional_no",
+      "confidence": 0.67,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.3,
+          "con": 7.8,
+          "note": "Both sides need evidence that directly speaks to Should schools switch to a four-day week?."
+        },
+        {
+          "name": "practicality",
+          "pro": 8,
+          "con": 7.6,
+          "note": "The pro case strengthens when it defines the comparison standard and applies it consistently."
+        },
+        {
+          "name": "risk",
+          "pro": 6.5,
+          "con": 8.6,
+          "note": "The con case is strongest when it exposes overbroad definitions or weak evidence transfer."
+        },
+        {
+          "name": "fairness",
+          "pro": 7.1,
+          "con": 8.1,
+          "note": "The judgment should not privilege a familiar or attractive framing over the strongest evidence without saying so."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.8,
+          "con": 7.4,
+          "note": "The verdict can change if the controlling metric changes."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "The decision on whether schools should switch to a four-day week hinges on the balance of student well-being against potential drawbacks.",
+      "recommendation": "The verdict is conditional no. The strongest answer should name the controlling standard, weigh the best pro and con evidence, and explain which dimensions matter most.",
+      "strongestPro": [
+        "Switching to a four-day school week can lead to improved student well-being and mental health.",
+        "A four-day week allows for longer weekends, which can enhance family time and extracurricular involvement.",
+        "Schools that have adopted a four-day week report increased attendance and engagement from students."
+      ],
+      "strongestCon": [
+        "Switching to a four-day week may lead to increased stress for students and teachers due to compressed schedules.",
+        "A four-day school week could negatively impact students' access to meals and support services that are typically provided during the school week."
+      ],
+      "unresolvedUncertainties": [
+        "Which definition or standard should control the verdict.",
+        "Whether broad appeal should count as much as deeper expert or institutional support.",
+        "Whether the cited evidence compares both sides using the same standard."
+      ],
+      "whatWouldChangeMind": [
+        "Comparative citation, curriculum, or practice data that strongly favors one side.",
+        "Evidence that one side shaped later fields or public understanding more deeply than currently shown.",
+        "A clearer definition of the controlling standard that changes which evidence matters most."
+      ],
+      "confidence": 0.67
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 7071,
+        "promptTokens": 1240,
+        "completionTokens": 270,
+        "estimatedCostUsd": 0.000348,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 7071
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 3025,
+        "promptTokens": 1234,
+        "completionTokens": 185,
+        "estimatedCostUsd": 0.0002961,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3025
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 3765,
+        "promptTokens": 2037,
+        "completionTokens": 206,
+        "estimatedCostUsd": 0.00042915,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3765
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 4383,
+        "promptTokens": 2038,
+        "completionTokens": 151,
+        "estimatedCostUsd": 0.0003963,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4383
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 4530,
+        "promptTokens": 2034,
+        "completionTokens": 150,
+        "estimatedCostUsd": 0.0003951,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4530
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 3308,
+        "promptTokens": 2025,
+        "completionTokens": 128,
+        "estimatedCostUsd": 0.00038055,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3308
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 2457,
+        "promptTokens": 2033,
+        "completionTokens": 142,
+        "estimatedCostUsd": 0.00039015,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2457
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 3668,
+        "promptTokens": 2020,
+        "completionTokens": 159,
+        "estimatedCostUsd": 0.0003984,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 3668
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 4395,
+        "promptTokens": 2017,
+        "completionTokens": 197,
+        "estimatedCostUsd": 0.00042075,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4395
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 4600,
+        "promptTokens": 2008,
+        "completionTokens": 164,
+        "estimatedCostUsd": 0.0003996,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4600
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 4731,
+        "promptTokens": 2047,
+        "completionTokens": 188,
+        "estimatedCostUsd": 0.00041985,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4731
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 6631,
+        "promptTokens": 3423,
+        "completionTokens": 280,
+        "estimatedCostUsd": 0.00068145,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 6631
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o-mini",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 7424,
+        "promptTokens": 3723,
+        "completionTokens": 324,
+        "estimatedCostUsd": 0.00075285,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 7424
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_5ae73266",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_7812d43e",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_b5eb06fa",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_f6edb0ca",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_94389cf6",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_719bb264",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_7cea39bd",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      },
+      {
+        "id": "artifact_97d88884",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:24:48.328Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_29235978",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as decision.",
+        "at": "2026-05-26T05:23:48.331Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_72bf3ab9",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:23:48.331Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_7a0b44ac",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:23:48.331Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_3b7b278d",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:23:48.331Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_a5e69fab",
+        "step": "opening",
+        "status": "ok",
+        "message": "5 source-linked claims generated.",
+        "at": "2026-05-26T05:23:58.429Z",
+        "durationMs": 10098
+      },
+      {
+        "id": "trace_07a0d45c",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:24:06.578Z",
+        "durationMs": 8149
+      },
+      {
+        "id": "trace_3196b8f2",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:24:14.417Z",
+        "durationMs": 7839
+      },
+      {
+        "id": "trace_a2615623",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:24:20.543Z",
+        "durationMs": 6126
+      },
+      {
+        "id": "trace_b47576db",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:24:29.540Z",
+        "durationMs": 8997
+      },
+      {
+        "id": "trace_4f203b12",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:24:34.271Z",
+        "durationMs": 4731
+      },
+      {
+        "id": "trace_839a1f10",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as conditional_no.",
+        "at": "2026-05-26T05:24:40.903Z",
+        "durationMs": 6632
+      },
+      {
+        "id": "trace_cb76444a",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: conditional_no.",
+        "at": "2026-05-26T05:24:48.328Z",
+        "durationMs": 7425
+      },
+      {
+        "id": "trace_5bcd01c3",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:24:48.328Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

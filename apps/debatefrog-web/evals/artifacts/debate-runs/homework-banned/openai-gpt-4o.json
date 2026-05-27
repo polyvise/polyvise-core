@@ -1,0 +1,1134 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-26T05:46:24.406Z",
+  "modelId": "openai/gpt-4o",
+  "questionId": "homework-banned",
+  "question": "Should homework be banned?",
+  "run": {
+    "id": "run_3b8a545f",
+    "debateId": "eval_homework-banned_openai-gpt-4o",
+    "status": "complete",
+    "startedAt": "2026-05-26T05:45:58.664Z",
+    "completedAt": "2026-05-26T05:46:24.406Z",
+    "events": [
+      {
+        "id": "event_ad1e56ed",
+        "debateId": "eval_homework-banned_openai-gpt-4o",
+        "runId": "run_3b8a545f",
+        "status": "queued",
+        "label": "Debate queued",
+        "detail": "The subject was accepted and the Hybrid Council run was initialized.",
+        "createdAt": "2026-05-26T05:45:58.664Z"
+      },
+      {
+        "id": "event_c1640998",
+        "debateId": "eval_homework-banned_openai-gpt-4o",
+        "runId": "run_3b8a545f",
+        "status": "framing",
+        "label": "Resolution framed",
+        "detail": "The free-text subject was converted into a neutral debate resolution.",
+        "createdAt": "2026-05-26T05:45:58.664Z"
+      },
+      {
+        "id": "event_06993cc3",
+        "debateId": "eval_homework-banned_openai-gpt-4o",
+        "runId": "run_3b8a545f",
+        "status": "researching",
+        "label": "Evidence gathered",
+        "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
+        "createdAt": "2026-05-26T05:45:58.664Z"
+      },
+      {
+        "id": "event_d0d85c82",
+        "debateId": "eval_homework-banned_openai-gpt-4o",
+        "runId": "run_3b8a545f",
+        "status": "debating",
+        "label": "Agents debated",
+        "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
+        "createdAt": "2026-05-26T05:46:02.770Z"
+      },
+      {
+        "id": "event_6ce34f62",
+        "debateId": "eval_homework-banned_openai-gpt-4o",
+        "runId": "run_3b8a545f",
+        "status": "judging",
+        "label": "Judge synthesized",
+        "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
+        "createdAt": "2026-05-26T05:46:17.344Z"
+      },
+      {
+        "id": "event_5f4186f5",
+        "debateId": "eval_homework-banned_openai-gpt-4o",
+        "runId": "run_3b8a545f",
+        "status": "complete",
+        "label": "Debate complete",
+        "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      }
+    ],
+    "scouts": [
+      {
+        "id": "scout_eebf1a6a",
+        "name": "Strategic Optimist",
+        "model": "openai/gpt-4o",
+        "lens": "upside, option value, and second-order gains",
+        "side": "pro",
+        "thesis": "From a upside, option value, and second-order gains lens, Should homework be banned? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should homework be banned?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_a97668d7",
+        "name": "Risk Skeptic",
+        "model": "openai/gpt-4o",
+        "lens": "failure modes, hidden costs, and reversibility",
+        "side": "con",
+        "thesis": "From a failure modes, hidden costs, and reversibility lens, Should homework be banned? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should homework be banned?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      },
+      {
+        "id": "scout_5b64365b",
+        "name": "Empirical Referee",
+        "model": "openai/gpt-4o (judge-calibrated)",
+        "lens": "quality of evidence, base rates, and uncertainty",
+        "side": "neutral",
+        "thesis": "From a quality of evidence, base rates, and uncertainty lens, the right answer depends on evidence strength, scope, definitions, and uncertainty.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "Evidence quality matters more than rhetorical force."
+        ],
+        "strongestArguments": [
+          "The decision turns on evidence quality, definitions, and scope.",
+          "Both sides need source-backed claims and explicit uncertainty.",
+          "The synthesis should say what evidence would change the recommendation."
+        ]
+      },
+      {
+        "id": "scout_fb1eb976",
+        "name": "Implementation Pragmatist",
+        "model": "openai/gpt-4o",
+        "lens": "execution design, sequencing, and measurable checkpoints",
+        "side": "pro",
+        "thesis": "From a execution design, sequencing, and measurable checkpoints lens, Should homework be banned? is plausible if the strongest evidence supports that framing.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The pro side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may be defensible if the best evidence supports Should homework be banned?.",
+          "The YES side should define the comparison standard and defend it consistently.",
+          "The alternative position may ignore important second-order or indirect effects."
+        ]
+      },
+      {
+        "id": "scout_7b0eb997",
+        "name": "Equity Auditor",
+        "model": "openai/gpt-4o",
+        "lens": "distributional impact, incentives, and affected stakeholders",
+        "side": "con",
+        "thesis": "From a distributional impact, incentives, and affected stakeholders lens, Should homework be banned? may fail if the comparison standard or evidence base favors the opposing case.",
+        "assumptions": [
+          "The debate is treated as a policy question.",
+          "The final answer should surface tradeoffs rather than pretend the issue is settled.",
+          "The con side should present the strongest good-faith version of its case."
+        ],
+        "strongestArguments": [
+          "The resolution may overstate what the evidence proves about Should homework be banned?.",
+          "Competing definitions, timeframes, or affected audiences may change the answer.",
+          "The NO side should identify what the YES side is leaving out."
+        ]
+      }
+    ],
+    "teams": {
+      "pro": [
+        {
+          "id": "agent_11894689",
+          "name": "Strategic Optimist",
+          "side": "pro",
+          "model": "openai/gpt-4o",
+          "role": "pro debater",
+          "thesis": "From a upside, option value, and second-order gains lens, Should homework be banned? is plausible if the strongest evidence supports that framing."
+        }
+      ],
+      "con": [
+        {
+          "id": "agent_347097bd",
+          "name": "Risk Skeptic",
+          "side": "con",
+          "model": "openai/gpt-4o",
+          "role": "con debater",
+          "thesis": "From a failure modes, hidden costs, and reversibility lens, Should homework be banned? may fail if the comparison standard or evidence base favors the opposing case."
+        }
+      ],
+      "judge": {
+        "id": "judge_3404b1df",
+        "name": "Neutral Synthesis Judge",
+        "model": "openai/gpt-4o (judge-calibrated)",
+        "role": "score evidence, risks, uncertainty, and decision usefulness"
+      }
+    },
+    "sources": [
+      {
+        "id": "src-mock-1",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Kialo Edu: Argument Mapping",
+        "url": "https://www.kialo-edu.com/advantages",
+        "publisher": "Kialo",
+        "snippet": "Shows how argument trees help users inspect supporting and opposing reasons.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-2",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Modified Oxford-Style Debate Format",
+        "url": "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        "publisher": "United States Courts",
+        "snippet": "Outlines opening arguments, rebuttals, and audience-oriented debate structure.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-3",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "AI Safety via Debate",
+        "url": "https://openai.com/index/debate/",
+        "publisher": "OpenAI",
+        "snippet": "Explains adversarial debate as a way to expose weaknesses in model-generated answers.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-4",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "url": "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        "publisher": "MIT News",
+        "snippet": "Covers research showing multiple AI agents can improve reasoning through collaboration.",
+        "quality": "expert"
+      },
+      {
+        "id": "src-mock-5",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Citizens' Assembly",
+        "url": "https://democracyinstitute.osu.edu/citizens-assembly",
+        "publisher": "Ohio State Democracy Institute",
+        "snippet": "Describes deliberative assembly practices for weighing diverse perspectives.",
+        "quality": "methodology"
+      },
+      {
+        "id": "src-mock-6",
+        "retrievedVia": "mock",
+        "status": "accepted",
+        "title": "Evidence search placeholder for policy topics",
+        "url": "https://example.com/evidence-provider-required",
+        "publisher": "Internal reference",
+        "snippet": "Configure BRAVE_SEARCH_API_KEY to replace this development reference with live topic-specific source retrieval.",
+        "quality": "context"
+      }
+    ],
+    "claims": [
+      {
+        "side": "pro",
+        "text": "Banning homework can lead to improved mental health for students.",
+        "warrant": "Homework can cause stress and anxiety, and removing it can alleviate these mental health issues.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.75,
+        "id": "claim_fb00bdf7"
+      },
+      {
+        "side": "pro",
+        "text": "Eliminating homework can increase family time and strengthen family bonds.",
+        "warrant": "Without homework, students have more free time to spend with their families, which can enhance family relationships.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.7,
+        "id": "claim_8529b6ad"
+      },
+      {
+        "side": "pro",
+        "text": "Banning homework can encourage students to pursue extracurricular activities and personal interests.",
+        "warrant": "With more free time, students can explore hobbies and activities that contribute to their personal development.",
+        "evidenceSourceIds": [
+          "src-mock-6"
+        ],
+        "confidence": 0.73,
+        "id": "claim_0d782a2d"
+      },
+      {
+        "side": "con",
+        "text": "Banning homework could negatively impact students' ability to develop self-discipline and time management skills.",
+        "warrant": "Homework provides a structured opportunity for students to practice managing their time and completing tasks independently, which are crucial skills for future academic and professional success.",
+        "evidenceSourceIds": [],
+        "confidence": 0.85,
+        "id": "claim_3fc8febc"
+      },
+      {
+        "side": "con",
+        "text": "Homework serves as a valuable tool for reinforcing classroom learning and improving retention.",
+        "warrant": "Studies have shown that students who engage with material outside of class through homework tend to have better retention and understanding of the subject matter.",
+        "evidenceSourceIds": [],
+        "confidence": 0.8,
+        "id": "claim_71b15e05"
+      },
+      {
+        "side": "neutral",
+        "text": "The effectiveness of homework varies depending on the subject and the individual student's needs.",
+        "warrant": "While homework can be beneficial for subjects that require practice, such as mathematics, it may be less effective for subjects that benefit more from discussion and interactive learning.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_cfb73600"
+      }
+    ],
+    "argumentNodes": [
+      {
+        "id": "resolution",
+        "kind": "resolution",
+        "side": "neutral",
+        "label": "Should homework be banned?",
+        "detail": "Classified as a policy debate."
+      },
+      {
+        "id": "claim_fb00bdf7",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Banning homework can lead to improved mental health for students."
+      },
+      {
+        "id": "claim_8529b6ad",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Eliminating homework can increase family time and strengthen family bonds."
+      },
+      {
+        "id": "claim_0d782a2d",
+        "kind": "claim",
+        "side": "pro",
+        "label": "Pro claim",
+        "detail": "Banning homework can encourage students to pursue extracurricular activities and personal interests."
+      },
+      {
+        "id": "claim_3fc8febc",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Banning homework could negatively impact students' ability to develop self-discipline and time management skills."
+      },
+      {
+        "id": "claim_71b15e05",
+        "kind": "claim",
+        "side": "con",
+        "label": "Con claim",
+        "detail": "Homework serves as a valuable tool for reinforcing classroom learning and improving retention."
+      },
+      {
+        "id": "claim_cfb73600",
+        "kind": "claim",
+        "side": "neutral",
+        "label": "Con claim",
+        "detail": "The effectiveness of homework varies depending on the subject and the individual student's needs."
+      },
+      {
+        "id": "evidence-src-mock-1",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Kialo",
+        "detail": "Kialo Edu: Argument Mapping",
+        "sourceId": "src-mock-1"
+      },
+      {
+        "id": "evidence-src-mock-2",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "United States Courts",
+        "detail": "Modified Oxford-Style Debate Format",
+        "sourceId": "src-mock-2"
+      },
+      {
+        "id": "evidence-src-mock-3",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "OpenAI",
+        "detail": "AI Safety via Debate",
+        "sourceId": "src-mock-3"
+      },
+      {
+        "id": "evidence-src-mock-4",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "MIT News",
+        "detail": "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        "sourceId": "src-mock-4"
+      },
+      {
+        "id": "evidence-src-mock-5",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Ohio State Democracy Institute",
+        "detail": "Citizens' Assembly",
+        "sourceId": "src-mock-5"
+      },
+      {
+        "id": "evidence-src-mock-6",
+        "kind": "evidence",
+        "side": "neutral",
+        "label": "Internal reference",
+        "detail": "Evidence search placeholder for policy topics",
+        "sourceId": "src-mock-6"
+      },
+      {
+        "id": "uncertainty",
+        "kind": "uncertainty",
+        "side": "neutral",
+        "label": "Main uncertainty",
+        "detail": "Would the evidence and incentives still hold in this user's exact context?"
+      }
+    ],
+    "argumentEdges": [
+      {
+        "id": "edge_ad057e36",
+        "source": "claim_fb00bdf7",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_7e5a2cec",
+        "source": "claim_8529b6ad",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_5f26c3bf",
+        "source": "claim_0d782a2d",
+        "target": "resolution",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_b6dcbf2d",
+        "source": "claim_3fc8febc",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_1fb3b688",
+        "source": "claim_71b15e05",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_e7049c08",
+        "source": "claim_cfb73600",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_28fe0268",
+        "source": "evidence-src-mock-6",
+        "target": "claim_fb00bdf7",
+        "relation": "supports"
+      },
+      {
+        "id": "edge_5e6157fc",
+        "source": "uncertainty",
+        "target": "resolution",
+        "relation": "qualifies"
+      }
+    ],
+    "turns": [
+      {
+        "round": "opening",
+        "agentId": "agent_11894689",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "I believe YES, homework should be banned. Banning homework can lead to improved mental health for students by reducing stress and anxiety. It also allows more time for family interactions, which can strengthen family bonds. Additionally, without homework, students can explore extracurricular activities and personal interests, contributing to their overall development.",
+        "claimIds": [
+          "claim_fb00bdf7",
+          "claim_8529b6ad",
+          "claim_0d782a2d"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_319961de",
+        "createdAt": "2026-05-26T05:46:06.896Z"
+      },
+      {
+        "round": "opening",
+        "agentId": "agent_347097bd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "I believe the answer is NO. Banning homework could hinder students' ability to develop important skills like self-discipline and time management. Homework provides a structured way for students to practice these skills, which are crucial for their future success.",
+        "claimIds": [
+          "claim_3fc8febc",
+          "claim_71b15e05"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_ad0e74cb",
+        "createdAt": "2026-05-26T05:46:06.896Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_11894689",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Can the NO side clarify why the potential loss of self-discipline from banning homework is more significant than the mental health benefits students could gain from having less stress and anxiety?",
+        "claimIds": [
+          "claim_fb00bdf7",
+          "claim_3fc8febc"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_b3886a63",
+        "createdAt": "2026-05-26T05:46:09.559Z"
+      },
+      {
+        "round": "cross_examination",
+        "agentId": "agent_347097bd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Can you provide specific evidence that banning homework directly improves mental health for all students? Without clear evidence, this claim might not hold.",
+        "claimIds": [
+          "claim_fb00bdf7"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_c820d1b2",
+        "createdAt": "2026-05-26T05:46:09.559Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_11894689",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "While the NO side argues that homework helps with self-discipline and retention, the YES side believes banning homework can improve mental health by reducing stress and anxiety. Additionally, students can spend more time with family and pursue personal interests, contributing to their overall development.",
+        "claimIds": [
+          "claim_fb00bdf7",
+          "claim_8529b6ad",
+          "claim_0d782a2d"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_afbff416",
+        "createdAt": "2026-05-26T05:46:12.404Z"
+      },
+      {
+        "round": "rebuttal",
+        "agentId": "agent_347097bd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Homework is crucial for developing self-discipline and time management skills. Without it, students might miss out on learning how to manage their time effectively, which is important for their future success. Additionally, homework reinforces classroom learning, helping students retain information better.",
+        "claimIds": [
+          "claim_3fc8febc",
+          "claim_71b15e05"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_daf4eeae",
+        "createdAt": "2026-05-26T05:46:12.404Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_11894689",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Let's consider the benefits of saying YES to banning homework. It can improve students' mental health by reducing stress and anxiety. Without homework, students have more time to spend with their families, strengthening those important bonds. Additionally, students can explore extracurricular activities and personal interests, which contribute to their overall development. These positive outcomes make a strong case for supporting the ban on homework.",
+        "claimIds": [
+          "claim_fb00bdf7",
+          "claim_8529b6ad",
+          "claim_0d782a2d"
+        ],
+        "sourceIds": [
+          "src-mock-6"
+        ],
+        "id": "turn_82b0d898",
+        "createdAt": "2026-05-26T05:46:15.531Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_347097bd",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Homework is essential for developing self-discipline and time management skills, which are crucial for future success. It also reinforces classroom learning, helping students retain information better. Vote NO to ensure students continue to benefit from these important skills and learning opportunities.",
+        "claimIds": [
+          "claim_3fc8febc",
+          "claim_71b15e05"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_0de35575",
+        "createdAt": "2026-05-26T05:46:15.531Z"
+      },
+      {
+        "round": "judge_review",
+        "agentId": "judge_3404b1df",
+        "agentName": "Neutral Synthesis Judge",
+        "side": "neutral",
+        "content": "In reviewing the debate on whether homework should be banned, both sides present compelling points. The YES side argues that banning homework can improve students' mental health, increase family time, and encourage personal development. On the other hand, the NO side highlights the importance of homework in developing self-discipline and reinforcing classroom learning. The effectiveness of homework can vary based on the subject and individual needs, suggesting a nuanced approach may be beneficial.",
+        "claimIds": [
+          "claim_fb00bdf7",
+          "claim_8529b6ad",
+          "claim_0d782a2d",
+          "claim_3fc8febc",
+          "claim_71b15e05",
+          "claim_cfb73600"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_647420c1",
+        "createdAt": "2026-05-26T05:46:17.344Z"
+      }
+    ],
+    "scorecard": {
+      "recommendation": "lean_no",
+      "confidence": 0.7,
+      "categories": [
+        {
+          "name": "evidence",
+          "pro": 7.3,
+          "con": 8.3,
+          "note": "The con side provided stronger arguments about the importance of homework for skill development, while the pro side lacked direct evidence on the benefits of banning homework."
+        },
+        {
+          "name": "practicality",
+          "pro": 8,
+          "con": 8.1,
+          "note": "The pro side needs to better define how banning homework would be implemented and its practical implications."
+        },
+        {
+          "name": "risk",
+          "pro": 6.5,
+          "con": 9.1,
+          "note": "The con side effectively highlighted the risks of losing valuable skills like self-discipline and time management."
+        },
+        {
+          "name": "fairness",
+          "pro": 7.1,
+          "con": 8.6,
+          "note": "The con side's arguments were more balanced in considering the diverse needs of students."
+        },
+        {
+          "name": "reversibility",
+          "pro": 7.8,
+          "con": 7.9,
+          "note": "Both sides acknowledged that the decision could be revisited if new evidence or circumstances arise."
+        }
+      ]
+    },
+    "summary": {
+      "headline": "Homework's Role in Skill Development Outweighs Potential Benefits of a Ban",
+      "recommendation": "The verdict is lean no. The con side presented stronger evidence regarding the importance of homework in developing essential skills like self-discipline and time management, which are crucial for students' future success.",
+      "strongestPro": [
+        "Banning homework can lead to improved mental health for students.",
+        "Eliminating homework can increase family time and strengthen family bonds.",
+        "Banning homework can encourage students to pursue extracurricular activities and personal interests."
+      ],
+      "strongestCon": [
+        "Banning homework could negatively impact students' ability to develop self-discipline and time management skills.",
+        "Homework serves as a valuable tool for reinforcing classroom learning and improving retention."
+      ],
+      "unresolvedUncertainties": [
+        "The lack of direct evidence showing the broad impact of banning homework on mental health.",
+        "How different educational contexts might affect the outcomes of banning homework."
+      ],
+      "whatWouldChangeMind": [
+        "New evidence demonstrating a significant improvement in student well-being and academic performance in environments where homework has been banned.",
+        "Data showing that alternative methods can effectively replace the skill development traditionally associated with homework."
+      ],
+      "confidence": 0.7
+    },
+    "modelSnapshots": [
+      {
+        "id": "polyvise-quick",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "stance scout and fast debate turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-deep",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "claims, rebuttals, and evidence reasoning",
+        "configured": true
+      },
+      {
+        "id": "polyvise-yes",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "YES frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-no",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "NO frog claims and turns",
+        "configured": true
+      },
+      {
+        "id": "polyvise-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "scorecard and final synthesis judge",
+        "configured": true
+      },
+      {
+        "id": "openrouter-yes-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog claim builder",
+        "configured": true,
+        "latencyMs": 1997,
+        "promptTokens": 1228,
+        "completionTokens": 250,
+        "estimatedCostUsd": 0.00557,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1997
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-claim-builder",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog claim builder",
+        "configured": true,
+        "latencyMs": 2108,
+        "promptTokens": 1222,
+        "completionTokens": 260,
+        "estimatedCostUsd": 0.005655,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2108
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog opening round",
+        "configured": true,
+        "latencyMs": 2180,
+        "promptTokens": 2069,
+        "completionTokens": 172,
+        "estimatedCostUsd": 0.0068925,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2180
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-opening-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog opening round",
+        "configured": true,
+        "latencyMs": 1945,
+        "promptTokens": 2077,
+        "completionTokens": 136,
+        "estimatedCostUsd": 0.0065525,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1945
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1220,
+        "promptTokens": 2071,
+        "completionTokens": 135,
+        "estimatedCostUsd": 0.0065275,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1220
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-cross-examination-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog cross-examination round",
+        "configured": true,
+        "latencyMs": 1441,
+        "promptTokens": 2063,
+        "completionTokens": 117,
+        "estimatedCostUsd": 0.0063275,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1441
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1622,
+        "promptTokens": 2078,
+        "completionTokens": 164,
+        "estimatedCostUsd": 0.006835,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1622
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-rebuttal-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog rebuttal round",
+        "configured": true,
+        "latencyMs": 1222,
+        "promptTokens": 2063,
+        "completionTokens": 141,
+        "estimatedCostUsd": 0.0065675,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1222
+          }
+        ]
+      },
+      {
+        "id": "openrouter-yes-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "yes frog closing round",
+        "configured": true,
+        "latencyMs": 1969,
+        "promptTokens": 2062,
+        "completionTokens": 184,
+        "estimatedCostUsd": 0.006995,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1969
+          }
+        ]
+      },
+      {
+        "id": "openrouter-no-frog-closing-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "no frog closing round",
+        "configured": true,
+        "latencyMs": 1157,
+        "promptTokens": 2051,
+        "completionTokens": 137,
+        "estimatedCostUsd": 0.0064975,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1157
+          }
+        ]
+      },
+      {
+        "id": "openrouter-judge-review-round",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "judge review round",
+        "configured": true,
+        "latencyMs": 1813,
+        "promptTokens": 2103,
+        "completionTokens": 250,
+        "estimatedCostUsd": 0.0077575,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 1813
+          }
+        ]
+      },
+      {
+        "id": "openrouter-scorecard-judge",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "scorecard judge",
+        "configured": true,
+        "latencyMs": 2148,
+        "promptTokens": 3547,
+        "completionTokens": 300,
+        "estimatedCostUsd": 0.0118675,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 2148
+          }
+        ]
+      },
+      {
+        "id": "openrouter-final-summary",
+        "provider": "openrouter",
+        "model": "openai/gpt-4o",
+        "role": "final summary",
+        "configured": true,
+        "latencyMs": 4912,
+        "promptTokens": 3834,
+        "completionTokens": 277,
+        "estimatedCostUsd": 0.012355,
+        "attempts": [
+          {
+            "attempt": 1,
+            "mode": "json_object",
+            "status": "ok",
+            "durationMs": 4912
+          }
+        ]
+      }
+    ],
+    "artifactManifest": [
+      {
+        "id": "artifact_9138e650",
+        "kind": "run_state",
+        "label": "Workflow run state",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_744b7194",
+        "kind": "scouts",
+        "label": "Structured scout outputs",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_77332fe4",
+        "kind": "evidence",
+        "label": "Evidence source ledger",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_2d71b531",
+        "kind": "claims",
+        "label": "Generated claims",
+        "recordCount": 6,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_9dc52bf6",
+        "kind": "turns",
+        "label": "Debate transcript turns",
+        "recordCount": 9,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_c851505f",
+        "kind": "scorecard",
+        "label": "Judge scorecard",
+        "recordCount": 5,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_e04efc1a",
+        "kind": "summary",
+        "label": "Final summary",
+        "recordCount": 1,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      },
+      {
+        "id": "artifact_037e5122",
+        "kind": "models",
+        "label": "Model snapshots",
+        "recordCount": 18,
+        "createdAt": "2026-05-26T05:46:24.406Z"
+      }
+    ],
+    "trace": [
+      {
+        "id": "trace_872690f4",
+        "step": "frame",
+        "status": "ok",
+        "message": "Classified as policy.",
+        "at": "2026-05-26T05:45:58.664Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_61594ecc",
+        "step": "scout",
+        "status": "ok",
+        "message": "Used deterministic duo scouts to avoid a startup LLM call.",
+        "at": "2026-05-26T05:45:58.664Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_5dc9a605",
+        "step": "team_builder",
+        "status": "ok",
+        "message": "Selected one pro and one con agent plus a neutral judge.",
+        "at": "2026-05-26T05:45:58.664Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_197b0a81",
+        "step": "evidence",
+        "status": "warning",
+        "message": "Using deterministic development evidence. Configured evidence provider is mock.",
+        "at": "2026-05-26T05:45:58.664Z",
+        "durationMs": 0
+      },
+      {
+        "id": "trace_5b91f67e",
+        "step": "opening",
+        "status": "ok",
+        "message": "6 source-linked claims generated.",
+        "at": "2026-05-26T05:46:02.770Z",
+        "durationMs": 4106
+      },
+      {
+        "id": "trace_850f4e35",
+        "step": "opening",
+        "status": "ok",
+        "message": "2 turns generated for opening.",
+        "at": "2026-05-26T05:46:06.896Z",
+        "durationMs": 4126
+      },
+      {
+        "id": "trace_434fb871",
+        "step": "cross_exam",
+        "status": "ok",
+        "message": "2 turns generated for cross examination.",
+        "at": "2026-05-26T05:46:09.559Z",
+        "durationMs": 2663
+      },
+      {
+        "id": "trace_505b66c3",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "2 turns generated for rebuttal.",
+        "at": "2026-05-26T05:46:12.404Z",
+        "durationMs": 2845
+      },
+      {
+        "id": "trace_a32616fe",
+        "step": "closing",
+        "status": "ok",
+        "message": "2 turns generated for closing.",
+        "at": "2026-05-26T05:46:15.531Z",
+        "durationMs": 3127
+      },
+      {
+        "id": "trace_6b082f90",
+        "step": "judge_review",
+        "status": "ok",
+        "message": "1 turns generated for judge review.",
+        "at": "2026-05-26T05:46:17.344Z",
+        "durationMs": 1813
+      },
+      {
+        "id": "trace_156687bc",
+        "step": "rebuttal",
+        "status": "ok",
+        "message": "Judge scored the debate as lean_no.",
+        "at": "2026-05-26T05:46:19.493Z",
+        "durationMs": 2149
+      },
+      {
+        "id": "trace_2610a680",
+        "step": "judge",
+        "status": "ok",
+        "message": "Recommendation: lean_no.",
+        "at": "2026-05-26T05:46:24.406Z",
+        "durationMs": 4913
+      },
+      {
+        "id": "trace_1595e525",
+        "step": "persist",
+        "status": "ok",
+        "message": "Run assembled with stable artifact manifest for repository persistence.",
+        "at": "2026-05-26T05:46:24.406Z",
+        "durationMs": 0
+      }
+    ]
+  }
+}

@@ -16,17 +16,16 @@ export interface DebateRuntimeConfig {
   evidenceProvider: EvidenceProviderName;
   enableMockLlm: boolean;
   allowDeterministicFallbacks: boolean;
+  useStrictJsonSchema: boolean;
   modelOptions: string[];
 }
 
 const DEFAULT_OPENROUTER_MODEL_OPTIONS = [
+  "google/gemini-2.5-flash",
+  "anthropic/claude-3.5-haiku",
   "openai/gpt-4o-mini",
   "openai/gpt-4.1",
-  "openai/gpt-4o",
-  "google/gemini-2.5-flash",
-  "google/gemini-2.5-pro",
-  "anthropic/claude-3.5-haiku",
-  "anthropic/claude-3.5-sonnet"
+  "openai/gpt-4o"
 ];
 
 export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): DebateRuntimeConfig {
@@ -37,7 +36,7 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
     deepModel: env.POLYVISE_DEEP_MODEL || "google/gemini-2.5-flash",
     yesModel: env.POLYVISE_YES_MODEL || "google/gemini-2.5-flash",
     noModel: env.POLYVISE_NO_MODEL || "google/gemini-2.5-flash",
-    judgeModel: env.POLYVISE_JUDGE_MODEL || "openai/gpt-4o-mini",
+    judgeModel: env.POLYVISE_JUDGE_MODEL || "openai/gpt-4.1",
     maxRounds: coercePositiveInteger(env.POLYVISE_MAX_ROUNDS, 3),
     llmTimeoutMs: coercePositiveInteger(env.POLYVISE_LLM_TIMEOUT_MS, 45000),
     llmMaxTokens: coercePositiveInteger(env.POLYVISE_LLM_MAX_TOKENS, 1800),
@@ -47,10 +46,11 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
     enableMockLlm: !isProduction && coerceBoolean(env.POLYVISE_ENABLE_MOCK_LLM, true),
     allowDeterministicFallbacks:
       !isProduction && coerceBoolean(env.POLYVISE_ALLOW_DETERMINISTIC_FALLBACKS, true),
+    useStrictJsonSchema: coerceBoolean(env.POLYVISE_USE_STRICT_JSON_SCHEMA, false),
     modelOptions: coerceModelOptions(env.POLYVISE_OPENROUTER_MODEL_OPTIONS, [
       env.POLYVISE_YES_MODEL || "google/gemini-2.5-flash",
       env.POLYVISE_NO_MODEL || "google/gemini-2.5-flash",
-      env.POLYVISE_JUDGE_MODEL || "openai/gpt-4o-mini",
+      env.POLYVISE_JUDGE_MODEL || "openai/gpt-4.1",
       ...DEFAULT_OPENROUTER_MODEL_OPTIONS
     ])
   };

@@ -111,8 +111,8 @@ export const judgeScorecardOutputSchema = z.object({
 });
 
 export const finalSummaryOutputSchema = z.object({
-  headline: z.string().min(1),
-  recommendation: z.string().min(1),
+  headline: z.string().min(1).max(120),
+  recommendation: z.string().min(1).max(320),
   strongestPro: z.array(z.string().min(1)).default([]),
   strongestCon: z.array(z.string().min(1)).default([]),
   unresolvedUncertainties: z.array(z.string().min(1)).default([]),

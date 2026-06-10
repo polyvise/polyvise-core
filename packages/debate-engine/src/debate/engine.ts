@@ -329,6 +329,8 @@ class DebateWorkflowExecutor {
               claims,
               teams,
               round,
+              turns: openingTurns,
+              expectedTurns: batch.turns,
               fallback: batchFallback
             }),
             runId
@@ -373,7 +375,7 @@ class DebateWorkflowExecutor {
         this.config,
         buildGenerationPrompt({
           task:
-            "Score the actual debate. NO is a fully valid winning answer. Do not reward YES by default. Choose lean_yes, conditional_yes, conditional_no, or lean_no whenever one side is even modestly stronger; use mixed only for a genuine near tie or unusable evidence. Notes must mention the actual resolution tradeoffs, not generic pilot/rollback language unless directly relevant. For broad policies involving children, schools, voting, animals, health, safety, or legal accommodations, require the YES side to prove the policy is safe, fair, administrable, and meaningfully better than the status quo; benefits that merely sound nice should not outweigh concrete safety, hygiene, supervision, disruption, access, or legal risks.",
+            "Score the actual debate. NO is a fully valid winning answer. Do not reward YES by default. Choose lean_yes, conditional_yes, conditional_no, or lean_no whenever one side is even modestly stronger; use mixed only for a genuine near tie or unusable evidence. Notes must mention the strongest point from each side, the hinge that decides the debate, and why the verdict follows from the transcript. For broad policies involving children, schools, voting, animals, health, safety, or legal accommodations, require the YES side to prove the policy is safe, fair, administrable, and meaningfully better than the status quo; benefits that merely sound nice should not outweigh concrete safety, hygiene, supervision, disruption, access, or legal risks. If the broad and narrow versions of the question have different answers, prefer a conditional verdict and name that scope difference in category notes. Confidence above 0.65 is only justified when the winning side directly answered the strongest opposing concern.",
           framed,
           sources,
           claims,
@@ -407,7 +409,7 @@ class DebateWorkflowExecutor {
         this.config,
         buildGenerationPrompt({
           task:
-            "Write the final verdict for this exact resolution. Be willing to say NO when the pink frog made the stronger case. Do not soften a NO result into uncertainty unless the scorecard is mixed. The headline, recommendation, uncertainties, and mind-changers must be specific to the subject and evidence. Use green frog and pink frog language in visible copy, not pro side, con side, YES frog, or NO frog. For school, child, animal, safety, voting, legal, or accommodation policies, do not treat warm benefits as enough for YES unless the green frog addressed the concrete risks and implementation burdens.",
+            "Write the final verdict for this exact resolution for a grades 5-8 reader. Be willing to say NO when the pink frog made the stronger case. Do not soften a NO result into uncertainty unless the scorecard is mixed. The headline and recommendation must name the debate hinge, the strongest point from each side, and the reason for the verdict in plain language. Headline: one complete sentence or headline phrase, around 90 characters or less; 120 is the hard maximum. Recommendation: 2 to 3 complete sentences, around 240 characters or less; 320 is the hard maximum. Never end mid-word, mid-clause, or with a dangling word like while, because, or and. If the copy is too long, rewrite it shorter instead of truncating it. If the broad and narrow versions of the question have different answers, say that directly instead of pretending there is one simple answer. Use green frog and pink frog language in visible copy, not pro side, con side, YES frog, or NO frog. For school, child, animal, safety, voting, legal, or accommodation policies, do not treat warm benefits as enough for YES unless the green frog addressed the concrete risks and implementation burdens.",
           framed,
           sources,
           claims,
@@ -603,6 +605,7 @@ function buildGenerationPrompt(input: {
   claims?: Claim[];
   teams?: DebateTeam;
   turns?: RoundTurn[];
+  expectedTurns?: RoundTurn[];
   scorecard?: Scorecard;
   round?: RoundTurn["round"];
   fallback: unknown;
@@ -614,10 +617,16 @@ function buildGenerationPrompt(input: {
         "Return only JSON matching the requested schema.",
         "Make every visible sentence specific to the resolution and cited evidence.",
         "Do not preserve deterministic fallback wording when it is generic.",
+        "Write for grades 5-8: short sentences, real debate moves, no baby talk.",
+        "Do not write narrator voice in visible debate turns: avoid 'The YES side argues', 'The NO side says', 'the pro side', and 'the con side'. The frog must speak as I or my side.",
+        "Do not write 'studies show', 'research says', 'evidence shows', or similar unless the claim is tied to a relevant source id in this JSON. If the source is only a debate-method source or placeholder, use a modest phrase like 'one reason is' instead.",
         "Do not mention pilots, rollback triggers, implementation phases, local accountability, or stakeholder safeguards unless the resolution actually asks about an implementation decision.",
+        "For broad words such as kids, students, phones, AI, pets, animals, school, voting, or elections, name the scope when it matters instead of arguing as if every version of the idea is the same.",
         ...debateTranscriptRules(input.round),
+        ...scopeClarificationRules(input.framed),
         ...judgePolicyRules(input.framed)
       ],
+      roundGuide: buildRoundGuide(input),
       debate: {
         subject: input.framed.subject,
         context: input.framed.context,
@@ -673,6 +682,89 @@ function buildGenerationPrompt(input: {
     null,
     2
   );
+}
+
+function buildRoundGuide(input: {
+  round?: RoundTurn["round"];
+  expectedTurns?: RoundTurn[];
+  turns?: RoundTurn[];
+}): unknown {
+  if (!input.round || input.round === "judge_review" || input.round === "synthesis") {
+    return undefined;
+  }
+
+  const expectedTurns = input.expectedTurns ?? [];
+  const previousTurns = input.turns ?? [];
+
+  if (input.round === "rebuttal") {
+    return {
+      job: "Answer the opponent's Round 2 question before defending your side.",
+      questionsToAnswer: expectedTurns.map((turn) => {
+        const opponentQuestion = [...previousTurns]
+          .reverse()
+          .find((candidate) => candidate.round === "cross_examination" && candidate.side !== turn.side);
+        return {
+          side: turn.side,
+          speaker: turn.agentName,
+          opponentQuestion: opponentQuestion?.content ?? null
+        };
+      })
+    };
+  }
+
+  if (input.round === "cross_examination") {
+    return {
+      job: "Ask exactly one pointed question that would make the other frog defend its weakest point.",
+      expectedQuestionCount: expectedTurns.length
+    };
+  }
+
+  if (input.round === "opening") {
+    return {
+      job: "Give a clear answer, the strongest reason, and one simple example.",
+      expectedTurns: expectedTurns.map((turn) => ({ side: turn.side, speaker: turn.agentName }))
+    };
+  }
+
+  if (input.round === "closing") {
+    return {
+      job: "Weigh the tradeoff and tell the viewer why your side should win overall.",
+      expectedTurns: expectedTurns.map((turn) => ({ side: turn.side, speaker: turn.agentName }))
+    };
+  }
+
+  return undefined;
+}
+
+function scopeClarificationRules(framed: FramedDebate): string[] {
+  const normalized = `${framed.subject} ${framed.resolution} ${framed.context ?? ""}`.toLowerCase();
+  const rules: string[] = [];
+
+  if (/\b(kid|kids|child|children|minors?)\b/.test(normalized)) {
+    rules.push(
+      "When the question says kids or children, do not silently treat all ages the same. If age matters, distinguish young children from older teens in one plain sentence."
+    );
+  }
+
+  if (/\b(vote|voting|election|elections)\b/.test(normalized) && /\b(kid|kids|child|children|minors?)\b/.test(normalized)) {
+    rules.push(
+      "For kids voting, distinguish the broad question 'all kids voting' from narrower ideas like 16- and 17-year-olds voting in local elections; the verdict may differ by scope."
+    );
+  }
+
+  if (/\b(ai|artificial intelligence)\b/.test(normalized)) {
+    rules.push("For AI questions, distinguish using AI as a helper from using AI to replace the student's own thinking.");
+  }
+
+  if (/\b(phone|phones|cell phone|smartphone)\b/.test(normalized)) {
+    rules.push("For phone questions, distinguish emergency access or learning tools from unrestricted entertainment use.");
+  }
+
+  if (/\b(pet|pets|animal|animals)\b/.test(normalized)) {
+    rules.push("For pet or animal questions, distinguish ordinary pets from trained service animals or supervised therapy programs.");
+  }
+
+  return rules;
 }
 
 function judgePolicyRules(framed: FramedDebate): string[] {
@@ -806,7 +898,7 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
     case "opening":
       return [
         ...commonRules,
-        "Opening round job: state your answer clearly, then give your strongest reason. Do not rebut yet unless absolutely necessary.",
+        "Opening round job: state your answer clearly, give your strongest reason, and include one simple concrete example. Do not rebut yet unless absolutely necessary.",
         "Good opening patterns: 'I think YES because...' or 'I do not think kids should...' Avoid 'the YES side' and 'the NO side' narration."
       ];
     case "cross_examination":
@@ -820,6 +912,7 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
       return [
         ...commonRules,
         "Comeback round job: answer one specific thing the opponent said, then explain why your side still wins that clash.",
+        "If this round has an opponent question in roundGuide.questionsToAnswer, answer that exact question first. Do not dodge it or switch to a different issue.",
         "Start by naming the opponent's point in plain speech, such as 'My opponent is right that...' or 'The other frog says...', then respond.",
         "Do not merely restate your opening. Add a comparison, an example, or a reason the opponent's point is not enough."
       ];
@@ -855,7 +948,7 @@ function polishDebateTurnContent(content: string, turn: GeneratedRoundTurn): str
     polished = polishOwnSideNarration(polished, "NO", "YES");
   }
 
-  return polishFrogRoleNames(polished);
+  return polishSentenceStarts(polishNarratorSideLabels(polishFrogRoleNames(polished), turn.side));
 }
 
 function polishOwnSideNarration(content: string, ownSide: "YES" | "NO", opponentSide: "YES" | "NO"): string {
@@ -900,16 +993,69 @@ function polishFrogRoleNames(content: string): string {
     .trim();
 }
 
+function polishNarratorSideLabels(content: string, side: GeneratedRoundTurn["side"]): string {
+  if (side !== "pro" && side !== "con") {
+    return content
+      .replace(/\bThe YES side\b/gi, "the green frog")
+      .replace(/\bthe YES side\b/gi, "the green frog")
+      .replace(/\bYES side\b/gi, "green frog")
+      .replace(/\bThe NO side\b/gi, "the pink frog")
+      .replace(/\bthe NO side\b/gi, "the pink frog")
+      .replace(/\bNO side\b/gi, "pink frog")
+      .replace(/\bthe pro side\b/gi, "the green frog")
+      .replace(/\bthe con side\b/gi, "the pink frog")
+      .replace(/\bpro side\b/gi, "green frog")
+      .replace(/\bcon side\b/gi, "pink frog")
+      .replace(/\s+([,.?!])/g, "$1")
+      .replace(/\s{2,}/g, " ")
+      .trim();
+  }
+  const own = side === "pro" ? "YES" : "NO";
+  const opponent = side === "pro" ? "NO" : "YES";
+
+  return content
+    .replace(new RegExp(`\\bThe ${own} side\\s+(?:says|said)\\s+that\\b`, "gi"), "I say that")
+    .replace(new RegExp(`\\bThe ${own} side\\s+(?:says|said)\\b`, "gi"), "I say")
+    .replace(new RegExp(`\\b${own} side\\s+(?:says|said)\\s+that\\b`, "gi"), "I say that")
+    .replace(new RegExp(`\\b${own} side\\s+(?:says|said)\\b`, "gi"), "I say")
+    .replace(new RegExp(`\\bThe ${opponent} side\\s+(?:says|said)\\s+that\\b`, "gi"), "my opponent says that")
+    .replace(new RegExp(`\\bThe ${opponent} side\\s+(?:says|said)\\b`, "gi"), "my opponent says")
+    .replace(new RegExp(`\\b${opponent} side\\s+(?:says|said)\\s+that\\b`, "gi"), "my opponent says that")
+    .replace(new RegExp(`\\b${opponent} side\\s+(?:says|said)\\b`, "gi"), "my opponent says")
+    .replace(new RegExp(`\\bThe ${own} side\\b`, "gi"), "my side")
+    .replace(new RegExp(`\\bthe ${own} side\\b`, "gi"), "my side")
+    .replace(new RegExp(`\\b${own} side\\b`, "gi"), "my side")
+    .replace(new RegExp(`\\bThe ${opponent} side\\b`, "gi"), "my opponent")
+    .replace(new RegExp(`\\bthe ${opponent} side\\b`, "gi"), "my opponent")
+    .replace(new RegExp(`\\b${opponent} side\\b`, "gi"), "my opponent")
+    .replace(/\bthe pro side\b/gi, side === "pro" ? "my side" : "my opponent")
+    .replace(/\bthe con side\b/gi, side === "con" ? "my side" : "my opponent")
+    .replace(/\bpro side\b/gi, side === "pro" ? "my side" : "my opponent")
+    .replace(/\bcon side\b/gi, side === "con" ? "my side" : "my opponent")
+    .replace(/\s+([,.?!])/g, "$1")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function polishSentenceStarts(content: string): string {
+  return content
+    .replace(/([.!?]\s+)my\b/g, "$1My")
+    .replace(/([.!?]\s+)i\b/g, "$1I")
+    .replace(/([.!?]\s+)the other frog\b/g, "$1The other frog")
+    .replace(/([.!?]\s+)my opponent\b/g, "$1My opponent")
+    .trim();
+}
+
 function turnGenerationTask(councilSize: CouncilSize, expectedTurns: RoundTurn[]): string {
   if (councilSize !== "duo") {
-    return "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content sound like a live debate transcript: first-person speakers, direct clash, and no narrator-style side summaries.";
+    return "Write this debate round for the exact resolution. Keep the same agent ids, names, sides, round, claim ids, and source ids, but make the content sound like a live debate transcript: first-person speakers, direct clash, clear scope, and no narrator-style side summaries.";
   }
 
   const expected = expectedTurns
     .map((turn) => `${turn.agentName} must be side "${turn.side}" in round "${turn.round}"`)
     .join("; ");
 
-  return `Write only the requested kid-friendly debate turn or turns for the exact question. ${expected}. Return exactly ${expectedTurns.length} turn(s), preserving each requested agent id, agent name, side, round, claim ids, and source ids. The visible content must sound like that frog speaking in first person, not a narrator summarizing "the YES side" or "the NO side." Refer to the other debater as my opponent, the other frog, you, or your side; do not write Yes Frog or No Frog inside the spoken text. Do not use pro, con, affirmative, or negative language in visible content. Make the content short, topic-specific, grounded in the claims and evidence, and meaningfully different from earlier turns.`;
+  return `Write only the requested kid-friendly debate turn or turns for the exact question. ${expected}. Return exactly ${expectedTurns.length} turn(s), preserving each requested agent id, agent name, side, round, claim ids, and source ids. The visible content must sound like that frog speaking in first person, not a narrator summarizing "the YES side" or "the NO side." Refer to the other debater as my opponent, the other frog, you, or your side; do not write Yes Frog or No Frog inside the spoken text. Do not use pro, con, affirmative, or negative language in visible content. Make the content short, topic-specific, grounded in the claims and evidence, clear about scope when the question is broad, and meaningfully different from earlier turns.`;
 }
 
 function reconcileGeneratedTurns(
@@ -1471,30 +1617,84 @@ function buildScorecard(claims: Claim[], framed: FramedDebate): Scorecard {
   };
 }
 
+function shortClaim(content: string | undefined, fallback: string): string {
+  const text = (content ?? fallback).replace(/\s+/g, " ").trim();
+  if (text.length <= 78) return text;
+  const slice = text.slice(0, 78).trimEnd();
+  const lastSpace = slice.lastIndexOf(" ");
+  const shortened = lastSpace > 44 ? slice.slice(0, lastSpace) : slice;
+  return shortened.replace(/[,:;.-]+$/, "");
+}
+
 function buildSummary(framed: FramedDebate, claims: Claim[], scorecard: Scorecard) {
   const proClaims = claims.filter((claim) => claim.side === "pro");
   const conClaims = claims.filter((claim) => claim.side === "con");
   const confidence = scorecard.confidence;
   const highStakesDisclaimer = framed.highStakes?.message;
+  const scopeUncertainties = summaryScopeUncertainties(framed);
+  const mindChangers = summaryScopeMindChangers(framed);
+  const hinge = scopeUncertainties[0] ?? "Which definition or standard should control the verdict.";
 
   return {
-    headline: `The answer depends on how the key standard is measured for ${framed.subject}.`,
-    recommendation: `The verdict is ${scorecard.recommendation.replace("_", " ")}. The strongest answer should name the controlling standard, weigh the best pro and con evidence, and explain which dimensions matter most.`,
+    headline: `The judge weighs the strongest green and pink frog points.`,
+    recommendation: `The verdict is ${scorecard.recommendation.replace("_", " ")}. The green frog's best point is ${shortClaim(proClaims[0]?.text, "the idea could help")}. The pink frog's best point is ${shortClaim(conClaims[0]?.text, "the idea may be risky or too broad")}.`,
     strongestPro: proClaims.map((claim) => claim.text),
     strongestCon: conClaims.map((claim) => claim.text),
     unresolvedUncertainties: [
-      "Which definition or standard should control the verdict.",
+      ...scopeUncertainties,
       "Whether broad appeal should count as much as deeper expert or institutional support.",
       "Whether the cited evidence compares both sides using the same standard."
     ],
     whatWouldChangeMind: [
-      "Comparative citation, curriculum, or practice data that strongly favors one side.",
-      "Evidence that one side shaped later fields or public understanding more deeply than currently shown.",
+      ...mindChangers,
+      "Comparative evidence that strongly favors one side.",
       "A clearer definition of the controlling standard that changes which evidence matters most."
     ],
     confidence,
     highStakesDisclaimer
   };
+}
+
+function summaryScopeUncertainties(framed: FramedDebate): string[] {
+  const normalized = `${framed.subject} ${framed.resolution} ${framed.context ?? ""}`.toLowerCase();
+
+  if (/\b(vote|voting|election|elections)\b/.test(normalized) && /\b(kid|kids|child|children|minors?)\b/.test(normalized)) {
+    return [
+      "Whether kids means all children or older teens, such as 16- and 17-year-olds.",
+      "Whether the question is about local elections, school votes, or national political elections."
+    ];
+  }
+
+  if (/\b(kid|kids|child|children|minors?)\b/.test(normalized)) {
+    return ["Whether the answer changes for young children versus older teens."];
+  }
+
+  if (/\b(ai|artificial intelligence)\b/.test(normalized)) {
+    return ["Whether AI is being used as a helper or as a replacement for the student's own thinking."];
+  }
+
+  if (/\b(phone|phones|cell phone|smartphone)\b/.test(normalized)) {
+    return ["Whether the rule allows limited school uses or unrestricted phone use."];
+  }
+
+  if (/\b(pet|pets|animal|animals)\b/.test(normalized)) {
+    return ["Whether the rule covers ordinary pets or only trained service animals and supervised therapy programs."];
+  }
+
+  return ["Which definition or standard should control the verdict."];
+}
+
+function summaryScopeMindChangers(framed: FramedDebate): string[] {
+  const normalized = `${framed.subject} ${framed.resolution} ${framed.context ?? ""}`.toLowerCase();
+
+  if (/\b(vote|voting|election|elections)\b/.test(normalized) && /\b(kid|kids|child|children|minors?)\b/.test(normalized)) {
+    return [
+      "Evidence that older teen voters can participate responsibly in the election type being discussed.",
+      "A clear plan for maturity, coercion, civic knowledge, and administration concerns."
+    ];
+  }
+
+  return [];
 }
 
 function pushEvent(

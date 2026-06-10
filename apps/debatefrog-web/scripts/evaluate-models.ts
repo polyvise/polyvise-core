@@ -232,7 +232,7 @@ async function main() {
         process.env.OPENROUTER_API_KEY
       )
     : null;
-  const questions = JSON.parse(await readFile(questionsPath, "utf8")) as EvalQuestion[];
+  const questions = selectedQuestions(JSON.parse(await readFile(questionsPath, "utf8")) as EvalQuestion[]);
   const roster = modelOptionsFromConfig(config).options;
   const selectedModelIds = selectedModels(roster.map((model) => model.id));
   let estimatedSpendUsd = 0;
@@ -499,6 +499,13 @@ function selectedModels(defaultModelIds: string[]) {
   return requested?.length ? requested : defaultModelIds;
 }
 
+function selectedQuestions(questions: EvalQuestion[]) {
+  const requested = process.env.POLYVISE_EVAL_QUESTIONS?.split(",").map((item) => item.trim()).filter(Boolean);
+  if (!requested?.length) return questions;
+  const requestedSet = new Set(requested);
+  return questions.filter((question) => requestedSet.has(question.id));
+}
+
 async function maybeMergeWithLatest(report: ModelEvalReport): Promise<ModelEvalReport> {
   if (process.env.POLYVISE_EVAL_MERGE_LATEST !== "true") {
     return report;
@@ -631,15 +638,17 @@ async function scoreRun({
     evidenceUse: scoreEvidenceUse(run),
     readability: scoreReadability(words),
     decisiveness: scoreDecisiveness(run),
+    debateCraft: scoreDebateCraft(run),
     specificity: clamp((uniqueWords.size / Math.max(words.length, 1)) * 150, 0, 100)
   };
   const quality =
-    dimensions.completeness * 0.22 +
-    dimensions.balance * 0.18 +
-    dimensions.evidenceUse * 0.16 +
-    dimensions.readability * 0.16 +
-    dimensions.decisiveness * 0.14 +
-    dimensions.specificity * 0.14;
+    dimensions.completeness * 0.18 +
+    dimensions.balance * 0.14 +
+    dimensions.evidenceUse * 0.14 +
+    dimensions.readability * 0.14 +
+    dimensions.decisiveness * 0.12 +
+    dimensions.debateCraft * 0.18 +
+    dimensions.specificity * 0.1;
   const heuristicQuality = clamp(quality, 0, 100);
 
   if (!qualityJudge || !llmJudgeModel) {
@@ -744,7 +753,7 @@ async function judgeRunQuality({
         fairness: "Are both sides represented seriously, with no default YES or NO bias?",
         ageAppropriateClarity: "Would a middle-school user understand it without being talked down to?",
         decisiveness: "Does the judge choose YES or NO when one side is stronger and explain why?",
-        groundedness: "Does the verdict follow from the debate content rather than vibes or unsupported assertions?"
+        groundedness: "Does the verdict follow from the debate content rather than vibes or unsupported assertions? Penalize narrator voice, repeated restatements, unsupported 'studies show' language, and rebuttals that dodge cross-examination questions."
       },
       question: question.question,
       questionPurpose: question.why,
@@ -833,6 +842,140 @@ function scoreReadability(words: string[]) {
 function scoreDecisiveness(run: DebateRun) {
   if (run.scorecard.recommendation === "mixed") return 55;
   return clamp(run.scorecard.confidence * 100, 0, 100);
+}
+
+function scoreDebateCraft(run: DebateRun) {
+  const narratorPenalty = run.turns.filter((turn) =>
+    /\b(?:The\s+)?(?:YES|NO)\s+side\b|\b(?:the\s+)?(?:pro|con)\s+side\b/i.test(turn.content)
+  ).length * 12;
+  const unsupportedResearchPenalty = unsupportedResearchClaims(run) * 10;
+  const weakRebuttalPenalty = weakRebuttals(run) * 12;
+  const repetitionPenalty = repeatedLaterTurns(run) * 10;
+
+  return clamp(100 - narratorPenalty - unsupportedResearchPenalty - weakRebuttalPenalty - repetitionPenalty, 0, 100);
+}
+
+function unsupportedResearchClaims(run: DebateRun) {
+  const sourceById = new Map(run.sources.map((source) => [source.id, source]));
+  const researchPattern = /\b(studies show|research (?:shows|says|suggests)|evidence shows|data shows)\b/i;
+  let count = 0;
+
+  for (const turn of run.turns) {
+    if (researchPattern.test(turn.content) && !hasMeaningfulSource(turn.sourceIds, sourceById)) {
+      count += 1;
+    }
+  }
+
+  for (const claim of run.claims) {
+    const claimText = `${claim.text} ${claim.warrant}`;
+    if (researchPattern.test(claimText) && !hasMeaningfulSource(claim.evidenceSourceIds, sourceById)) {
+      count += 1;
+    }
+  }
+
+  return count;
+}
+
+function hasMeaningfulSource(sourceIds: string[], sourceById: Map<string, DebateRun["sources"][number]>) {
+  return sourceIds.some((id) => {
+    const source = sourceById.get(id);
+    if (!source || source.status !== "accepted") return false;
+    if (source.url.includes("example.com/evidence-provider-required")) return false;
+    if (source.title.toLowerCase().includes("evidence search placeholder")) return false;
+    if (source.retrievedVia === "mock" && source.quality === "methodology") return false;
+    return true;
+  });
+}
+
+function weakRebuttals(run: DebateRun) {
+  const opponentQuestionTerms = new Map<"pro" | "con", Set<string>>();
+  for (const side of ["pro", "con"] as const) {
+    const opponentQuestion = run.turns.find(
+      (turn) => turn.round === "cross_examination" && turn.side !== side
+    );
+    opponentQuestionTerms.set(side, meaningfulTerms(opponentQuestion?.content ?? ""));
+  }
+
+  let weak = 0;
+  for (const turn of run.turns.filter((item) => item.round === "rebuttal" && (item.side === "pro" || item.side === "con"))) {
+    const responseTerms = meaningfulTerms(turn.content);
+    const questionTerms = opponentQuestionTerms.get(turn.side) ?? new Set<string>();
+    const overlap = [...questionTerms].filter((term) => responseTerms.has(term)).length;
+    const signalsAnswer = /\b(my opponent|the other frog|you asked|your question|your concern|your worry|you said|right that)\b/i.test(
+      turn.content
+    );
+    if (!signalsAnswer || (questionTerms.size >= 4 && overlap < 2)) {
+      weak += 1;
+    }
+  }
+
+  return weak;
+}
+
+function repeatedLaterTurns(run: DebateRun) {
+  let repeated = 0;
+  for (const side of ["pro", "con"] as const) {
+    const opening = run.turns.find((turn) => turn.round === "opening" && turn.side === side);
+    if (!opening) continue;
+    const openingTerms = meaningfulTerms(opening.content);
+    for (const turn of run.turns.filter((item) => item.side === side && (item.round === "rebuttal" || item.round === "closing"))) {
+      const terms = meaningfulTerms(turn.content);
+      const overlap = [...terms].filter((term) => openingTerms.has(term)).length;
+      const similarity = overlap / Math.max(terms.size, 1);
+      const clashSignal = /\b(my opponent|the other frog|you asked|but|however|even if|weigh|matters more|because)\b/i.test(
+        turn.content
+      );
+      if (similarity > 0.72 && !clashSignal) {
+        repeated += 1;
+      }
+    }
+  }
+
+  return repeated;
+}
+
+function meaningfulTerms(value: string): Set<string> {
+  const stopWords = new Set([
+    "about",
+    "after",
+    "again",
+    "also",
+    "because",
+    "being",
+    "could",
+    "does",
+    "each",
+    "from",
+    "have",
+    "into",
+    "more",
+    "most",
+    "other",
+    "should",
+    "side",
+    "that",
+    "their",
+    "there",
+    "these",
+    "they",
+    "this",
+    "vote",
+    "what",
+    "when",
+    "where",
+    "which",
+    "while",
+    "with",
+    "would",
+    "your"
+  ]);
+
+  return new Set(
+    value
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((term) => term.length > 3 && !stopWords.has(term))
+  );
 }
 
 function summarizeModel(id: string, label: string, runs: ModelEvalRun[]): ModelEvalSummary {

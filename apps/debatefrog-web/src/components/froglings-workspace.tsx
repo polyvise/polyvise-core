@@ -41,6 +41,7 @@ import {
   BarChart3,
   CheckCircle2,
   ChevronDown,
+  ExternalLink,
   Loader2,
   RotateCcw,
   Send,
@@ -54,6 +55,7 @@ import { FunFrog } from "@/components/fun-frog";
 import { SlowPrint } from "@/components/slow-print";
 import { useFrogSounds } from "@/components/use-frog-sounds";
 import { FroglingsIntro } from "@/components/froglings-intro";
+import { buildFroglingsSourceChips, type FroglingsSourceChip } from "@/lib/source-chips";
 import type {
   Claim,
   DebateLiveEvent,
@@ -2067,6 +2069,7 @@ function Rounds({
                   side="pro"
                   content={froglingsBubbleText(pro)}
                   name={froglingsFrogName("pro")}
+                  sourceChips={buildFroglingsSourceChips(pro.sourceIds, live.sources)}
                   onDone={onTurnComplete}
                 />
               ) : null}
@@ -2075,6 +2078,7 @@ function Rounds({
                   side="con"
                   content={froglingsBubbleText(con)}
                   name={froglingsFrogName("con")}
+                  sourceChips={buildFroglingsSourceChips(con.sourceIds, live.sources)}
                   onDone={onTurnComplete}
                 />
               ) : null}
@@ -2090,11 +2094,13 @@ function Bubble({
   side,
   name,
   content,
+  sourceChips,
   onDone
 }: {
   side: "pro" | "con";
   name: string;
   content: string;
+  sourceChips: FroglingsSourceChip[];
   onDone: () => void;
 }) {
   const isPro = side === "pro";
@@ -2153,6 +2159,26 @@ function Bubble({
         <p className="text-sm leading-relaxed text-ink/85">
           <SlowPrint text={content} onTypingChange={setTyping} onComplete={onDone} />
         </p>
+        {sourceChips.length > 0 ? (
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Sources for this turn">
+            {sourceChips.map((chip) => (
+              <a
+                key={chip.id}
+                href={chip.url}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold transition ${
+                  isPro
+                    ? "border-leaf/25 bg-white/40 text-pond hover:bg-white/70"
+                    : "border-berry/20 bg-white/45 text-berry hover:bg-white/75"
+                }`}
+              >
+                <span className="truncate">{chip.label}</span>
+                <ExternalLink className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -2247,7 +2273,7 @@ function Verdict({
     return null;
   }
   const pct = Math.round(live.scorecard.confidence * 100);
-  const verdictCopy = froglingsVerdictCopy(live.scorecard, live.topicKind);
+  const verdictCopy = froglingsVerdictCopy(live.scorecard, live.topicKind, live.summary);
   return (
     <section ref={verdictRef} className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -2409,7 +2435,17 @@ function trimAtWord(content: string, maxLength: number) {
   return `${trimmed}.`;
 }
 
-function froglingsVerdictCopy(scorecard: Scorecard, topicKind?: TopicKind) {
+function froglingsVerdictCopy(scorecard: Scorecard, topicKind?: TopicKind, summary?: DebateSummary | null) {
+  const summaryHeadline = summary?.headline ? simplifyForKids(summary.headline) : "";
+  const summaryBody = summary?.recommendation ? simplifyForKids(summary.recommendation) : "";
+
+  if (summaryHeadline && summaryBody) {
+    return {
+      headline: summaryHeadline,
+      body: summaryBody
+    };
+  }
+
   const topicCopy = froglingsVerdictTopicCopy(topicKind);
 
   switch (scorecard.recommendation) {

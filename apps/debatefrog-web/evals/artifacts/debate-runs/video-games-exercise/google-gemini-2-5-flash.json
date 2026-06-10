@@ -1,74 +1,74 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T04:52:07.670Z",
+  "generatedAt": "2026-05-27T16:32:24.727Z",
   "modelId": "google/gemini-2.5-flash",
   "questionId": "video-games-exercise",
   "question": "Should video games count as exercise?",
   "run": {
-    "id": "run_3fd8551b",
+    "id": "run_ac863dcb",
     "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
     "status": "complete",
-    "startedAt": "2026-05-26T04:51:43.956Z",
-    "completedAt": "2026-05-26T04:52:07.670Z",
+    "startedAt": "2026-05-27T16:31:41.145Z",
+    "completedAt": "2026-05-27T16:32:24.727Z",
     "events": [
       {
-        "id": "event_7346dd73",
+        "id": "event_fd48ae6c",
         "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
-        "runId": "run_3fd8551b",
+        "runId": "run_ac863dcb",
         "status": "queued",
         "label": "Debate queued",
         "detail": "The subject was accepted and the Hybrid Council run was initialized.",
-        "createdAt": "2026-05-26T04:51:43.956Z"
+        "createdAt": "2026-05-27T16:31:41.145Z"
       },
       {
-        "id": "event_9fd3d813",
+        "id": "event_976a8223",
         "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
-        "runId": "run_3fd8551b",
+        "runId": "run_ac863dcb",
         "status": "framing",
         "label": "Resolution framed",
         "detail": "The free-text subject was converted into a neutral debate resolution.",
-        "createdAt": "2026-05-26T04:51:43.956Z"
+        "createdAt": "2026-05-27T16:31:41.145Z"
       },
       {
-        "id": "event_2fe9e0a4",
+        "id": "event_088ea064",
         "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
-        "runId": "run_3fd8551b",
+        "runId": "run_ac863dcb",
         "status": "researching",
         "label": "Evidence gathered",
         "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
-        "createdAt": "2026-05-26T04:51:43.957Z"
+        "createdAt": "2026-05-27T16:31:41.145Z"
       },
       {
-        "id": "event_40750366",
+        "id": "event_fd854e8a",
         "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
-        "runId": "run_3fd8551b",
+        "runId": "run_ac863dcb",
         "status": "debating",
         "label": "Agents debated",
         "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
-        "createdAt": "2026-05-26T04:51:47.858Z"
+        "createdAt": "2026-05-27T16:31:59.024Z"
       },
       {
-        "id": "event_f4010514",
+        "id": "event_62e77ae9",
         "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
-        "runId": "run_3fd8551b",
+        "runId": "run_ac863dcb",
         "status": "judging",
         "label": "Judge synthesized",
         "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
-        "createdAt": "2026-05-26T04:52:00.574Z"
+        "createdAt": "2026-05-27T16:32:18.773Z"
       },
       {
-        "id": "event_8a5feba4",
+        "id": "event_0716b5ab",
         "debateId": "eval_video-games-exercise_google-gemini-2-5-flash",
-        "runId": "run_3fd8551b",
+        "runId": "run_ac863dcb",
         "status": "complete",
         "label": "Debate complete",
         "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       }
     ],
     "scouts": [
       {
-        "id": "scout_088bd7f2",
+        "id": "scout_3b4ca1d8",
         "name": "Strategic Optimist",
         "model": "google/gemini-2.5-flash",
         "lens": "upside, option value, and second-order gains",
@@ -86,7 +86,7 @@
         ]
       },
       {
-        "id": "scout_f2125c59",
+        "id": "scout_579503b8",
         "name": "Risk Skeptic",
         "model": "google/gemini-2.5-flash",
         "lens": "failure modes, hidden costs, and reversibility",
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "id": "scout_ac492e16",
+        "id": "scout_95eae7b5",
         "name": "Empirical Referee",
         "model": "google/gemini-2.5-flash (judge-calibrated)",
         "lens": "quality of evidence, base rates, and uncertainty",
@@ -122,7 +122,7 @@
         ]
       },
       {
-        "id": "scout_91b874c6",
+        "id": "scout_21efeb6b",
         "name": "Implementation Pragmatist",
         "model": "google/gemini-2.5-flash",
         "lens": "execution design, sequencing, and measurable checkpoints",
@@ -140,7 +140,7 @@
         ]
       },
       {
-        "id": "scout_b25e3fde",
+        "id": "scout_981c5dcd",
         "name": "Equity Auditor",
         "model": "google/gemini-2.5-flash",
         "lens": "distributional impact, incentives, and affected stakeholders",
@@ -161,7 +161,7 @@
     "teams": {
       "pro": [
         {
-          "id": "agent_3ef0c2da",
+          "id": "agent_e3176542",
           "name": "Strategic Optimist",
           "side": "pro",
           "model": "google/gemini-2.5-flash",
@@ -171,7 +171,7 @@
       ],
       "con": [
         {
-          "id": "agent_591ee4f2",
+          "id": "agent_69cc221d",
           "name": "Risk Skeptic",
           "side": "con",
           "model": "google/gemini-2.5-flash",
@@ -180,7 +180,7 @@
         }
       ],
       "judge": {
-        "id": "judge_be820897",
+        "id": "judge_25369034",
         "name": "Neutral Synthesis Judge",
         "model": "google/gemini-2.5-flash (judge-calibrated)",
         "role": "score evidence, risks, uncertainty, and decision usefulness"
@@ -251,57 +251,57 @@
     "claims": [
       {
         "side": "pro",
-        "text": "Video games should count as exercise if they involve physical activity that meets established criteria for exercise.",
-        "warrant": "To be considered exercise, an activity typically needs to elevate heart rate, engage muscles, and contribute to physical fitness.",
+        "text": "My side can win if I clearly explain what would make counting video games as exercise a good idea.",
+        "warrant": "A good argument needs to show the scope, mechanisms, or real-world reach behind my position.",
+        "evidenceSourceIds": [
+          "src-mock-1"
+        ],
+        "confidence": 0.72,
+        "id": "claim_489c2394"
+      },
+      {
+        "side": "pro",
+        "text": "My side can win if the benefits of counting video games as exercise reach enough people and are important enough to justify the change.",
+        "warrant": "A strong case should include both direct effects and important later consequences.",
+        "evidenceSourceIds": [
+          "src-mock-2"
+        ],
+        "confidence": 0.68,
+        "id": "claim_56bc7930"
+      },
+      {
+        "side": "pro",
+        "text": "My side should show evidence that counting video games as exercise would improve daily life more than keeping things as they are.",
+        "warrant": "Later effects can be as important as immediate effects when deciding on a contested topic.",
+        "evidenceSourceIds": [
+          "src-mock-3"
+        ],
+        "confidence": 0.64,
+        "id": "claim_0728e22d"
+      },
+      {
+        "side": "con",
+        "text": "Video games should not count as exercise because they do not provide the same physical benefits as traditional exercise.",
+        "warrant": "Exercise typically involves significant physical exertion and movement, which most video games do not require.",
         "evidenceSourceIds": [],
         "confidence": 0.8,
-        "id": "claim_7e5a6342"
+        "id": "claim_2bfdd075"
       },
       {
-        "side": "pro",
-        "text": "Certain video games, particularly those utilizing motion-sensing technology, require significant physical exertion comparable to traditional forms of exercise.",
-        "warrant": "Games that demand active movement from players can provide cardiovascular benefits and muscle engagement, aligning with the definition of exercise.",
+        "side": "con",
+        "text": "My side argues that counting video games as exercise could lead to a decrease in actual physical activity.",
+        "warrant": "If video games are considered exercise, people might choose them over more effective forms of physical activity, potentially harming their health.",
         "evidenceSourceIds": [],
         "confidence": 0.75,
-        "id": "claim_87a25219"
+        "id": "claim_106b7f47"
       },
       {
-        "side": "pro",
-        "text": "Recognizing active video games as exercise could encourage more individuals, especially those who are otherwise sedentary, to engage in physical activity.",
-        "warrant": "Lowering barriers to entry and making exercise more appealing through gamification can lead to increased participation in physical activity.",
+        "side": "con",
+        "text": "The definition of exercise involves sustained physical effort to improve health, which is not met by most video games.",
+        "warrant": "One reason is that the primary goal of video games is entertainment, not physical fitness.",
         "evidenceSourceIds": [],
         "confidence": 0.7,
-        "id": "claim_3a7037eb"
-      },
-      {
-        "side": "con",
-        "text": "Video games should not count as exercise because the evidence does not demonstrate that this approach would be more effective than current exercise definitions.",
-        "warrant": "A source such as \"Multi-AI Collaboration Helps Reasoning and Factual Accuracy\" can expose whether the YES side is overstating the benefits of including video games as exercise relative to existing exercise definitions.",
-        "evidenceSourceIds": [
-          "src-mock-4"
-        ],
-        "confidence": 0.7,
-        "id": "claim_5a60ffe7"
-      },
-      {
-        "side": "con",
-        "text": "Video games should not count as exercise because the appeal of the idea does not equate to proven health benefits.",
-        "warrant": "A position can be rhetorically attractive, but a rival explanation or benchmark might demonstrate more actual health benefits than classifying video games as exercise.",
-        "evidenceSourceIds": [
-          "src-mock-5"
-        ],
-        "confidence": 0.66,
-        "id": "claim_64e3fe71"
-      },
-      {
-        "side": "con",
-        "text": "Whether video games count as exercise depends on which aspect of the question is prioritized.",
-        "warrant": "A precise verdict should specify the dimension being judged (e.g., physical exertion, caloric expenditure, cardiovascular health) rather than broadly classifying all video games as exercise.",
-        "evidenceSourceIds": [
-          "src-mock-6"
-        ],
-        "confidence": 0.74,
-        "id": "claim_ddc8cbef"
+        "id": "claim_0288098a"
       }
     ],
     "argumentNodes": [
@@ -313,46 +313,46 @@
         "detail": "Classified as a decision debate."
       },
       {
-        "id": "claim_7e5a6342",
+        "id": "claim_489c2394",
         "kind": "claim",
         "side": "pro",
         "label": "Pro claim",
-        "detail": "Video games should count as exercise if they involve physical activity that meets established criteria for exercise."
+        "detail": "My side can win if I clearly explain what would make counting video games as exercise a good idea."
       },
       {
-        "id": "claim_87a25219",
+        "id": "claim_56bc7930",
         "kind": "claim",
         "side": "pro",
         "label": "Pro claim",
-        "detail": "Certain video games, particularly those utilizing motion-sensing technology, require significant physical exertion comparable to traditional forms of exercise."
+        "detail": "My side can win if the benefits of counting video games as exercise reach enough people and are important enough to justify the change."
       },
       {
-        "id": "claim_3a7037eb",
+        "id": "claim_0728e22d",
         "kind": "claim",
         "side": "pro",
         "label": "Pro claim",
-        "detail": "Recognizing active video games as exercise could encourage more individuals, especially those who are otherwise sedentary, to engage in physical activity."
+        "detail": "My side should show evidence that counting video games as exercise would improve daily life more than keeping things as they are."
       },
       {
-        "id": "claim_5a60ffe7",
+        "id": "claim_2bfdd075",
         "kind": "claim",
         "side": "con",
         "label": "Con claim",
-        "detail": "Video games should not count as exercise because the evidence does not demonstrate that this approach would be more effective than current exercise definitions."
+        "detail": "Video games should not count as exercise because they do not provide the same physical benefits as traditional exercise."
       },
       {
-        "id": "claim_64e3fe71",
+        "id": "claim_106b7f47",
         "kind": "claim",
         "side": "con",
         "label": "Con claim",
-        "detail": "Video games should not count as exercise because the appeal of the idea does not equate to proven health benefits."
+        "detail": "My side argues that counting video games as exercise could lead to a decrease in actual physical activity."
       },
       {
-        "id": "claim_ddc8cbef",
+        "id": "claim_0288098a",
         "kind": "claim",
         "side": "con",
         "label": "Con claim",
-        "detail": "Whether video games count as exercise depends on which aspect of the question is prioritized."
+        "detail": "The definition of exercise involves sustained physical effort to improve health, which is not met by most video games."
       },
       {
         "id": "evidence-src-mock-1",
@@ -412,61 +412,61 @@
     ],
     "argumentEdges": [
       {
-        "id": "edge_cd7ac767",
-        "source": "claim_7e5a6342",
+        "id": "edge_8529e19f",
+        "source": "claim_489c2394",
         "target": "resolution",
         "relation": "supports"
       },
       {
-        "id": "edge_595421e7",
-        "source": "claim_87a25219",
+        "id": "edge_16a65ed1",
+        "source": "claim_56bc7930",
         "target": "resolution",
         "relation": "supports"
       },
       {
-        "id": "edge_8a7cef2b",
-        "source": "claim_3a7037eb",
+        "id": "edge_2adb9b87",
+        "source": "claim_0728e22d",
         "target": "resolution",
         "relation": "supports"
       },
       {
-        "id": "edge_4c8d9324",
-        "source": "claim_5a60ffe7",
-        "target": "resolution",
-        "relation": "challenges"
-      },
-      {
-        "id": "edge_ba6a19d1",
-        "source": "claim_64e3fe71",
+        "id": "edge_1a191b3b",
+        "source": "claim_2bfdd075",
         "target": "resolution",
         "relation": "challenges"
       },
       {
-        "id": "edge_6596cfb6",
-        "source": "claim_ddc8cbef",
+        "id": "edge_112544e7",
+        "source": "claim_106b7f47",
         "target": "resolution",
         "relation": "challenges"
       },
       {
-        "id": "edge_0e881dc7",
-        "source": "evidence-src-mock-4",
-        "target": "claim_5a60ffe7",
+        "id": "edge_d4de91b8",
+        "source": "claim_0288098a",
+        "target": "resolution",
+        "relation": "challenges"
+      },
+      {
+        "id": "edge_5d5d6cf9",
+        "source": "evidence-src-mock-1",
+        "target": "claim_489c2394",
         "relation": "supports"
       },
       {
-        "id": "edge_a3c4e814",
-        "source": "evidence-src-mock-5",
-        "target": "claim_64e3fe71",
+        "id": "edge_9c438181",
+        "source": "evidence-src-mock-2",
+        "target": "claim_56bc7930",
         "relation": "supports"
       },
       {
-        "id": "edge_73d15659",
-        "source": "evidence-src-mock-6",
-        "target": "claim_ddc8cbef",
+        "id": "edge_0f2c98a8",
+        "source": "evidence-src-mock-3",
+        "target": "claim_0728e22d",
         "relation": "supports"
       },
       {
-        "id": "edge_b8d8d691",
+        "id": "edge_e7640569",
         "source": "uncertainty",
         "target": "resolution",
         "relation": "qualifies"
@@ -475,14 +475,12 @@
     "turns": [
       {
         "round": "opening",
-        "agentId": "agent_3ef0c2da",
+        "agentId": "agent_e3176542",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "YES, video games should count as exercise. Video games should count as exercise if they involve physical activity that meets established criteria for exercise. Certain video games, especially those with motion-sensing technology, require significant physical exertion comparable to traditional exercise. Recognizing active video games as exercise could encourage more individuals to engage in physical activity.",
+        "content": "I think yes, video games should count as exercise! My main reason is that it would improve daily life for many people. If we count active video games as exercise, it could encourage more kids to be active. For example, games like \"Beat Saber\" or \"Ring Fit Adventure\" get players moving and sweating, which is good for their health.",
         "claimIds": [
-          "claim_7e5a6342",
-          "claim_87a25219",
-          "claim_3a7037eb"
+          "claim_0728e22d"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -490,34 +488,36 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_7819348a",
-        "createdAt": "2026-05-26T04:51:50.486Z"
+        "id": "turn_36ec8d2d",
+        "createdAt": "2026-05-27T16:32:01.880Z"
       },
       {
         "round": "opening",
-        "agentId": "agent_591ee4f2",
+        "agentId": "agent_69cc221d",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The NO side believes that video games should not count as exercise. The evidence does not show that this approach would be more effective than our current ways of defining exercise. We also need to consider that just because an idea sounds good, it doesn't mean it has proven health benefits. For example, a source from MIT News helps us understand if the YES side is overstating the benefits of including video games as exercise compared to existing definitions.",
+        "content": "I do not think video games should count as exercise. My main reason is that video games do not give you the same physical benefits as real exercise. For example, playing a video game where you move your hands a little is not the same as running around outside.",
         "claimIds": [
-          "claim_5a60ffe7",
-          "claim_64e3fe71"
+          "claim_2bfdd075",
+          "claim_0288098a"
         ],
         "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_5175957c",
-        "createdAt": "2026-05-26T04:51:50.486Z"
+        "id": "turn_266ad0a9",
+        "createdAt": "2026-05-27T16:32:01.880Z"
       },
       {
         "round": "cross_examination",
-        "agentId": "agent_3ef0c2da",
+        "agentId": "agent_e3176542",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "The NO side claims that the appeal of classifying video games as exercise does not equate to proven health benefits (claim_64e3fe71). However, certain video games, especially those with motion-sensing technology, require significant physical exertion comparable to traditional exercise (claim_87a25219). Does the NO side believe that physical exertion in these games does not contribute to health benefits?",
+        "content": "My opponent, you said that counting video games as exercise could lead to less physical activity. How would you answer that some video games actually require significant physical movement, like dancing or sports simulations?",
         "claimIds": [
-          "claim_87a25219",
-          "claim_64e3fe71"
+          "claim_106b7f47"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -525,18 +525,17 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_647a1f04",
-        "createdAt": "2026-05-26T04:51:53.514Z"
+        "id": "turn_f6c6954d",
+        "createdAt": "2026-05-27T16:32:10.815Z"
       },
       {
         "round": "cross_examination",
-        "agentId": "agent_591ee4f2",
+        "agentId": "agent_69cc221d",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The YES side claims that video games should count as exercise if they involve physical activity that meets established criteria for exercise. What specific criteria are you referring to, and how do these criteria differentiate between various types of video games?",
+        "content": "My opponent, if your side believes active video games are exercise, how do you make sure people don't just play less active games and still count it as exercise?",
         "claimIds": [
-          "claim_7e5a6342",
-          "claim_ddc8cbef"
+          "claim_106b7f47"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -544,18 +543,19 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_a7127a6a",
-        "createdAt": "2026-05-26T04:51:53.514Z"
+        "id": "turn_00ef67d6",
+        "createdAt": "2026-05-27T16:32:10.816Z"
       },
       {
         "round": "rebuttal",
-        "agentId": "agent_3ef0c2da",
+        "agentId": "agent_e3176542",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "The NO side suggests that the appeal of video games does not equate to proven health benefits. However, the YES side argues that recognizing active video games as exercise could encourage more individuals to engage in physical activity, especially those who are otherwise sedentary. This could lead to increased participation in physical activity, which is a significant benefit.",
+        "content": "My opponent asks how we make sure people don't just play less active games. My side believes we can define what counts as \"active\" video games. We can set clear rules for which games involve enough movement to be considered exercise, like those that use motion sensors or require full-body movement. This way, we ensure the benefits are broad and useful.",
         "claimIds": [
-          "claim_3a7037eb",
-          "claim_64e3fe71"
+          "claim_489c2394",
+          "claim_56bc7930",
+          "claim_0728e22d"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -563,36 +563,19 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_417c63ba",
-        "createdAt": "2026-05-26T04:51:55.941Z"
+        "id": "turn_2d6d4f8d",
+        "createdAt": "2026-05-27T16:32:14.038Z"
       },
       {
         "round": "rebuttal",
-        "agentId": "agent_591ee4f2",
+        "agentId": "agent_69cc221d",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The NO side argues that simply wanting video games to count as exercise does not make it so. The YES side has not shown that this approach is more effective than current exercise definitions (claim_5a60ffe7). We need to prioritize proven health benefits, not just appealing ideas (claim_64e3fe71).",
+        "content": "My opponent asks about active video games. While some games like dancing or sports simulations do involve movement, they are not the same as traditional exercise. Counting them as exercise could still lead to people choosing less effective physical activity overall, which is my concern.",
         "claimIds": [
-          "claim_5a60ffe7",
-          "claim_64e3fe71"
-        ],
-        "sourceIds": [
-          "src-mock-4",
-          "src-mock-5"
-        ],
-        "id": "turn_81d4cba1",
-        "createdAt": "2026-05-26T04:51:55.941Z"
-      },
-      {
-        "round": "closing",
-        "agentId": "agent_3ef0c2da",
-        "agentName": "Strategic Optimist",
-        "side": "pro",
-        "content": "The YES side has shown that video games can count as exercise when they involve physical activity that meets established criteria, such as motion-sensing games that require significant exertion. Recognizing these active video games as exercise could encourage more individuals to engage in physical activity, aligning with the definition of exercise and providing cardiovascular benefits. Vote YES to embrace a broader, more inclusive view of exercise that can benefit more people.",
-        "claimIds": [
-          "claim_7e5a6342",
-          "claim_87a25219",
-          "claim_3a7037eb"
+          "claim_2bfdd075",
+          "claim_106b7f47",
+          "claim_0288098a"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -600,49 +583,71 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_32c784ca",
-        "createdAt": "2026-05-26T04:51:58.804Z"
+        "id": "turn_7c834d7e",
+        "createdAt": "2026-05-27T16:32:14.038Z"
       },
       {
         "round": "closing",
-        "agentId": "agent_591ee4f2",
-        "agentName": "Risk Skeptic",
-        "side": "con",
-        "content": "The NO side has shown that simply calling video games 'exercise' doesn't make them as effective as traditional exercise. The YES side has not proven that this approach would be better than what we already have for encouraging physical activity, and the appeal of the idea doesn't mean it has proven health benefits. Therefore, video games should not count as exercise.",
+        "agentId": "agent_e3176542",
+        "agentName": "Strategic Optimist",
+        "side": "pro",
+        "content": "Vote YES because counting active video games as exercise would encourage more kids to be active and improve their daily lives. My side has shown that with clear definitions, we can ensure these games provide real benefits, unlike my opponent's concerns about decreased activity.",
         "claimIds": [
-          "claim_5a60ffe7",
-          "claim_64e3fe71",
-          "claim_ddc8cbef"
+          "claim_489c2394",
+          "claim_56bc7930",
+          "claim_0728e22d"
         ],
         "sourceIds": [
-          "src-mock-4",
-          "src-mock-5",
-          "src-mock-6"
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
         ],
-        "id": "turn_063fb3fb",
-        "createdAt": "2026-05-26T04:51:58.804Z"
+        "id": "turn_c51b4ea6",
+        "createdAt": "2026-05-27T16:32:16.703Z"
+      },
+      {
+        "round": "closing",
+        "agentId": "agent_69cc221d",
+        "agentName": "Risk Skeptic",
+        "side": "con",
+        "content": "Vote NO because video games do not provide the same physical benefits as traditional exercise. Counting them as exercise could make people choose less effective activities, harming their health. Exercise needs sustained physical effort, which most video games just don't offer.",
+        "claimIds": [
+          "claim_2bfdd075",
+          "claim_106b7f47",
+          "claim_0288098a"
+        ],
+        "sourceIds": [
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
+        ],
+        "id": "turn_16ca408d",
+        "createdAt": "2026-05-27T16:32:16.703Z"
       },
       {
         "round": "judge_review",
-        "agentId": "judge_be820897",
+        "agentId": "judge_25369034",
         "agentName": "Neutral Synthesis Judge",
         "side": "neutral",
-        "content": "The YES side argues that video games should count as exercise if they involve physical activity meeting exercise criteria, and that certain motion-sensing games require significant exertion. The NO side counters that the effectiveness of this approach is not proven to be better than current exercise definitions and that the appeal of the idea does not equate to proven health benefits. The decision hinges on whether the physical activity in video games consistently meets established exercise criteria and provides demonstrable health benefits, or if other benchmarks are more effective.",
+        "content": "My job is to look at the arguments from both sides. the green frog wants to count active video games as exercise because it could encourage more activity and improve daily life. the pink frog says that video games don't offer the same physical benefits as traditional exercise and could lead to less actual physical activity. I need to decide if the potential benefits of counting active video games as exercise outweigh the risks of people choosing less effective activities.",
         "claimIds": [
-          "claim_7e5a6342",
-          "claim_87a25219",
-          "claim_3a7037eb",
-          "claim_5a60ffe7",
-          "claim_64e3fe71",
-          "claim_ddc8cbef"
+          "claim_489c2394",
+          "claim_56bc7930",
+          "claim_0728e22d",
+          "claim_2bfdd075",
+          "claim_106b7f47",
+          "claim_0288098a"
         ],
         "sourceIds": [
-          "src-mock-4",
-          "src-mock-5",
-          "src-mock-6"
+          "src-mock-1",
+          "src-mock-2",
+          "src-mock-3",
+          "src-mock-4"
         ],
-        "id": "turn_d5bcd073",
-        "createdAt": "2026-05-26T04:52:00.574Z"
+        "id": "turn_0f239ed4",
+        "createdAt": "2026-05-27T16:32:18.772Z"
       }
     ],
     "scorecard": {
@@ -653,55 +658,50 @@
           "name": "evidence",
           "pro": 5,
           "con": 7,
-          "note": "The PRO side asserts that certain video games involve physical activity comparable to traditional exercise, but provides no specific evidence or criteria for what constitutes 'established criteria for exercise' or 'significant physical exertion'. The CON side effectively highlights the lack of proven health benefits for this classification and questions the effectiveness compared to existing definitions, though also without specific external evidence."
+          "note": "The YES side claims active video games can improve daily life but offers no specific evidence of this. The NO side argues video games lack the physical benefits of traditional exercise, which is a common understanding of exercise."
         },
         {
           "name": "practicality",
-          "pro": 4,
+          "pro": 6,
           "con": 7,
-          "note": "The PRO side's argument that recognizing active video games as exercise could encourage more sedentary individuals to engage in physical activity is an appealing idea, but lacks practical detail on how this would be implemented or measured, or if it would be more effective than current approaches. The CON side's skepticism about the practical benefits without proven effectiveness is stronger."
+          "note": "The YES side proposes setting clear rules for 'active' video games, but does not explain how this would be implemented or enforced. The NO side's concern about people choosing less effective activities if video games count as exercise remains a practical challenge."
         },
         {
           "name": "risk",
-          "pro": 3,
-          "con": 7,
-          "note": "The PRO side introduces the risk of misclassification if the criteria for exercise are not clearly defined and consistently applied. The CON side implicitly raises the risk of diluting the definition of exercise and potentially misleading individuals about actual health benefits if the classification is based on appeal rather than proven efficacy."
+          "pro": 4,
+          "con": 8,
+          "note": "The NO side effectively highlights the risk that counting video games as exercise could lead to a decrease in actual, beneficial physical activity. The YES side's proposed solution of 'clear definitions' does not fully address this risk."
         },
         {
           "name": "fairness",
           "pro": 5,
-          "con": 6,
-          "note": "The PRO side attempts to broaden the definition of exercise to be more inclusive, which could be seen as fair to those who find traditional exercise unappealing. However, without clear, objective criteria and proven benefits, this could be unfair to those who rely on established exercise definitions for health guidance. The CON side's focus on proven health benefits and effectiveness maintains a fairer standard for what counts as exercise."
+          "con": 7,
+          "note": "The YES side's argument that counting video games as exercise would encourage more kids to be active is appealing, but it does not address the fairness of equating potentially less effective activities with traditional exercise."
         },
         {
           "name": "reversibility",
-          "pro": 4,
+          "pro": 6,
           "con": 6,
-          "note": "If video games are counted as exercise without clear, measurable criteria and proven benefits, it could be difficult to reverse this classification without causing confusion or undermining public health messages. The CON side's cautious approach suggests a more reversible stance, as it maintains the current, more defined understanding of exercise."
+          "note": "Both sides imply that the definition of exercise could be changed or maintained. The impact of such a change would be reversible, but the health consequences of a misdefinition could be significant."
         }
       ]
     },
     "summary": {
-      "headline": "Video Games Should Not Count as Exercise Without Clear, Proven Health Benefits",
-      "recommendation": "The resolution is rejected. While the idea of including active video games as exercise is appealing for its potential to encourage physical activity, the lack of clear, established criteria and proven health benefits, compared to existing exercise definitions, makes this classification premature and potentially misleading.",
+      "headline": "Should video games count as exercise? The pink frog says NO because video games don't offer the same physical benefits as traditional exercise, which is a stronger point than the green frog's idea that it could encourage more activity.",
+      "recommendation": "The pink frog made the stronger case, so video games should NOT count as exercise. The pink frog showed that video games don't give you the same physical benefits as traditional exercise. The green frog's idea that counting active video games as exercise would make more kids active wasn't enough to overcome the risk of people choosing less effective activities.",
       "strongestPro": [
-        "Certain video games, particularly those utilizing motion-sensing technology, require significant physical exertion comparable to traditional forms of exercise.",
-        "Recognizing active video games as exercise could encourage more individuals, especially those who are otherwise sedentary, to engage in physical activity."
+        "The green frog believes counting active video games as exercise would encourage more kids to be active and improve their daily lives. They think clear rules could define which games count."
       ],
       "strongestCon": [
-        "Video games should not count as exercise because the evidence does not demonstrate that this approach would be more effective than current exercise definitions.",
-        "Video games should not count as exercise because the appeal of the idea does not equate to proven health benefits.",
-        "Whether video games count as exercise depends on which aspect of the question is prioritized, and a precise verdict should specify the dimension being judged."
+        "The pink frog argues that video games do not provide the same physical benefits as traditional exercise and could lead to people choosing less effective physical activities, harming their health."
       ],
       "unresolvedUncertainties": [
-        "What specific, measurable criteria define 'established criteria for exercise' that active video games would need to meet.",
-        "The extent to which the physical exertion in motion-sensing video games consistently provides cardiovascular benefits and muscle engagement comparable to traditional exercise.",
-        "How the effectiveness of classifying video games as exercise in encouraging physical activity compares to existing public health strategies."
+        "How to clearly define and enforce what counts as an 'active' video game.",
+        "Whether the potential for increased participation in 'active' video games outweighs the risk of people substituting less effective activities for traditional exercise."
       ],
       "whatWouldChangeMind": [
-        "Clear, objective, and widely accepted criteria for what constitutes 'exercise' that explicitly include specific types of video game activity.",
-        "Empirical evidence demonstrating that classifying active video games as exercise leads to measurable, sustained health benefits for individuals, comparable to or exceeding those from traditional exercise.",
-        "Studies showing that this classification is more effective at increasing overall physical activity levels in sedentary populations than current exercise promotion methods."
+        "Strong evidence showing that 'active' video games provide comparable physical health benefits to traditional exercise.",
+        "A clear and practical plan for how to define and regulate 'active' video games to prevent people from substituting less effective activities."
       ],
       "confidence": 0.7
     },
@@ -747,16 +747,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog claim builder",
         "configured": true,
-        "latencyMs": 1842,
-        "promptTokens": 1374,
-        "completionTokens": 278,
-        "estimatedCostUsd": 0.0011072,
+        "latencyMs": 8980,
+        "promptTokens": 1549,
+        "completionTokens": 300,
+        "estimatedCostUsd": 0.0012147,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1842
+            "durationMs": 8980
           }
         ]
       },
@@ -766,16 +766,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog claim builder",
         "configured": true,
-        "latencyMs": 2058,
-        "promptTokens": 1366,
-        "completionTokens": 345,
-        "estimatedCostUsd": 0.0012723,
+        "latencyMs": 8897,
+        "promptTokens": 1541,
+        "completionTokens": 263,
+        "estimatedCostUsd": 0.0011198,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2058
+            "durationMs": 8897
           }
         ]
       },
@@ -785,16 +785,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog opening round",
         "configured": true,
-        "latencyMs": 1331,
-        "promptTokens": 2405,
-        "completionTokens": 189,
-        "estimatedCostUsd": 0.001194,
+        "latencyMs": 1462,
+        "promptTokens": 2950,
+        "completionTokens": 171,
+        "estimatedCostUsd": 0.0013125,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1331
+            "durationMs": 1462
           }
         ]
       },
@@ -804,16 +804,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog opening round",
         "configured": true,
-        "latencyMs": 1296,
-        "promptTokens": 2412,
-        "completionTokens": 211,
-        "estimatedCostUsd": 0.0012511,
+        "latencyMs": 1392,
+        "promptTokens": 2948,
+        "completionTokens": 164,
+        "estimatedCostUsd": 0.0012944,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1296
+            "durationMs": 1392
           }
         ]
       },
@@ -823,16 +823,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog cross-examination round",
         "configured": true,
-        "latencyMs": 1247,
-        "promptTokens": 2408,
-        "completionTokens": 196,
-        "estimatedCostUsd": 0.0012124,
+        "latencyMs": 1646,
+        "promptTokens": 3288,
+        "completionTokens": 140,
+        "estimatedCostUsd": 0.0013364,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1247
+            "durationMs": 1646
           }
         ]
       },
@@ -842,16 +842,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog cross-examination round",
         "configured": true,
-        "latencyMs": 1781,
-        "promptTokens": 2407,
-        "completionTokens": 156,
-        "estimatedCostUsd": 0.0011121,
+        "latencyMs": 7288,
+        "promptTokens": 3283,
+        "completionTokens": 135,
+        "estimatedCostUsd": 0.00051672,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1781
+            "durationMs": 7288
           }
         ]
       },
@@ -861,16 +861,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog rebuttal round",
         "configured": true,
-        "latencyMs": 1140,
-        "promptTokens": 2407,
-        "completionTokens": 176,
-        "estimatedCostUsd": 0.0011621,
+        "latencyMs": 1674,
+        "promptTokens": 3699,
+        "completionTokens": 202,
+        "estimatedCostUsd": 0.0016147,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1140
+            "durationMs": 1674
           }
         ]
       },
@@ -880,16 +880,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog rebuttal round",
         "configured": true,
-        "latencyMs": 1285,
-        "promptTokens": 2400,
-        "completionTokens": 202,
-        "estimatedCostUsd": 0.001225,
+        "latencyMs": 1547,
+        "promptTokens": 3707,
+        "completionTokens": 177,
+        "estimatedCostUsd": 0.0015546,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1285
+            "durationMs": 1547
           }
         ]
       },
@@ -899,16 +899,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog closing round",
         "configured": true,
-        "latencyMs": 1421,
-        "promptTokens": 2392,
-        "completionTokens": 204,
-        "estimatedCostUsd": 0.0012276,
+        "latencyMs": 1267,
+        "promptTokens": 4004,
+        "completionTokens": 216,
+        "estimatedCostUsd": 0.0017412,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1421
+            "durationMs": 1267
           }
         ]
       },
@@ -918,16 +918,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog closing round",
         "configured": true,
-        "latencyMs": 1441,
-        "promptTokens": 2389,
-        "completionTokens": 223,
-        "estimatedCostUsd": 0.0012742,
+        "latencyMs": 1395,
+        "promptTokens": 4006,
+        "completionTokens": 173,
+        "estimatedCostUsd": 0.0016343,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1441
+            "durationMs": 1395
           }
         ]
       },
@@ -937,16 +937,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "judge review round",
         "configured": true,
-        "latencyMs": 1769,
-        "promptTokens": 2442,
-        "completionTokens": 290,
-        "estimatedCostUsd": 0.0014576,
+        "latencyMs": 2068,
+        "promptTokens": 4060,
+        "completionTokens": 294,
+        "estimatedCostUsd": 0.001953,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1769
+            "durationMs": 2068
           }
         ]
       },
@@ -956,16 +956,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "scorecard judge",
         "configured": true,
-        "latencyMs": 4332,
-        "promptTokens": 4327,
-        "completionTokens": 547,
-        "estimatedCostUsd": 0.0026656,
+        "latencyMs": 3087,
+        "promptTokens": 4398,
+        "completionTokens": 426,
+        "estimatedCostUsd": 0.0023844,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 4332
+            "durationMs": 3087
           }
         ]
       },
@@ -975,181 +975,181 @@
         "model": "google/gemini-2.5-flash",
         "role": "final summary",
         "configured": true,
-        "latencyMs": 2763,
-        "promptTokens": 4905,
-        "completionTokens": 443,
-        "estimatedCostUsd": 0.002579,
+        "latencyMs": 2865,
+        "promptTokens": 4880,
+        "completionTokens": 354,
+        "estimatedCostUsd": 0.002349,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2763
+            "durationMs": 2865
           }
         ]
       }
     ],
     "artifactManifest": [
       {
-        "id": "artifact_e6412c00",
+        "id": "artifact_9c083491",
         "kind": "run_state",
         "label": "Workflow run state",
         "recordCount": 1,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_3ac9ce22",
+        "id": "artifact_d6149248",
         "kind": "scouts",
         "label": "Structured scout outputs",
         "recordCount": 5,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_86b0861e",
+        "id": "artifact_fd6c5176",
         "kind": "evidence",
         "label": "Evidence source ledger",
         "recordCount": 6,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_a081742c",
+        "id": "artifact_b3b6b219",
         "kind": "claims",
         "label": "Generated claims",
         "recordCount": 6,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_a2b5c3de",
+        "id": "artifact_78fae0ae",
         "kind": "turns",
         "label": "Debate transcript turns",
         "recordCount": 9,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_b7762336",
+        "id": "artifact_93b85193",
         "kind": "scorecard",
         "label": "Judge scorecard",
         "recordCount": 5,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_3a72df6f",
+        "id": "artifact_0ad40a47",
         "kind": "summary",
         "label": "Final summary",
         "recordCount": 1,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       },
       {
-        "id": "artifact_a5a7fae6",
+        "id": "artifact_d0eeac8b",
         "kind": "models",
         "label": "Model snapshots",
         "recordCount": 18,
-        "createdAt": "2026-05-26T04:52:07.670Z"
+        "createdAt": "2026-05-27T16:32:24.727Z"
       }
     ],
     "trace": [
       {
-        "id": "trace_c4641207",
+        "id": "trace_bad0c138",
         "step": "frame",
         "status": "ok",
         "message": "Classified as decision.",
-        "at": "2026-05-26T04:51:43.956Z",
+        "at": "2026-05-27T16:31:41.145Z",
         "durationMs": 0
       },
       {
-        "id": "trace_cd370893",
+        "id": "trace_e029c512",
         "step": "scout",
         "status": "ok",
         "message": "Used deterministic duo scouts to avoid a startup LLM call.",
-        "at": "2026-05-26T04:51:43.957Z",
-        "durationMs": 1
+        "at": "2026-05-27T16:31:41.145Z",
+        "durationMs": 0
       },
       {
-        "id": "trace_ed9e8a57",
+        "id": "trace_14cd7696",
         "step": "team_builder",
         "status": "ok",
         "message": "Selected one pro and one con agent plus a neutral judge.",
-        "at": "2026-05-26T04:51:43.957Z",
+        "at": "2026-05-27T16:31:41.145Z",
         "durationMs": 0
       },
       {
-        "id": "trace_e49a05bb",
+        "id": "trace_f5df116e",
         "step": "evidence",
         "status": "warning",
         "message": "Using deterministic development evidence. Configured evidence provider is mock.",
-        "at": "2026-05-26T04:51:43.957Z",
+        "at": "2026-05-27T16:31:41.145Z",
         "durationMs": 0
       },
       {
-        "id": "trace_777f763f",
+        "id": "trace_b6300be5",
         "step": "opening",
         "status": "ok",
         "message": "6 source-linked claims generated.",
-        "at": "2026-05-26T04:51:47.858Z",
-        "durationMs": 3901
+        "at": "2026-05-27T16:31:59.023Z",
+        "durationMs": 17878
       },
       {
-        "id": "trace_aea86e50",
+        "id": "trace_059b04ba",
         "step": "opening",
         "status": "ok",
         "message": "2 turns generated for opening.",
-        "at": "2026-05-26T04:51:50.486Z",
-        "durationMs": 2628
+        "at": "2026-05-27T16:32:01.880Z",
+        "durationMs": 2856
       },
       {
-        "id": "trace_bba6a795",
+        "id": "trace_71b33edd",
         "step": "cross_exam",
         "status": "ok",
         "message": "2 turns generated for cross examination.",
-        "at": "2026-05-26T04:51:53.514Z",
-        "durationMs": 3028
+        "at": "2026-05-27T16:32:10.816Z",
+        "durationMs": 8936
       },
       {
-        "id": "trace_d83634b5",
+        "id": "trace_c38a5b20",
         "step": "rebuttal",
         "status": "ok",
         "message": "2 turns generated for rebuttal.",
-        "at": "2026-05-26T04:51:55.941Z",
-        "durationMs": 2427
+        "at": "2026-05-27T16:32:14.038Z",
+        "durationMs": 3222
       },
       {
-        "id": "trace_5b4a3031",
+        "id": "trace_0146df26",
         "step": "closing",
         "status": "ok",
         "message": "2 turns generated for closing.",
-        "at": "2026-05-26T04:51:58.804Z",
-        "durationMs": 2863
+        "at": "2026-05-27T16:32:16.703Z",
+        "durationMs": 2665
       },
       {
-        "id": "trace_f1e08d9a",
+        "id": "trace_0dabbd2e",
         "step": "judge_review",
         "status": "ok",
         "message": "1 turns generated for judge review.",
-        "at": "2026-05-26T04:52:00.574Z",
-        "durationMs": 1770
+        "at": "2026-05-27T16:32:18.772Z",
+        "durationMs": 2069
       },
       {
-        "id": "trace_f8c830a8",
+        "id": "trace_efb70c99",
         "step": "rebuttal",
         "status": "ok",
         "message": "Judge scored the debate as lean_no.",
-        "at": "2026-05-26T04:52:04.906Z",
-        "durationMs": 4332
+        "at": "2026-05-27T16:32:21.860Z",
+        "durationMs": 3087
       },
       {
-        "id": "trace_de35157c",
+        "id": "trace_81b103c9",
         "step": "judge",
         "status": "ok",
         "message": "Recommendation: lean_no.",
-        "at": "2026-05-26T04:52:07.670Z",
-        "durationMs": 2764
+        "at": "2026-05-27T16:32:24.727Z",
+        "durationMs": 2867
       },
       {
-        "id": "trace_4cd08578",
+        "id": "trace_a56aa1df",
         "step": "persist",
         "status": "ok",
         "message": "Run assembled with stable artifact manifest for repository persistence.",
-        "at": "2026-05-26T04:52:07.670Z",
+        "at": "2026-05-27T16:32:24.727Z",
         "durationMs": 0
       }
     ]

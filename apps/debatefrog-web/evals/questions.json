@@ -7,9 +7,9 @@
   },
   {
     "id": "kids-voting",
-    "question": "Should kids be allowed to vote in political elections?",
+    "question": "Should kids be allowed to vote?",
     "tags": ["civics", "high-stakes-adjacent", "policy"],
-    "why": "Tests whether the judge can confidently choose NO when democratic legitimacy and maturity arguments matter."
+    "why": "Tests whether frogs clarify that 'kids' is broad, distinguish young children from older teens or local elections, and avoid fake certainty."
   },
   {
     "id": "video-games-exercise",

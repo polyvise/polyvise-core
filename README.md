@@ -155,6 +155,7 @@ To use Postgres instead, put `DATABASE_URL` in the ignored root `local.ops.secre
 ## Project Notes
 
 - [Architecture](docs/architecture.md) explains the current executor, provider, repository, and persistence choices.
+- [DebateFrog App Notes](apps/debatefrog-web/README.md) describes the desired kid-facing frog and judge behavior.
 - [Future Direction](docs/future-direction.md) captures the intended durable multi-agent workflow and next implementation order.
 - [Deployment Direction](docs/deployment.md) compares Google Cloud, Cloudflare, and Hostinger, and describes the local batch publishing model.
 - [Monorepo Notes](docs/monorepo.md) explains the package/app boundaries and why both branded sites live here for now.

@@ -11,6 +11,7 @@ import {
   type LlmRequest
 } from "@polyvise/debate-engine/providers/llm";
 import { normalizeSources } from "@polyvise/debate-engine/providers/search";
+import { buildFroglingsSourceChips } from "../apps/debatefrog-web/src/lib/source-chips";
 import type { EvidenceSource, ModelSnapshot } from "@polyvise/debate-engine/debate/types";
 
 afterEach(() => {
@@ -338,13 +339,21 @@ describe("hybrid council engine", () => {
     expect(run.modelSnapshots.some((snapshot) => snapshot.id === "polyvise-no" && snapshot.model === "anthropic/no-model")).toBe(true);
   });
 
-  it("can produce a NO fallback verdict instead of defaulting close calls to YES", async () => {
+  it("can produce a scoped NO fallback verdict instead of defaulting broad kids-voting questions to YES", async () => {
     const run = await runHybridCouncilDebate("debate_no_verdict_test", {
-      subject: "Should kids be allowed to vote in a political election?",
+      subject: "Should kids be allowed to vote?",
       councilSize: "duo"
     });
 
     expect(["conditional_no", "lean_no"]).toContain(run.scorecard.recommendation);
+    const summaryScopeText = [
+      run.summary.headline,
+      run.summary.recommendation,
+      ...run.summary.unresolvedUncertainties,
+      ...run.summary.whatWouldChangeMind
+    ].join(" ");
+    expect(summaryScopeText).toMatch(/older teens|16- and 17-year-olds|all children/i);
+    expect(summaryScopeText).toMatch(/local elections|national political elections|election type/i);
   });
 
   it("does not give broad pets-at-school policies a confident YES without safeguards", async () => {
@@ -648,6 +657,81 @@ describe("hybrid council engine", () => {
     expect(visibleJudgeCopy).toContain("pink frog");
   });
 
+  it("keeps narrator side labels out of spoken transcript copy", async () => {
+    class SideNarrationProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        const result = await super.generateStructured<{ turns?: Array<{ side: "pro" | "con"; content: string }> }>(
+          request
+        );
+        if (request.schemaName !== "debateTurnOutput" || !Array.isArray(result.data.turns)) {
+          return result as { data: T; snapshot: ModelSnapshot };
+        }
+
+        return {
+          data: {
+            ...result.data,
+            turns: result.data.turns.map((turn) => ({
+              ...turn,
+              content:
+                turn.side === "pro"
+                  ? "The YES side argues that longer recess helps kids focus."
+                  : "The NO side says longer recess can squeeze out class time."
+            }))
+          } as T,
+          snapshot: result.snapshot
+        };
+      }
+    }
+
+    const run = await runHybridCouncilDebate(
+      "debate_side_narration_test",
+      {
+        subject: "Should schools have longer recess for kids?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new SideNarrationProvider() }
+    );
+
+    const visibleTranscript = run.turns.map((turn) => turn.content).join(" ");
+    expect(visibleTranscript).not.toMatch(/\b(?:The\s+)?(?:YES|NO)\s+side\b/);
+    expect(visibleTranscript).toMatch(/\bmy side\b/);
+  });
+
+  it("puts the opponent cross-examination question into rebuttal prompts", async () => {
+    let rebuttalPrompt = "";
+
+    class RebuttalPromptCaptureProvider extends MockLlmProvider {
+      override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        if (
+          request.schemaName === "debateTurnOutput" &&
+          request.role.toLowerCase().includes("yes frog rebuttal")
+        ) {
+          rebuttalPrompt = request.prompt;
+        }
+
+        return super.generateStructured<T>(request);
+      }
+    }
+
+    await runHybridCouncilDebate(
+      "debate_rebuttal_prompt_test",
+      {
+        subject: "Should kids be allowed to vote?",
+        councilSize: "duo"
+      },
+      undefined,
+      { provider: new RebuttalPromptCaptureProvider() }
+    );
+
+    const promptJson = JSON.parse(rebuttalPrompt) as {
+      rules: string[];
+      roundGuide: { questionsToAnswer: Array<{ opponentQuestion: string | null }> };
+    };
+    expect(promptJson.rules.join(" ")).toContain("answer that exact question first");
+    expect(JSON.stringify(promptJson.roundGuide.questionsToAnswer[0]?.opponentQuestion)).toMatch(/\?/);
+  });
+
   it("does not accept a generated duo turn for the wrong frog side", async () => {
     class WrongSideProvider extends MockLlmProvider {
       override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
@@ -780,5 +864,60 @@ describe("hybrid council engine", () => {
 
     expect(run.status).toBe("complete");
     expect(run.summary.confidence).toBe(run.scorecard.confidence);
+  });
+});
+
+describe("Debatefrog source chips", () => {
+  it("hides mock methodology and placeholder sources while keeping compact live source labels", () => {
+    const sources: EvidenceSource[] = [
+      {
+        id: "mock-method",
+        title: "Modified Oxford-Style Debate Format",
+        url: "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
+        publisher: "United States Courts",
+        snippet: "Outlines opening arguments.",
+        quality: "methodology",
+        retrievedVia: "mock",
+        status: "accepted"
+      },
+      {
+        id: "placeholder",
+        title: "Evidence search placeholder for policy topics",
+        url: "https://example.com/evidence-provider-required",
+        publisher: "Internal reference",
+        snippet: "Configure a provider.",
+        quality: "context",
+        retrievedVia: "mock",
+        status: "accepted"
+      },
+      {
+        id: "generic-expert",
+        title: "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
+        url: "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
+        publisher: "MIT News",
+        snippet: "Covers research showing multiple AI agents can improve reasoning.",
+        quality: "expert",
+        retrievedVia: "mock",
+        status: "accepted"
+      },
+      {
+        id: "live-1",
+        title: "Voting at 16: Turnout and Quality of Vote Choice",
+        url: "https://example.edu/voting-at-16",
+        publisher: "University Civic Lab",
+        snippet: "Research on younger voters.",
+        quality: "expert",
+        retrievedVia: "tavily",
+        status: "accepted"
+      }
+    ];
+
+    expect(buildFroglingsSourceChips(["mock-method", "placeholder", "generic-expert", "live-1"], sources)).toEqual([
+      {
+        id: "live-1",
+        label: "University Civic Lab",
+        url: "https://example.edu/voting-at-16"
+      }
+    ]);
   });
 });

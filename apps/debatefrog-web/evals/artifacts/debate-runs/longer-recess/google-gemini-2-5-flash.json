@@ -1,74 +1,74 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-26T04:50:35.482Z",
+  "generatedAt": "2026-05-27T16:30:56.406Z",
   "modelId": "google/gemini-2.5-flash",
   "questionId": "longer-recess",
   "question": "Should schools have longer recess?",
   "run": {
-    "id": "run_e3bb2f80",
+    "id": "run_2b1533ec",
     "debateId": "eval_longer-recess_google-gemini-2-5-flash",
     "status": "complete",
-    "startedAt": "2026-05-26T04:50:09.633Z",
-    "completedAt": "2026-05-26T04:50:35.482Z",
+    "startedAt": "2026-05-27T16:23:21.374Z",
+    "completedAt": "2026-05-27T16:30:56.406Z",
     "events": [
       {
-        "id": "event_e8f00e55",
+        "id": "event_cce96d8c",
         "debateId": "eval_longer-recess_google-gemini-2-5-flash",
-        "runId": "run_e3bb2f80",
+        "runId": "run_2b1533ec",
         "status": "queued",
         "label": "Debate queued",
         "detail": "The subject was accepted and the Hybrid Council run was initialized.",
-        "createdAt": "2026-05-26T04:50:09.634Z"
+        "createdAt": "2026-05-27T16:23:21.375Z"
       },
       {
-        "id": "event_ae3161a2",
+        "id": "event_33b87ecc",
         "debateId": "eval_longer-recess_google-gemini-2-5-flash",
-        "runId": "run_e3bb2f80",
+        "runId": "run_2b1533ec",
         "status": "framing",
         "label": "Resolution framed",
         "detail": "The free-text subject was converted into a neutral debate resolution.",
-        "createdAt": "2026-05-26T04:50:09.634Z"
+        "createdAt": "2026-05-27T16:23:21.375Z"
       },
       {
-        "id": "event_a7dcbf25",
+        "id": "event_5d9d47f6",
         "debateId": "eval_longer-recess_google-gemini-2-5-flash",
-        "runId": "run_e3bb2f80",
+        "runId": "run_2b1533ec",
         "status": "researching",
         "label": "Evidence gathered",
         "detail": "Sources were collected, deduplicated, and attached to claim-level arguments.",
-        "createdAt": "2026-05-26T04:50:09.634Z"
+        "createdAt": "2026-05-27T16:23:21.375Z"
       },
       {
-        "id": "event_9b3ad895",
+        "id": "event_fd916541",
         "debateId": "eval_longer-recess_google-gemini-2-5-flash",
-        "runId": "run_e3bb2f80",
+        "runId": "run_2b1533ec",
         "status": "debating",
         "label": "Agents debated",
         "detail": "Pro and con agents completed opening, cross-examination, rebuttal, and closing rounds.",
-        "createdAt": "2026-05-26T04:50:14.321Z"
+        "createdAt": "2026-05-27T16:23:25.474Z"
       },
       {
-        "id": "event_b808cabc",
+        "id": "event_8b267aa1",
         "debateId": "eval_longer-recess_google-gemini-2-5-flash",
-        "runId": "run_e3bb2f80",
+        "runId": "run_2b1533ec",
         "status": "judging",
         "label": "Judge synthesized",
         "detail": "The neutral judge scored tradeoffs and prepared the decision brief.",
-        "createdAt": "2026-05-26T04:50:29.371Z"
+        "createdAt": "2026-05-27T16:24:12.479Z"
       },
       {
-        "id": "event_0b6dc56c",
+        "id": "event_2fc3f7cf",
         "debateId": "eval_longer-recess_google-gemini-2-5-flash",
-        "runId": "run_e3bb2f80",
+        "runId": "run_2b1533ec",
         "status": "complete",
         "label": "Debate complete",
         "detail": "The decision brief, argument map, source ledger, and transcript are ready.",
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.405Z"
       }
     ],
     "scouts": [
       {
-        "id": "scout_73870ac8",
+        "id": "scout_919302cf",
         "name": "Strategic Optimist",
         "model": "google/gemini-2.5-flash",
         "lens": "upside, option value, and second-order gains",
@@ -86,7 +86,7 @@
         ]
       },
       {
-        "id": "scout_fd116db5",
+        "id": "scout_6fbf6338",
         "name": "Risk Skeptic",
         "model": "google/gemini-2.5-flash",
         "lens": "failure modes, hidden costs, and reversibility",
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "id": "scout_12e0f777",
+        "id": "scout_8428bba3",
         "name": "Empirical Referee",
         "model": "google/gemini-2.5-flash (judge-calibrated)",
         "lens": "quality of evidence, base rates, and uncertainty",
@@ -122,7 +122,7 @@
         ]
       },
       {
-        "id": "scout_e5d7b72d",
+        "id": "scout_f741d2d0",
         "name": "Implementation Pragmatist",
         "model": "google/gemini-2.5-flash",
         "lens": "execution design, sequencing, and measurable checkpoints",
@@ -140,7 +140,7 @@
         ]
       },
       {
-        "id": "scout_4c2c97b2",
+        "id": "scout_09b2cec3",
         "name": "Equity Auditor",
         "model": "google/gemini-2.5-flash",
         "lens": "distributional impact, incentives, and affected stakeholders",
@@ -161,7 +161,7 @@
     "teams": {
       "pro": [
         {
-          "id": "agent_375c0288",
+          "id": "agent_28315783",
           "name": "Strategic Optimist",
           "side": "pro",
           "model": "google/gemini-2.5-flash",
@@ -171,7 +171,7 @@
       ],
       "con": [
         {
-          "id": "agent_1b3bfdb7",
+          "id": "agent_80fb331e",
           "name": "Risk Skeptic",
           "side": "con",
           "model": "google/gemini-2.5-flash",
@@ -180,7 +180,7 @@
         }
       ],
       "judge": {
-        "id": "judge_c04ac881",
+        "id": "judge_cf613879",
         "name": "Neutral Synthesis Judge",
         "model": "google/gemini-2.5-flash (judge-calibrated)",
         "role": "score evidence, risks, uncertainty, and decision usefulness"
@@ -251,51 +251,51 @@
     "claims": [
       {
         "side": "pro",
-        "text": "Longer recess can improve student well-being and academic performance.",
-        "warrant": "Increased physical activity and breaks from academic tasks are known to reduce stress and improve focus, which can positively impact learning outcomes.",
+        "text": "Longer recess would give students more time to play, which helps them learn how to get along with others.",
+        "warrant": "Social interaction during play is important for developing social skills and cooperation.",
         "evidenceSourceIds": [],
         "confidence": 0.8,
-        "id": "claim_eb589281"
+        "id": "claim_cb9920b0"
       },
       {
         "side": "pro",
-        "text": "Extended recess periods provide opportunities for enhanced social development among students.",
-        "warrant": "Unstructured play time allows children to develop crucial social skills, conflict resolution abilities, and cooperation through peer interaction.",
+        "text": "More recess time can help students be more focused and ready to learn when they return to the classroom.",
+        "warrant": "Physical activity and breaks from academic tasks can improve attention spans and reduce restlessness.",
         "evidenceSourceIds": [],
         "confidence": 0.75,
-        "id": "claim_69ee389f"
+        "id": "claim_b450f8a6"
       },
       {
         "side": "pro",
-        "text": "Longer recess can lead to a more positive school environment and reduced behavioral issues.",
-        "warrant": "Students who have adequate time to release energy and socialize are often more engaged and less disruptive in the classroom.",
+        "text": "Longer recess could lead to better physical health for students by providing more opportunities for exercise.",
+        "warrant": "Increased time for active play contributes to overall physical fitness and can combat sedentary lifestyles.",
+        "evidenceSourceIds": [],
+        "confidence": 0.78,
+        "id": "claim_3043ba37"
+      },
+      {
+        "side": "con",
+        "text": "Longer recess could take away from valuable instructional time, potentially harming academic performance.",
+        "warrant": "Schools have limited time in the day, and increasing recess means decreasing time for other subjects.",
+        "evidenceSourceIds": [],
+        "confidence": 0.75,
+        "id": "claim_fbfbfeab"
+      },
+      {
+        "side": "con",
+        "text": "Extending recess might lead to increased supervision challenges and safety concerns for school staff.",
+        "warrant": "More time unsupervised or with less direct oversight during recess could create more opportunities for accidents or conflicts.",
         "evidenceSourceIds": [],
         "confidence": 0.7,
-        "id": "claim_953004ab"
+        "id": "claim_79e9e214"
       },
       {
         "side": "con",
-        "text": "Schools should not have longer recess if the evidence does not demonstrate that longer recess would be more effective than the current recess duration.",
-        "warrant": "The NO side can prevail if the YES side fails to provide sufficient evidence that longer recess yields better outcomes than existing recess schedules.",
+        "text": "Implementing longer recess could disrupt existing school schedules and create logistical difficulties for teachers and administrators.",
+        "warrant": "Changing the daily schedule requires significant planning and adjustment, which can be burdensome for schools.",
         "evidenceSourceIds": [],
-        "confidence": 0.7,
-        "id": "claim_d4397866"
-      },
-      {
-        "side": "con",
-        "text": "The proposal for longer recess may sound appealing, but the NO side can win by demonstrating that its perceived benefits are not actually supported by evidence.",
-        "warrant": "A policy can be rhetorically attractive without being demonstrably superior to the status quo, and the NO side can highlight this discrepancy.",
-        "evidenceSourceIds": [],
-        "confidence": 0.66,
-        "id": "claim_b6614e47"
-      },
-      {
-        "side": "con",
-        "text": "The decision on whether schools should have longer recess depends on which specific aspects of the question are prioritized, such as academic performance, social development, or logistical challenges.",
-        "warrant": "A comprehensive evaluation requires considering various dimensions of the impact of longer recess, and the NO side can argue that certain dimensions do not support the change.",
-        "evidenceSourceIds": [],
-        "confidence": 0.74,
-        "id": "claim_c6112ee2"
+        "confidence": 0.65,
+        "id": "claim_a088ddb9"
       }
     ],
     "argumentNodes": [
@@ -307,46 +307,46 @@
         "detail": "Classified as a policy debate."
       },
       {
-        "id": "claim_eb589281",
+        "id": "claim_cb9920b0",
         "kind": "claim",
         "side": "pro",
         "label": "Pro claim",
-        "detail": "Longer recess can improve student well-being and academic performance."
+        "detail": "Longer recess would give students more time to play, which helps them learn how to get along with others."
       },
       {
-        "id": "claim_69ee389f",
+        "id": "claim_b450f8a6",
         "kind": "claim",
         "side": "pro",
         "label": "Pro claim",
-        "detail": "Extended recess periods provide opportunities for enhanced social development among students."
+        "detail": "More recess time can help students be more focused and ready to learn when they return to the classroom."
       },
       {
-        "id": "claim_953004ab",
+        "id": "claim_3043ba37",
         "kind": "claim",
         "side": "pro",
         "label": "Pro claim",
-        "detail": "Longer recess can lead to a more positive school environment and reduced behavioral issues."
+        "detail": "Longer recess could lead to better physical health for students by providing more opportunities for exercise."
       },
       {
-        "id": "claim_d4397866",
+        "id": "claim_fbfbfeab",
         "kind": "claim",
         "side": "con",
         "label": "Con claim",
-        "detail": "Schools should not have longer recess if the evidence does not demonstrate that longer recess would be more effective than the current recess duration."
+        "detail": "Longer recess could take away from valuable instructional time, potentially harming academic performance."
       },
       {
-        "id": "claim_b6614e47",
+        "id": "claim_79e9e214",
         "kind": "claim",
         "side": "con",
         "label": "Con claim",
-        "detail": "The proposal for longer recess may sound appealing, but the NO side can win by demonstrating that its perceived benefits are not actually supported by evidence."
+        "detail": "Extending recess might lead to increased supervision challenges and safety concerns for school staff."
       },
       {
-        "id": "claim_c6112ee2",
+        "id": "claim_a088ddb9",
         "kind": "claim",
         "side": "con",
         "label": "Con claim",
-        "detail": "The decision on whether schools should have longer recess depends on which specific aspects of the question are prioritized, such as academic performance, social development, or logistical challenges."
+        "detail": "Implementing longer recess could disrupt existing school schedules and create logistical difficulties for teachers and administrators."
       },
       {
         "id": "evidence-src-mock-1",
@@ -406,43 +406,43 @@
     ],
     "argumentEdges": [
       {
-        "id": "edge_de186ecf",
-        "source": "claim_eb589281",
+        "id": "edge_76b65cc9",
+        "source": "claim_cb9920b0",
         "target": "resolution",
         "relation": "supports"
       },
       {
-        "id": "edge_85259642",
-        "source": "claim_69ee389f",
+        "id": "edge_ea7d276d",
+        "source": "claim_b450f8a6",
         "target": "resolution",
         "relation": "supports"
       },
       {
-        "id": "edge_7e0a6b34",
-        "source": "claim_953004ab",
+        "id": "edge_0c0f9a69",
+        "source": "claim_3043ba37",
         "target": "resolution",
         "relation": "supports"
       },
       {
-        "id": "edge_6f6f4a0c",
-        "source": "claim_d4397866",
+        "id": "edge_d1ec8cb3",
+        "source": "claim_fbfbfeab",
         "target": "resolution",
         "relation": "challenges"
       },
       {
-        "id": "edge_0ea4f5d2",
-        "source": "claim_b6614e47",
+        "id": "edge_1a316d1e",
+        "source": "claim_79e9e214",
         "target": "resolution",
         "relation": "challenges"
       },
       {
-        "id": "edge_7b86c366",
-        "source": "claim_c6112ee2",
+        "id": "edge_7d3ea130",
+        "source": "claim_a088ddb9",
         "target": "resolution",
         "relation": "challenges"
       },
       {
-        "id": "edge_a82a7aed",
+        "id": "edge_dd888d74",
         "source": "uncertainty",
         "target": "resolution",
         "relation": "qualifies"
@@ -451,14 +451,12 @@
     "turns": [
       {
         "round": "opening",
-        "agentId": "agent_375c0288",
+        "agentId": "agent_28315783",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "YES, schools should have longer recess. Longer recess can improve student well-being and academic performance. It also provides opportunities for enhanced social development and can lead to a more positive school environment with reduced behavioral issues.",
+        "content": "I think schools should have longer recess! My main reason is that more recess time can help students be more focused and ready to learn when they return to the classroom. For example, after running around and playing, kids often come back feeling refreshed and ready to pay attention.",
         "claimIds": [
-          "claim_eb589281",
-          "claim_69ee389f",
-          "claim_953004ab"
+          "claim_b450f8a6"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -466,18 +464,17 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_44dd50c0",
-        "createdAt": "2026-05-26T04:50:17.551Z"
+        "id": "turn_1898184b",
+        "createdAt": "2026-05-27T16:23:37.663Z"
       },
       {
         "round": "opening",
-        "agentId": "agent_1b3bfdb7",
+        "agentId": "agent_80fb331e",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The NO side argues that schools should not have longer recess if there isn't clear evidence that it would be more effective than the current recess time. We need to see strong proof that longer recess actually provides better results. The NO side can win if the perceived benefits of longer recess are not truly supported by evidence.",
+        "content": "I do not think schools should have longer recess. My main concern is that longer recess would take away important time from learning in the classroom. For example, if we add more recess, that means less time for subjects like math or reading, which could make it harder for students to do well in school.",
         "claimIds": [
-          "claim_d4397866",
-          "claim_b6614e47"
+          "claim_fbfbfeab"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -485,18 +482,19 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_e75c7147",
-        "createdAt": "2026-05-26T04:50:17.551Z"
+        "id": "turn_8283a560",
+        "createdAt": "2026-05-27T16:23:37.663Z"
       },
       {
         "round": "cross_examination",
-        "agentId": "agent_375c0288",
+        "agentId": "agent_28315783",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "The NO side argues that the benefits of longer recess may not be supported by evidence (claim_b6614e47). However, the YES side has presented that longer recess can improve student well-being and academic performance (claim_eb589281). How does the NO side reconcile their claim with the potential for improved student well-being and academic performance?",
+        "content": "My opponent, you mentioned that longer recess could lead to increased supervision challenges and safety concerns. How would you address the benefits of increased focus and social skills that come from more play time?",
         "claimIds": [
-          "claim_b6614e47",
-          "claim_eb589281"
+          "claim_79e9e214",
+          "claim_b450f8a6",
+          "claim_cb9920b0"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -504,18 +502,17 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_286c91da",
-        "createdAt": "2026-05-26T04:50:21.669Z"
+        "id": "turn_c61d8d5a",
+        "createdAt": "2026-05-27T16:23:45.302Z"
       },
       {
         "round": "cross_examination",
-        "agentId": "agent_1b3bfdb7",
+        "agentId": "agent_80fb331e",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The NO side asks the YES side: You claim that longer recess can improve student well-being and academic performance. What specific evidence demonstrates that longer recess is more effective than the current recess duration to achieve these benefits?",
+        "content": "My opponent, if longer recess means less time for important subjects, how will students still learn everything they need to know?",
         "claimIds": [
-          "claim_d4397866",
-          "claim_eb589281"
+          "claim_fbfbfeab"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -523,20 +520,17 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_ae6a184f",
-        "createdAt": "2026-05-26T04:50:21.669Z"
+        "id": "turn_1f4a665b",
+        "createdAt": "2026-05-27T16:23:45.302Z"
       },
       {
         "round": "rebuttal",
-        "agentId": "agent_375c0288",
+        "agentId": "agent_28315783",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "The NO side suggests that longer recess might not be more effective than current recess. However, the YES side argues that longer recess can improve student well-being and academic performance, enhance social development, and lead to a more positive school environment with reduced behavioral issues. These broad benefits demonstrate that longer recess is indeed more effective.",
+        "content": "My opponent asks how students will learn everything they need to know if recess is longer. I believe that students will actually learn better because they will be more focused after a good break. This means the time they do spend in class will be more effective.",
         "claimIds": [
-          "claim_eb589281",
-          "claim_69ee389f",
-          "claim_953004ab",
-          "claim_d4397866"
+          "claim_b450f8a6"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -544,19 +538,19 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_30cae590",
-        "createdAt": "2026-05-26T04:50:24.383Z"
+        "id": "turn_cb93149a",
+        "createdAt": "2026-05-27T16:23:54.735Z"
       },
       {
         "round": "rebuttal",
-        "agentId": "agent_1b3bfdb7",
+        "agentId": "agent_80fb331e",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The YES side claims that longer recess improves student well-being and academic performance, but the NO side argues that this is only true if the evidence shows it is more effective than current recess times. The NO side also points out that the perceived benefits of longer recess might not be supported by actual evidence. The decision should depend on which specific aspects are prioritized, like academic performance or social development, and if those aspects truly support longer recess.",
+        "content": "My opponent asks how I would address the benefits of increased focus and social skills. While those are good things, my side worries about the practical problems. More play time means more chances for accidents or arguments, and schools might not have enough grown-ups to watch everyone safely. These risks could outweigh the benefits you mentioned.",
         "claimIds": [
-          "claim_d4397866",
-          "claim_b6614e47",
-          "claim_c6112ee2"
+          "claim_79e9e214",
+          "claim_b450f8a6",
+          "claim_cb9920b0"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -564,19 +558,19 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_b5cb7356",
-        "createdAt": "2026-05-26T04:50:24.383Z"
+        "id": "turn_d0ff64c0",
+        "createdAt": "2026-05-27T16:23:54.735Z"
       },
       {
         "round": "closing",
-        "agentId": "agent_375c0288",
+        "agentId": "agent_28315783",
         "agentName": "Strategic Optimist",
         "side": "pro",
-        "content": "Vote YES for longer recess because it can improve student well-being and academic performance, enhance social development, and lead to a more positive school environment with fewer behavioral issues. The YES side has shown that these benefits are supported by evidence.",
+        "content": "Vote YES because longer recess helps students learn better, get along with others, and stay healthy. My opponent worries about lost class time, but I believe that focused students learn more effectively. The benefits of play outweigh the concerns.",
         "claimIds": [
-          "claim_eb589281",
-          "claim_69ee389f",
-          "claim_953004ab"
+          "claim_cb9920b0",
+          "claim_b450f8a6",
+          "claim_3043ba37"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -584,19 +578,19 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_e55d1a26",
-        "createdAt": "2026-05-26T04:50:27.884Z"
+        "id": "turn_b6824fe1",
+        "createdAt": "2026-05-27T16:24:10.636Z"
       },
       {
         "round": "closing",
-        "agentId": "agent_1b3bfdb7",
+        "agentId": "agent_80fb331e",
         "agentName": "Risk Skeptic",
         "side": "con",
-        "content": "The NO side has shown that the proposal for longer recess lacks sufficient evidence to prove it would be more effective than current recess durations (claim_d4397866). While longer recess may sound good, the NO side has demonstrated that its perceived benefits are not fully supported by evidence (claim_b6614e47). The decision to extend recess depends on prioritizing specific aspects, and the NO side argues that some dimensions do not support this change (claim_c6112ee2). Therefore, the NO side urges you to vote NO on longer recess.",
+        "content": "Vote NO because while my opponent talks about benefits, my side has shown the real problems. Longer recess means less time for learning and more chances for kids to get hurt. It would also make school schedules very difficult to manage. The risks are too great.",
         "claimIds": [
-          "claim_d4397866",
-          "claim_b6614e47",
-          "claim_c6112ee2"
+          "claim_fbfbfeab",
+          "claim_79e9e214",
+          "claim_a088ddb9"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -604,22 +598,22 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_ad2e1241",
-        "createdAt": "2026-05-26T04:50:27.884Z"
+        "id": "turn_cc606757",
+        "createdAt": "2026-05-27T16:24:10.636Z"
       },
       {
         "round": "judge_review",
-        "agentId": "judge_c04ac881",
+        "agentId": "judge_cf613879",
         "agentName": "Neutral Synthesis Judge",
         "side": "neutral",
-        "content": "The YES side argues that longer recess can improve student well-being, academic performance, social development, and lead to a more positive school environment. The NO side argues that longer recess should not be implemented if there is insufficient evidence to demonstrate its effectiveness compared to current recess durations, and that the perceived benefits may not be supported by evidence. The decision depends on whether the YES side can provide sufficient evidence that longer recess yields better outcomes than existing recess schedules.",
+        "content": "I see that the green frog believes longer recess helps students learn better, get along, and stay healthy, even if it means less class time. the pink frog worries about losing learning time, safety, and scheduling problems. My job is to weigh these points and see which side has made a stronger case for their view.",
         "claimIds": [
-          "claim_eb589281",
-          "claim_69ee389f",
-          "claim_953004ab",
-          "claim_d4397866",
-          "claim_b6614e47",
-          "claim_c6112ee2"
+          "claim_cb9920b0",
+          "claim_b450f8a6",
+          "claim_3043ba37",
+          "claim_fbfbfeab",
+          "claim_79e9e214",
+          "claim_a088ddb9"
         ],
         "sourceIds": [
           "src-mock-1",
@@ -627,68 +621,65 @@
           "src-mock-3",
           "src-mock-4"
         ],
-        "id": "turn_1914d34a",
-        "createdAt": "2026-05-26T04:50:29.371Z"
+        "id": "turn_8d77bf15",
+        "createdAt": "2026-05-27T16:24:12.479Z"
       }
     ],
     "scorecard": {
       "recommendation": "lean_no",
-      "confidence": 0.7,
+      "confidence": 0.6,
       "categories": [
         {
           "name": "evidence",
-          "pro": 3,
-          "con": 7,
-          "note": "The PRO side makes claims about improved well-being, academic performance, social development, and reduced behavioral issues, but provides no specific evidence to support these claims or to demonstrate that longer recess is more effective than current recess durations. The CON side effectively highlights this lack of evidence."
+          "pro": 5,
+          "con": 6,
+          "note": "The pro side claims longer recess helps students learn better and be more focused, but it does not provide evidence that this increased focus makes up for the lost instructional time. The con side points out the direct loss of instructional time, which is a clear consequence."
         },
         {
           "name": "practicality",
-          "pro": 4,
-          "con": 6,
-          "note": "The PRO side's claims, while potentially beneficial, are not substantiated with practical evidence of how longer recess would achieve these outcomes. The CON side raises a practical concern about the absence of demonstrated effectiveness."
+          "pro": 5,
+          "con": 7,
+          "note": "The pro side suggests benefits without detailing how schools would manage the schedule changes. The con side highlights the logistical difficulties and disruption to existing school schedules, which is a practical concern for implementation."
         },
         {
           "name": "risk",
           "pro": 4,
           "con": 7,
-          "note": "The PRO side presents potential benefits without addressing any potential risks or drawbacks of longer recess. The CON side's argument that perceived benefits might not be supported by evidence implies a risk of implementing a policy without clear positive impact."
+          "note": "The pro side acknowledges the con's safety concerns but does not offer a clear plan to mitigate them. The con side raises valid points about increased supervision challenges and potential safety concerns, which are direct risks of longer recess."
         },
         {
           "name": "fairness",
           "pro": 5,
           "con": 6,
-          "note": "Both sides present their arguments fairly, but the PRO side's claims lack the necessary evidentiary support to be considered fully fair in their assertion of benefits. The CON side fairly challenges the PRO side to provide this evidence."
+          "note": "The pro side argues for social and health benefits, but the con side's point about potential harm to academic performance, especially for subjects like math or reading, suggests a fairness issue if some students fall behind due to reduced instructional time."
         },
         {
           "name": "reversibility",
           "pro": 5,
           "con": 6,
-          "note": "While changing recess duration might be reversible, the debate focuses on the initial decision. The PRO side does not provide a strong enough case to warrant the change, making the CON side's stance on requiring evidence more compelling for the initial decision."
+          "note": "While changing recess times is reversible, the potential academic setbacks from lost instructional time, as argued by the con side, could be harder to reverse for students."
         }
       ]
     },
     "summary": {
-      "headline": "Lack of Specific Evidence Undermines Case for Longer Recess",
-      "recommendation": "lean_no",
+      "headline": "Should schools have longer recess? The pink frog wins because the risks of losing learning time and safety concerns outweigh the green frog's benefits of better focus and social skills.",
+      "recommendation": "The verdict is NO. While the green frog argued that longer recess helps students learn better by making them more focused and improving social skills, the pink frog showed that losing valuable classroom time and facing more safety challenges are bigger problems. The pink frog's concerns about less learning time and increased supervision challenges were stronger than the green frog's points.",
       "strongestPro": [
-        "Longer recess can improve student well-being and academic performance.",
-        "Extended recess periods provide opportunities for enhanced social development among students.",
-        "Longer recess can lead to a more positive school environment and reduced behavioral issues."
+        "More recess time can help students be more focused and ready to learn when they return to the classroom."
       ],
       "strongestCon": [
-        "Schools should not have longer recess if the evidence does not demonstrate that longer recess would be more effective than the current recess duration.",
-        "The proposal for longer recess may sound appealing, but the NO side can win by demonstrating that its perceived benefits are not actually supported by evidence.",
-        "The decision on whether schools should have longer recess depends on which specific aspects of the question are prioritized, such as academic performance, social development, or logistical challenges."
+        "Longer recess could take away from valuable instructional time, potentially harming academic performance.",
+        "Extending recess might lead to increased supervision challenges and safety concerns for school staff."
       ],
       "unresolvedUncertainties": [
-        "What specific evidence demonstrates that longer recess is more effective than current recess durations in achieving improved student well-being, academic performance, social development, or reduced behavioral issues?",
-        "How would the implementation of longer recess address potential logistical challenges or curriculum constraints?"
+        "It is unclear if the increased focus from longer recess would truly make up for the lost instructional time in the classroom.",
+        "The exact level of increased supervision needed and how schools would manage it with longer recess is not fully clear."
       ],
       "whatWouldChangeMind": [
-        "Specific, comparative evidence demonstrating that longer recess durations lead to significantly better outcomes in student well-being, academic performance, social development, or behavior compared to existing recess schedules.",
-        "Empirical data or studies that quantify the benefits of extended recess periods and directly address the concerns raised by the NO side regarding the lack of proven effectiveness."
+        "If the green frog could show clear evidence that the academic benefits of increased focus and social skills from longer recess fully outweigh the loss of instructional time.",
+        "If the green frog could provide a practical plan for how schools could manage increased supervision and safety concerns without adding significant burden."
       ],
-      "confidence": 0.7
+      "confidence": 0.6
     },
     "modelSnapshots": [
       {
@@ -732,16 +723,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog claim builder",
         "configured": true,
-        "latencyMs": 2059,
-        "promptTokens": 1371,
-        "completionTokens": 253,
-        "estimatedCostUsd": 0.0010438,
+        "latencyMs": 2263,
+        "promptTokens": 1546,
+        "completionTokens": 250,
+        "estimatedCostUsd": 0.0010888,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2059
+            "durationMs": 2263
           }
         ]
       },
@@ -751,16 +742,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog claim builder",
         "configured": true,
-        "latencyMs": 2622,
-        "promptTokens": 1363,
-        "completionTokens": 312,
-        "estimatedCostUsd": 0.0011889,
+        "latencyMs": 1832,
+        "promptTokens": 1538,
+        "completionTokens": 249,
+        "estimatedCostUsd": 0.0010839,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2622
+            "durationMs": 1832
           }
         ]
       },
@@ -770,16 +761,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog opening round",
         "configured": true,
-        "latencyMs": 1137,
-        "promptTokens": 2341,
-        "completionTokens": 167,
-        "estimatedCostUsd": 0.0011198,
+        "latencyMs": 4067,
+        "promptTokens": 2879,
+        "completionTokens": 154,
+        "estimatedCostUsd": 0.0012487,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1137
+            "durationMs": 4067
           }
         ]
       },
@@ -789,16 +780,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog opening round",
         "configured": true,
-        "latencyMs": 2090,
-        "promptTokens": 2354,
-        "completionTokens": 175,
-        "estimatedCostUsd": 0.0011437,
+        "latencyMs": 8118,
+        "promptTokens": 2870,
+        "completionTokens": 157,
+        "estimatedCostUsd": 0.0012535,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2090
+            "durationMs": 8118
           }
         ]
       },
@@ -808,16 +799,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog cross-examination round",
         "configured": true,
-        "latencyMs": 2230,
-        "promptTokens": 2341,
-        "completionTokens": 194,
-        "estimatedCostUsd": 0.0011873,
+        "latencyMs": 6029,
+        "promptTokens": 3188,
+        "completionTokens": 166,
+        "estimatedCostUsd": 0.0013714,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2230
+            "durationMs": 6029
           }
         ]
       },
@@ -827,16 +818,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog cross-examination round",
         "configured": true,
-        "latencyMs": 1887,
-        "promptTokens": 2343,
-        "completionTokens": 156,
-        "estimatedCostUsd": 0.0010929,
+        "latencyMs": 1609,
+        "promptTokens": 3186,
+        "completionTokens": 122,
+        "estimatedCostUsd": 0.0012608,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1887
+            "durationMs": 1609
           }
         ]
       },
@@ -846,16 +837,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog rebuttal round",
         "configured": true,
-        "latencyMs": 1207,
-        "promptTokens": 2349,
-        "completionTokens": 205,
-        "estimatedCostUsd": 0.0012172,
+        "latencyMs": 1369,
+        "promptTokens": 3605,
+        "completionTokens": 152,
+        "estimatedCostUsd": 0.0014615,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1207
+            "durationMs": 1369
           }
         ]
       },
@@ -865,16 +856,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog rebuttal round",
         "configured": true,
-        "latencyMs": 1505,
-        "promptTokens": 2346,
-        "completionTokens": 214,
-        "estimatedCostUsd": 0.00070771,
+        "latencyMs": 8064,
+        "promptTokens": 3621,
+        "completionTokens": 192,
+        "estimatedCostUsd": 0.0015663,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1505
+            "durationMs": 8064
           }
         ]
       },
@@ -884,16 +875,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "yes frog closing round",
         "configured": true,
-        "latencyMs": 1963,
-        "promptTokens": 2334,
-        "completionTokens": 172,
-        "estimatedCostUsd": 0.0011302,
+        "latencyMs": 7751,
+        "promptTokens": 3885,
+        "completionTokens": 171,
+        "estimatedCostUsd": 0.001593,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1963
+            "durationMs": 7751
           }
         ]
       },
@@ -903,16 +894,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "no frog closing round",
         "configured": true,
-        "latencyMs": 1536,
-        "promptTokens": 2335,
-        "completionTokens": 245,
-        "estimatedCostUsd": 0.001313,
+        "latencyMs": 8148,
+        "promptTokens": 3886,
+        "completionTokens": 174,
+        "estimatedCostUsd": 0.0016008,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1537
+            "durationMs": 8148
           }
         ]
       },
@@ -922,16 +913,16 @@
         "model": "google/gemini-2.5-flash",
         "role": "judge review round",
         "configured": true,
-        "latencyMs": 1486,
-        "promptTokens": 2387,
-        "completionTokens": 257,
-        "estimatedCostUsd": 0.0013586,
+        "latencyMs": 1842,
+        "promptTokens": 3933,
+        "completionTokens": 268,
+        "estimatedCostUsd": 0.0018499,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 1486
+            "durationMs": 1842
           }
         ]
       },
@@ -941,16 +932,23 @@
         "model": "google/gemini-2.5-flash",
         "role": "scorecard judge",
         "configured": true,
-        "latencyMs": 3669,
-        "promptTokens": 4356,
-        "completionTokens": 447,
-        "estimatedCostUsd": 0.0024243,
+        "latencyMs": 399145,
+        "promptTokens": 4247,
+        "completionTokens": 427,
+        "estimatedCostUsd": 0.0023416,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
+            "status": "failed",
+            "durationMs": 392073,
+            "message": "AI model returned an empty response."
+          },
+          {
+            "attempt": 2,
+            "mode": "json_object",
             "status": "ok",
-            "durationMs": 3669
+            "durationMs": 6470
           }
         ]
       },
@@ -960,181 +958,181 @@
         "model": "google/gemini-2.5-flash",
         "role": "final summary",
         "configured": true,
-        "latencyMs": 2437,
-        "promptTokens": 4834,
-        "completionTokens": 366,
-        "estimatedCostUsd": 0.0023652,
+        "latencyMs": 4777,
+        "promptTokens": 4710,
+        "completionTokens": 354,
+        "estimatedCostUsd": 0.002298,
         "attempts": [
           {
             "attempt": 1,
             "mode": "json_object",
             "status": "ok",
-            "durationMs": 2437
+            "durationMs": 4777
           }
         ]
       }
     ],
     "artifactManifest": [
       {
-        "id": "artifact_ec5779f2",
+        "id": "artifact_80794cf4",
         "kind": "run_state",
         "label": "Workflow run state",
         "recordCount": 1,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_91a8d641",
+        "id": "artifact_1eac36cc",
         "kind": "scouts",
         "label": "Structured scout outputs",
         "recordCount": 5,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_18e8a0cf",
+        "id": "artifact_37c247ce",
         "kind": "evidence",
         "label": "Evidence source ledger",
         "recordCount": 6,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_41ff550f",
+        "id": "artifact_46b32fc2",
         "kind": "claims",
         "label": "Generated claims",
         "recordCount": 6,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_929a4be2",
+        "id": "artifact_c518da82",
         "kind": "turns",
         "label": "Debate transcript turns",
         "recordCount": 9,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_2ecbdd7d",
+        "id": "artifact_c0a6ebf1",
         "kind": "scorecard",
         "label": "Judge scorecard",
         "recordCount": 5,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_bef49c02",
+        "id": "artifact_20582daf",
         "kind": "summary",
         "label": "Final summary",
         "recordCount": 1,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       },
       {
-        "id": "artifact_498a1cf5",
+        "id": "artifact_8ec70fc2",
         "kind": "models",
         "label": "Model snapshots",
         "recordCount": 18,
-        "createdAt": "2026-05-26T04:50:35.482Z"
+        "createdAt": "2026-05-27T16:30:56.406Z"
       }
     ],
     "trace": [
       {
-        "id": "trace_24e1bc4b",
+        "id": "trace_39533fa9",
         "step": "frame",
         "status": "ok",
         "message": "Classified as policy.",
-        "at": "2026-05-26T04:50:09.634Z",
+        "at": "2026-05-27T16:23:21.375Z",
         "durationMs": 0
       },
       {
-        "id": "trace_06b29553",
+        "id": "trace_b54875c9",
         "step": "scout",
         "status": "ok",
         "message": "Used deterministic duo scouts to avoid a startup LLM call.",
-        "at": "2026-05-26T04:50:09.634Z",
+        "at": "2026-05-27T16:23:21.375Z",
         "durationMs": 0
       },
       {
-        "id": "trace_04627077",
+        "id": "trace_1198ba0d",
         "step": "team_builder",
         "status": "ok",
         "message": "Selected one pro and one con agent plus a neutral judge.",
-        "at": "2026-05-26T04:50:09.634Z",
+        "at": "2026-05-27T16:23:21.375Z",
         "durationMs": 0
       },
       {
-        "id": "trace_41d12b60",
+        "id": "trace_cff67ad0",
         "step": "evidence",
         "status": "warning",
         "message": "Using deterministic development evidence. Configured evidence provider is mock.",
-        "at": "2026-05-26T04:50:09.634Z",
+        "at": "2026-05-27T16:23:21.375Z",
         "durationMs": 0
       },
       {
-        "id": "trace_dacc7d34",
+        "id": "trace_89fc5eaa",
         "step": "opening",
         "status": "ok",
         "message": "6 source-linked claims generated.",
-        "at": "2026-05-26T04:50:14.320Z",
-        "durationMs": 4686
+        "at": "2026-05-27T16:23:25.474Z",
+        "durationMs": 4099
       },
       {
-        "id": "trace_9c1fce0d",
+        "id": "trace_f1ae2d67",
         "step": "opening",
         "status": "ok",
         "message": "2 turns generated for opening.",
-        "at": "2026-05-26T04:50:17.551Z",
-        "durationMs": 3230
+        "at": "2026-05-27T16:23:37.663Z",
+        "durationMs": 12189
       },
       {
-        "id": "trace_e0387015",
+        "id": "trace_774412b6",
         "step": "cross_exam",
         "status": "ok",
         "message": "2 turns generated for cross examination.",
-        "at": "2026-05-26T04:50:21.669Z",
-        "durationMs": 4118
+        "at": "2026-05-27T16:23:45.302Z",
+        "durationMs": 7639
       },
       {
-        "id": "trace_f843d719",
+        "id": "trace_3935e7a4",
         "step": "rebuttal",
         "status": "ok",
         "message": "2 turns generated for rebuttal.",
-        "at": "2026-05-26T04:50:24.383Z",
-        "durationMs": 2714
+        "at": "2026-05-27T16:23:54.735Z",
+        "durationMs": 9433
       },
       {
-        "id": "trace_90248561",
+        "id": "trace_19bfcfd2",
         "step": "closing",
         "status": "ok",
         "message": "2 turns generated for closing.",
-        "at": "2026-05-26T04:50:27.884Z",
-        "durationMs": 3501
+        "at": "2026-05-27T16:24:10.636Z",
+        "durationMs": 15901
       },
       {
-        "id": "trace_7cca1805",
+        "id": "trace_5753ad4a",
         "step": "judge_review",
         "status": "ok",
         "message": "1 turns generated for judge review.",
-        "at": "2026-05-26T04:50:29.371Z",
-        "durationMs": 1487
+        "at": "2026-05-27T16:24:12.479Z",
+        "durationMs": 1843
       },
       {
-        "id": "trace_cb33fa6d",
+        "id": "trace_e9ae3b3e",
         "step": "rebuttal",
         "status": "ok",
         "message": "Judge scored the debate as lean_no.",
-        "at": "2026-05-26T04:50:33.042Z",
-        "durationMs": 3671
+        "at": "2026-05-27T16:30:51.625Z",
+        "durationMs": 399146
       },
       {
-        "id": "trace_a90460e5",
+        "id": "trace_74fb8945",
         "step": "judge",
         "status": "ok",
         "message": "Recommendation: lean_no.",
-        "at": "2026-05-26T04:50:35.482Z",
-        "durationMs": 2440
+        "at": "2026-05-27T16:30:56.405Z",
+        "durationMs": 4780
       },
       {
-        "id": "trace_b3ea0e0a",
+        "id": "trace_700c9ace",
         "step": "persist",
         "status": "ok",
         "message": "Run assembled with stable artifact manifest for repository persistence.",
-        "at": "2026-05-26T04:50:35.482Z",
+        "at": "2026-05-27T16:30:56.406Z",
         "durationMs": 0
       }
     ]

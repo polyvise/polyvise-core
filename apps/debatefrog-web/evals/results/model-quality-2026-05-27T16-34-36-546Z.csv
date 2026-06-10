@@ -1,0 +1,2 @@
+model_id,label,provider,evaluated,question_count,average_quality,average_llm_quality,average_second_judge_quality,average_heuristic_quality,average_latency_ms,latency_p50_ms,latency_p90_ms,average_cost_usd,success_rate,retry_rate,llm_judge_model,second_judge_model,average_llm_judge_cost_usd,average_second_judge_cost_usd,average_llm_judge_latency_ms,average_second_judge_latency_ms,failure_count,notes
+google/gemini-2.5-flash,Gemini 2.5 Flash,Google,true,5,90.141552,,,90.141552,135013.4,46777,455014,0.020437,1,0.2,,,,,,,0,Evaluation completed.

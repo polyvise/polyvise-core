@@ -1426,7 +1426,7 @@ function FroglingsLive({
 
   return (
     <div className="mt-6 space-y-5">
-      <QuestionBanner live={live} staged={staged} showStartSequence={showStartSequence} />
+      <QuestionBanner live={live} staged={staged} showStartSequence={showStartSequence} slowWait={slowWait} />
       {(live.backupReasons ?? []).length > 0 && !showStartSequence ? <BackupAnswersNotice /> : null}
       {showStartSequence ? (
         <DebateStartSequence live={live} countdownStarted={countdownStarted} />
@@ -1434,7 +1434,6 @@ function FroglingsLive({
       {live.teams && !preferences.openingSplash ? <FrogIntros teams={live.teams} /> : null}
       {!showStartSequence ? (
         <>
-          <SlowFrogWaitNotice wait={slowWait} />
           <Rounds live={live} visibleTurns={staged.visibleTurns} onTurnComplete={staged.showNextTurn} />
           <Verdict live={live} readyForVerdict={staged.readyForVerdict} />
         </>
@@ -1448,6 +1447,7 @@ type SlowFrogWaitState = {
   level: "normal" | "long" | "unusual";
   elapsedMs: number;
   side: "pro" | "con" | "judge";
+  waitKind: "claim" | "turn" | "judge";
   title: string;
   body: string;
 };
@@ -1459,9 +1459,13 @@ function useSlowFrogWait(
 ): SlowFrogWaitState {
   const [progressStartedAt, setProgressStartedAt] = useState(() => Date.now());
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const completedClaimBuilderSides = completedFrogClaimBuilderSides(live.modelSnapshots);
   const progressKey = [
     live.debateId,
     live.status,
+    completedClaimBuilderSides.has("pro") ? "yes-claim-done" : "yes-claim-pending",
+    completedClaimBuilderSides.has("con") ? "no-claim-done" : "no-claim-pending",
+    live.claims.length,
     live.turns.length,
     live.scorecard ? "scorecard" : "no-scorecard",
     live.summary ? "summary" : "no-summary",
@@ -1489,6 +1493,11 @@ function useSlowFrogWait(
   }, [live.done, live.status]);
 
   const elapsedMs = nowMs - progressStartedAt;
+  const waitingForClaims =
+    live.status === "researching" &&
+    live.sources.length > 0 &&
+    live.claims.length === 0 &&
+    completedClaimBuilderSides.size < 2;
   const waitingForDebateTurn =
     live.status === "debating" &&
     !showStartSequence &&
@@ -1505,7 +1514,7 @@ function useSlowFrogWait(
     !live.done &&
     live.status !== "complete" &&
     live.status !== "failed" &&
-    (waitingForDebateTurn || waitingForJudge);
+    (waitingForClaims || waitingForDebateTurn || waitingForJudge);
 
   const level =
     elapsedMs >= UNUSUAL_FROG_NOTICE_MS
@@ -1513,54 +1522,33 @@ function useSlowFrogWait(
       : elapsedMs >= VERY_SLOW_FROG_NOTICE_MS
         ? "long"
         : "normal";
-  const side = waitingForJudge ? "judge" : nextExpectedFrogSide(live.turns);
+  const waitKind = waitingForJudge ? "judge" : waitingForClaims ? "claim" : "turn";
+  const side = waitingForJudge
+    ? "judge"
+    : waitingForClaims
+      ? nextExpectedClaimBuilderSide(completedClaimBuilderSides)
+      : nextExpectedFrogSide(live.turns);
 
   return {
     visible,
     level,
     elapsedMs,
     side,
-    ...slowFrogWaitCopy({ level, side, waitingForJudge })
+    waitKind,
+    ...slowFrogWaitCopy({ level, side, waitKind })
   };
-}
-
-function SlowFrogWaitNotice({ wait }: { wait: SlowFrogWaitState }) {
-  if (!wait.visible) return null;
-
-  return (
-    <section className="hop-in rounded-2xl border border-leaf/30 bg-mint/45 p-4 shadow-sm" aria-live="polite">
-      <div className="flex items-center gap-3">
-        <div className="relative shrink-0">
-          <FunFrog mood={wait.side} size={48} bob speaking={wait.level !== "normal"} />
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-panel shadow-sm">
-            <Loader2 className="h-3 w-3 animate-spin text-leaf" />
-          </span>
-        </div>
-        <div className="min-w-0">
-          <div className="text-sm font-black text-pond">{wait.title}</div>
-          <div className="mt-0.5 text-xs leading-relaxed text-ink/70">{wait.body}</div>
-        </div>
-      </div>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-pond/10">
-        <div
-          className="h-full rounded-full bg-leaf transition-all duration-500"
-          style={{ width: `${Math.min(100, Math.max(18, (wait.elapsedMs / UNUSUAL_FROG_NOTICE_MS) * 100))}%` }}
-        />
-      </div>
-    </section>
-  );
 }
 
 function slowFrogWaitCopy({
   level,
   side,
-  waitingForJudge
+  waitKind
 }: {
   level: SlowFrogWaitState["level"];
   side: SlowFrogWaitState["side"];
-  waitingForJudge: boolean;
+  waitKind: SlowFrogWaitState["waitKind"];
 }): Pick<SlowFrogWaitState, "title" | "body"> {
-  const frogName = waitingForJudge
+  const frogName = waitKind === "judge"
     ? "The judge frog"
     : side === "pro"
       ? "Yes Frog"
@@ -1569,23 +1557,48 @@ function slowFrogWaitCopy({
   if (level === "unusual") {
     return {
       title: `${frogName} is slower than usual.`,
-      body: "The debate is still running. If the AI model fails, Debatefrog will retry or show a try-again message."
+      body:
+        waitKind === "claim"
+          ? "The debate is still running. This frog is taking extra time to turn the facts into its first reasons."
+          : "The debate is still running. If the AI model fails, Debatefrog will retry or show a try-again message."
     };
   }
 
   if (level === "long") {
     return {
       title: `${frogName} is still thinking.`,
-      body: "This answer is taking a little longer than usual, so the lily pad is holding the next turn."
+      body:
+        waitKind === "claim"
+          ? "This case is taking a little longer than usual, so the lily pad is waiting before the first round."
+          : "This answer is taking a little longer than usual, so the lily pad is holding the next turn."
     };
   }
 
   return {
     title: `${frogName} is thinking this one through...`,
-    body: waitingForJudge
-      ? "The judge is checking both sides before picking a winner."
-      : "Some questions need a few extra seconds before the next frog hops in."
+    body:
+      waitKind === "judge"
+        ? "The judge is checking both sides before picking a winner."
+        : waitKind === "claim"
+          ? "This frog is building its case from the facts before the debate begins."
+          : "Some questions need a few extra seconds before the next frog hops in."
   };
+}
+
+function completedFrogClaimBuilderSides(snapshots: ModelSnapshot[]): Set<"pro" | "con"> {
+  const completed = new Set<"pro" | "con">();
+
+  for (const snapshot of snapshots) {
+    const role = snapshot.role.toLowerCase();
+    if (role.includes("yes frog claim builder")) completed.add("pro");
+    if (role.includes("no frog claim builder")) completed.add("con");
+  }
+
+  return completed;
+}
+
+function nextExpectedClaimBuilderSide(completedSides: Set<"pro" | "con">): "pro" | "con" {
+  return completedSides.has("pro") ? "con" : "pro";
 }
 
 function useStartSequenceVisibility(
@@ -1701,30 +1714,59 @@ function delay(ms: number): Promise<void> {
 function QuestionBanner({
   live,
   staged,
-  showStartSequence
+  showStartSequence,
+  slowWait
 }: {
   live: FroglingsLiveState;
   staged: ReturnType<typeof useStagedFroglingsTurns>;
   showStartSequence: boolean;
+  slowWait: SlowFrogWaitState;
 }) {
   const isActuallyDone = (live.status === "complete" || live.done) && staged.readyForVerdict;
   const stageCopy = froglingsStageCopy(live, staged);
+  const showSlowWait = slowWait.visible;
+  const bannerClassName = showSlowWait
+    ? "sticky top-3 z-30 overflow-hidden rounded-2xl border border-leaf/45 bg-gradient-to-br from-panel/98 via-mint/90 to-cream/95 p-5 shadow-[0_16px_42px_rgba(38,107,76,0.18)] ring-2 ring-leaf/15 backdrop-blur supports-[backdrop-filter]:from-panel/95 supports-[backdrop-filter]:via-mint/80 supports-[backdrop-filter]:to-cream/90"
+    : "sticky top-3 z-30 rounded-2xl border border-mud/20 bg-panel/95 p-5 shadow-lily backdrop-blur supports-[backdrop-filter]:bg-panel/90";
 
   return (
-    <section className="sticky top-3 z-30 rounded-2xl border border-mud/20 bg-panel/95 p-5 shadow-lily backdrop-blur supports-[backdrop-filter]:bg-panel/90">
+    <section className={bannerClassName}>
       <div className="text-[11px] font-extrabold uppercase tracking-wide text-mud/60">
         Question
       </div>
       <div className="mt-1 text-lg leading-snug text-ink">
         {literalQuestionText(live.subject)}
       </div>
-      {!showStartSequence ? (
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-xs font-bold text-mud">
-          {isActuallyDone ? null : (
-            <Loader2 className="h-3 w-3 animate-spin text-leaf" />
-          )}
-          {stageCopy}
-        </div>
+      {!showStartSequence || showSlowWait ? (
+        showSlowWait ? (
+          <div className="mt-4 rounded-xl border border-leaf/25 bg-white/55 p-3 shadow-sm" aria-live="polite">
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0">
+                <FunFrog mood={slowWait.side} size={44} bob speaking={slowWait.level !== "normal"} />
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-panel shadow-sm">
+                  <Loader2 className="h-3 w-3 animate-spin text-leaf" />
+                </span>
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-black text-pond">{slowWait.title}</div>
+                <div className="mt-0.5 text-xs leading-relaxed text-ink/70">{slowWait.body}</div>
+              </div>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-pond/10">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-leaf via-mintDark to-berry transition-all duration-500"
+                style={{ width: `${Math.min(100, Math.max(18, (slowWait.elapsedMs / UNUSUAL_FROG_NOTICE_MS) * 100))}%` }}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-cream/70 px-3 py-1 text-xs font-bold text-mud">
+            {isActuallyDone ? null : (
+              <Loader2 className="h-3 w-3 animate-spin text-leaf" />
+            )}
+            {stageCopy}
+          </div>
+        )
       ) : null}
     </section>
   );

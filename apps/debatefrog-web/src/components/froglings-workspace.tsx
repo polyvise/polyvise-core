@@ -41,12 +41,14 @@ import {
   BarChart3,
   CheckCircle2,
   ChevronDown,
+  CircleHelp,
   ExternalLink,
   Loader2,
   RotateCcw,
   Send,
   Settings,
   SlidersHorizontal,
+  XCircle,
   Volume2,
   VolumeX,
   X
@@ -2274,9 +2276,10 @@ function Verdict({
   }
   const pct = Math.round(live.scorecard.confidence * 100);
   const verdictCopy = froglingsVerdictCopy(live.scorecard, live.topicKind, live.summary);
+  const verdictDecision = froglingsVerdictDecision(live.scorecard.recommendation);
   return (
     <section ref={verdictRef} className="rounded-2xl border border-mud/20 bg-panel/95 p-6 shadow-lily">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-start gap-4 sm:max-w-xl">
           <div className="flex shrink-0 flex-col items-center gap-1">
             <FunFrog mood="judge" size={64} hop />
@@ -2284,8 +2287,27 @@ function Verdict({
               Judge
             </span>
           </div>
-          <div>
-            <h2 className="text-xl font-black leading-snug text-pond">{verdictCopy.headline}</h2>
+          <div className="min-w-0">
+            <div
+              className={`inline-flex max-w-full items-center gap-3 rounded-2xl border px-4 py-3 shadow-sm ${verdictDecision.className}`}
+              aria-label={`Judge decision: ${verdictDecision.label}`}
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70">
+                <verdictDecision.Icon className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[11px] font-black uppercase tracking-wide opacity-70">
+                  Judge's pick
+                </span>
+                <span className="block text-2xl font-black leading-none tracking-normal sm:text-3xl">
+                  {verdictDecision.label}
+                </span>
+                <span className="mt-1 block text-xs font-bold leading-snug opacity-75">
+                  {verdictDecision.subLabel}
+                </span>
+              </span>
+            </div>
+            <h2 className="mt-3 text-xl font-black leading-snug text-pond">{verdictCopy.headline}</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink/85">{verdictCopy.body}</p>
           </div>
         </div>
@@ -2319,6 +2341,47 @@ function scrollActiveFrogIntoView(element: HTMLElement | null) {
 function froglingsVerdictPendingCopy(status: DebateStatus): string {
   if (status === "judging") return "The judge frog is thinking about who made the better case...";
   return "The judge frog is listening until all four rounds are finished.";
+}
+
+function froglingsVerdictDecision(recommendation: Scorecard["recommendation"]) {
+  switch (recommendation) {
+    case "conditional_yes":
+      return {
+        label: "Probably YES",
+        subLabel: "Green frog is ahead, with some care.",
+        Icon: CheckCircle2,
+        className: "border-leaf/35 bg-mint/75 text-pond"
+      };
+    case "lean_yes":
+      return {
+        label: "YES wins",
+        subLabel: "Green frog made the stronger case.",
+        Icon: CheckCircle2,
+        className: "border-leaf/35 bg-mint/75 text-pond"
+      };
+    case "conditional_no":
+      return {
+        label: "Probably NO",
+        subLabel: "Pink frog made the best argument.",
+        Icon: XCircle,
+        className: "border-berry/35 bg-lily/60 text-berry"
+      };
+    case "lean_no":
+      return {
+        label: "NO wins",
+        subLabel: "Pink frog made the stronger case.",
+        Icon: XCircle,
+        className: "border-berry/35 bg-lily/60 text-berry"
+      };
+    case "mixed":
+    default:
+      return {
+        label: "Too close",
+        subLabel: "Both frogs made strong points.",
+        Icon: CircleHelp,
+        className: "border-[#9978b8]/30 bg-[#9978b8]/12 text-[#5c4583]"
+      };
+  }
 }
 
 function orderedFroglingsTurns(turns: RoundTurn[]) {

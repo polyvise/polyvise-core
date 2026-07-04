@@ -168,6 +168,8 @@ export function ModelQualityReport({ report }: { report: ModelEvalReport }) {
           </div>
         </div>
 
+        <QualityScoreLegend />
+
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[820px] border-separate border-spacing-y-2 text-left">
             <thead>
@@ -175,7 +177,7 @@ export function ModelQualityReport({ report }: { report: ModelEvalReport }) {
                 <SortableHeader label="Model" sortKey="model" sort={sort} onSort={updateSort} />
                 <SortableHeader label="Quality" sortKey="quality" sort={sort} onSort={updateSort} />
                 <SortableHeader label="Latency" sortKey="latency" sort={sort} onSort={updateSort} />
-                <SortableHeader label="Avg cost" sortKey="cost" sort={sort} onSort={updateSort} />
+                <SortableHeader label="Avg debate cost" sortKey="cost" sort={sort} onSort={updateSort} />
                 <SortableHeader label="Success" sortKey="success" sort={sort} onSort={updateSort} />
                 <SortableHeader label="Retries" sortKey="retries" sort={sort} onSort={updateSort} />
                 <SortableHeader label="Notes" sortKey="notes" sort={sort} onSort={updateSort} />
@@ -192,15 +194,16 @@ export function ModelQualityReport({ report }: { report: ModelEvalReport }) {
                     </div>
                   </td>
                   <td className="px-3 py-3 font-black text-ink">
-                    <div>{formatScore(model.averageQuality)}</div>
+                    <div>Overall {formatScore(model.averageQuality)}</div>
                     {model.averageLlmQuality !== undefined || model.averageHeuristicQuality !== undefined ? (
                       <div className="mt-0.5 text-xs font-normal text-ink/45">
-                        LLM {formatScore(model.averageLlmQuality ?? null)} · rules {formatScore(model.averageHeuristicQuality ?? null)}
+                        <div className="whitespace-nowrap">AI judge {formatScore(model.averageLlmQuality ?? null)}</div>
+                        <div className="whitespace-nowrap">Rules check {formatScore(model.averageHeuristicQuality ?? null)}</div>
                       </div>
                     ) : null}
                     {typeof model.averageSecondJudgeQuality === "number" ? (
-                      <div className="mt-0.5 text-xs font-normal text-ink/45">
-                        second opinion {formatScore(model.averageSecondJudgeQuality)}
+                      <div className="mt-0.5 whitespace-nowrap text-xs font-normal text-ink/45">
+                        Second opinion {formatScore(model.averageSecondJudgeQuality)}
                       </div>
                     ) : null}
                   </td>
@@ -221,6 +224,61 @@ export function ModelQualityReport({ report }: { report: ModelEvalReport }) {
         </div>
       </section>
     </div>
+  );
+}
+
+function QualityScoreLegend() {
+  const qualityTerms = [
+    {
+      label: "Overall",
+      description: "The combined score Debatefrog uses to rank model quality."
+    },
+    {
+      label: "AI judge",
+      description: "The main evaluation model's score for answer quality."
+    },
+    {
+      label: "Rules check",
+      description: "A checklist score for format, citations, and complete answers."
+    },
+    {
+      label: "Second opinion",
+      description: "A backup judge score used to spot inconsistent results."
+    }
+  ];
+  const runTerms = [
+    {
+      label: "Avg debate cost",
+      description:
+        "Estimated USD to run one full Debatefrog evaluation debate with that model, averaged across successful test questions. This is not a per-token price and does not include the separate AI judge scoring calls."
+    },
+    {
+      label: "Latency",
+      description:
+        "Average time for a completed evaluation debate. p50 is the middle run; p90 is a slower run near the high end."
+    }
+  ];
+
+  return (
+    <section className="mt-4 rounded-2xl border border-leaf/20 bg-mint/35 p-4">
+      <div className="text-sm font-black text-pond">How to read this report</div>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {qualityTerms.map((term) => (
+          <div key={term.label} className="rounded-xl bg-white/55 px-3 py-2">
+            <div className="text-xs font-black uppercase tracking-wide text-pond">{term.label}</div>
+            <p className="mt-1 text-xs leading-relaxed text-ink/65">{term.description}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 grid gap-3 lg:grid-cols-2">
+        {runTerms.map((term) => (
+          <div key={term.label} className="rounded-xl bg-white/55 px-3 py-2">
+            <div className="text-xs font-black uppercase tracking-wide text-pond">{term.label}</div>
+            <p className="mt-1 text-xs leading-relaxed text-ink/65">{term.description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

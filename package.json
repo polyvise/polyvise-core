@@ -1,12 +1,12 @@
 {
-  "name": "@polyvise/debate-engine",
-  "version": "0.3.0",
+  "name": "@polyvise/core",
+  "version": "0.3.1",
   "description": "Framework-neutral multi-agent debate engine, schemas, providers, and artifact contracts.",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/polyvise/polyvise.git"
+    "url": "git+https://github.com/polyvise/core.git"
   },
   "files": [
     "dist",

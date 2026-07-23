@@ -1,16 +1,16 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { runHybridCouncilDebate } from "@polyvise/debate-engine/debate/engine";
-import { debateRequestSchema } from "@polyvise/debate-engine/debate/schema";
-import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/debate-engine/debate/topic";
-import { loadDebateRuntimeConfig, modelOptionsFromConfig } from "@polyvise/debate-engine/debate/config";
+import { runHybridCouncilDebate } from "@polyvise/core/debate/engine";
+import { debateRequestSchema } from "@polyvise/core/debate/schema";
+import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/core/debate/topic";
+import { loadDebateRuntimeConfig, modelOptionsFromConfig } from "@polyvise/core/debate/config";
 import {
   createDefaultLlmProvider,
   MockLlmProvider,
   OpenRouterLlmProvider,
   type LlmRequest
-} from "@polyvise/debate-engine/providers/llm";
-import { normalizeSources } from "@polyvise/debate-engine/providers/search";
-import type { EvidenceSource, ModelSnapshot } from "@polyvise/debate-engine/debate/types";
+} from "@polyvise/core/providers/llm";
+import { normalizeSources } from "@polyvise/core/providers/search";
+import type { EvidenceSource, ModelSnapshot } from "@polyvise/core/debate/types";
 
 afterEach(() => {
   vi.unstubAllGlobals();

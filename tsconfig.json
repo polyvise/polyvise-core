@@ -16,10 +16,10 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
-      "@polyvise/debate-engine": [
+      "@polyvise/core": [
         "src/index.ts"
       ],
-      "@polyvise/debate-engine/*": [
+      "@polyvise/core/*": [
         "src/*"
       ]
     }

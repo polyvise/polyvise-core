@@ -10,13 +10,13 @@ This repository contains the core library only. Product websites, persistence, A
 ## Install
 
 ```bash
-npm install @polyvise/debate-engine
+npm install @polyvise/core
 ```
 
 ## Example
 
 ```ts
-import { runHybridCouncilDebate } from "@polyvise/debate-engine";
+import { runHybridCouncilDebate } from "@polyvise/core";
 
 const run = await runHybridCouncilDebate("example-run", {
   subject: "Should schools have longer recess?"

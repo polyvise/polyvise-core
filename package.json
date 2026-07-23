@@ -16,23 +16,28 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./debate/*": {
       "types": "./dist/debate/*.d.ts",
-      "import": "./dist/debate/*.js"
+      "import": "./dist/debate/*.js",
+      "default": "./dist/debate/*.js"
     },
     "./providers/*": {
       "types": "./dist/providers/*.d.ts",
-      "import": "./dist/providers/*.js"
+      "import": "./dist/providers/*.js",
+      "default": "./dist/providers/*.js"
     },
     "./publishing/*": {
       "types": "./dist/publishing/*.d.ts",
-      "import": "./dist/publishing/*.js"
+      "import": "./dist/publishing/*.js",
+      "default": "./dist/publishing/*.js"
     },
     "./workflows/*": {
       "types": "./dist/workflows/*.d.ts",
-      "import": "./dist/workflows/*.js"
+      "import": "./dist/workflows/*.js",
+      "default": "./dist/workflows/*.js"
     }
   },
   "scripts": {

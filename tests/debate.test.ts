@@ -1,9 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { runHybridCouncilDebate } from "@polyvise/debate-engine/debate/engine";
-import { debateRequestSchema, feedbackRequestSchema } from "@polyvise/debate-engine/debate/schema";
+import { debateRequestSchema } from "@polyvise/debate-engine/debate/schema";
 import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/debate-engine/debate/topic";
 import { loadDebateRuntimeConfig, modelOptionsFromConfig } from "@polyvise/debate-engine/debate/config";
-import { listFeedback, submitFeedback } from "@polyvise/debate-engine/debate/store";
 import {
   createDefaultLlmProvider,
   MockLlmProvider,
@@ -11,7 +10,6 @@ import {
   type LlmRequest
 } from "@polyvise/debate-engine/providers/llm";
 import { normalizeSources } from "@polyvise/debate-engine/providers/search";
-import { buildFroglingsSourceChips } from "../apps/debatefrog-web/src/lib/source-chips";
 import type { EvidenceSource, ModelSnapshot } from "@polyvise/debate-engine/debate/types";
 
 afterEach(() => {
@@ -119,27 +117,6 @@ describe("request schema", () => {
     });
 
     expect(parsed.devOptions?.liveApis).toBe(true);
-  });
-});
-
-describe("feedback", () => {
-  it("validates anonymous feedback text", () => {
-    expect(feedbackRequestSchema.safeParse({ message: "" }).success).toBe(false);
-    expect(feedbackRequestSchema.safeParse({ message: "x".repeat(2001) }).success).toBe(false);
-    expect(feedbackRequestSchema.safeParse({ message: "The frogs were charming." }).success).toBe(true);
-  });
-
-  it("saves anonymous feedback in the memory repository", async () => {
-    const feedback = await submitFeedback({
-      message: "The judge should explain close calls more clearly.",
-      debateId: "debate_feedback_test",
-      pagePath: "/",
-      userAgent: "vitest"
-    });
-    const allFeedback = await listFeedback();
-
-    expect(feedback.id).toMatch(/^feedback_/);
-    expect(allFeedback.some((item) => item.id === feedback.id && item.message === feedback.message)).toBe(true);
   });
 });
 
@@ -864,60 +841,5 @@ describe("hybrid council engine", () => {
 
     expect(run.status).toBe("complete");
     expect(run.summary.confidence).toBe(run.scorecard.confidence);
-  });
-});
-
-describe("Debatefrog source chips", () => {
-  it("hides mock methodology and placeholder sources while keeping compact live source labels", () => {
-    const sources: EvidenceSource[] = [
-      {
-        id: "mock-method",
-        title: "Modified Oxford-Style Debate Format",
-        url: "https://www.uscourts.gov/about-federal-courts/educational-resources/about-educational-outreach/activity-resources/oxford-style-debate",
-        publisher: "United States Courts",
-        snippet: "Outlines opening arguments.",
-        quality: "methodology",
-        retrievedVia: "mock",
-        status: "accepted"
-      },
-      {
-        id: "placeholder",
-        title: "Evidence search placeholder for policy topics",
-        url: "https://example.com/evidence-provider-required",
-        publisher: "Internal reference",
-        snippet: "Configure a provider.",
-        quality: "context",
-        retrievedVia: "mock",
-        status: "accepted"
-      },
-      {
-        id: "generic-expert",
-        title: "Multi-AI Collaboration Helps Reasoning and Factual Accuracy",
-        url: "https://news.mit.edu/2023/multi-ai-collaboration-helps-reasoning-factual-accuracy-language-models-0918",
-        publisher: "MIT News",
-        snippet: "Covers research showing multiple AI agents can improve reasoning.",
-        quality: "expert",
-        retrievedVia: "mock",
-        status: "accepted"
-      },
-      {
-        id: "live-1",
-        title: "Voting at 16: Turnout and Quality of Vote Choice",
-        url: "https://example.edu/voting-at-16",
-        publisher: "University Civic Lab",
-        snippet: "Research on younger voters.",
-        quality: "expert",
-        retrievedVia: "tavily",
-        status: "accepted"
-      }
-    ];
-
-    expect(buildFroglingsSourceChips(["mock-method", "placeholder", "generic-expert", "live-1"], sources)).toEqual([
-      {
-        id: "live-1",
-        label: "University Civic Lab",
-        url: "https://example.edu/voting-at-16"
-      }
-    ]);
   });
 });

@@ -6,7 +6,6 @@
       "dom.iterable",
       "es2022"
     ],
-    "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -15,20 +14,24 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
-    "incremental": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@polyvise/debate-engine": [
+        "src/index.ts"
+      ],
+      "@polyvise/debate-engine/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
-    "apps/**/*.ts",
-    "apps/**/*.tsx",
-    "packages/**/*.ts",
+    "src/**/*.ts",
     "tests/**/*.ts",
-    "tests/**/*.tsx",
     "vitest.config.ts",
-    "drizzle.config.ts"
+    "tsup.config.ts"
   ],
   "exclude": [
+    "dist",
     "node_modules"
   ]
 }

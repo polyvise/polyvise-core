@@ -1,60 +1,64 @@
 {
-  "name": "polyvise-monorepo",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Polyvise debate engine, professional demo app, and Debatefrog app.",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
+  "name": "@polyvise/debate-engine",
+  "version": "0.3.0",
+  "description": "Framework-neutral multi-agent debate engine, schemas, providers, and artifact contracts.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/polyvise/polyvise.git"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./debate/*": {
+      "types": "./dist/debate/*.d.ts",
+      "import": "./dist/debate/*.js"
+    },
+    "./providers/*": {
+      "types": "./dist/providers/*.d.ts",
+      "import": "./dist/providers/*.js"
+    },
+    "./publishing/*": {
+      "types": "./dist/publishing/*.d.ts",
+      "import": "./dist/publishing/*.js"
+    },
+    "./workflows/*": {
+      "types": "./dist/workflows/*.d.ts",
+      "import": "./dist/workflows/*.js"
+    }
+  },
   "scripts": {
-    "dev": "npm run dev -w @polyvise/polyvise-web",
-    "dev:polyvise": "npm run dev -w @polyvise/polyvise-web",
-    "dev:debatefrog": "npm run dev -w @polyvise/debatefrog-web",
-    "build": "npm run build --workspaces --if-present",
-    "build:polyvise": "npm run build -w @polyvise/polyvise-web",
-    "build:debatefrog": "npm run build -w @polyvise/debatefrog-web",
-    "eval:debatefrog-models": "npm run eval:models -w @polyvise/debatefrog-web",
-    "start": "npm run start:polyvise",
-    "start:polyvise": "npm run start -w @polyvise/polyvise-web",
-    "start:debatefrog": "npm run start -w @polyvise/debatefrog-web",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "prepublishOnly": "npm run verify",
+    "verify": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
-    "@supabase/supabase-js": "latest",
-    "@xyflow/react": "latest",
-    "drizzle-orm": "latest",
-    "inngest": "latest",
-    "lucide-react": "latest",
-    "next": "latest",
-    "postgres": "latest",
-    "react": "latest",
-    "react-dom": "latest",
     "zod": "latest"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "latest",
-    "@testing-library/jest-dom": "latest",
-    "@testing-library/react": "latest",
     "@types/node": "latest",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "autoprefixer": "latest",
-    "drizzle-kit": "latest",
-    "eslint": "latest",
-    "eslint-config-next": "latest",
     "jsdom": "latest",
-    "postcss": "latest",
-    "tailwindcss": "^3.4.17",
+    "tsup": "latest",
     "typescript": "latest",
     "vite-tsconfig-paths": "latest",
     "vitest": "latest"
   },
   "engines": {
     "node": ">=20.11.0"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   }
 }

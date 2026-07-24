@@ -5,6 +5,7 @@ import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/core
 import { loadDebateRuntimeConfig, modelOptionsFromConfig } from "@polyvise/core/debate/config";
 import {
   createDefaultLlmProvider,
+  LlmProviderFailure,
   MockLlmProvider,
   OpenRouterLlmProvider,
   type LlmRequest
@@ -223,8 +224,10 @@ describe("LLM provider selection", () => {
     expect(optionIds).toContain("openai/gpt-4o-mini");
     expect(optionIds).toContain("openai/gpt-4.1");
     expect(optionIds).toContain("google/gemini-2.5-flash");
-    expect(optionIds).toContain("anthropic/claude-sonnet-5");
-    expect(optionIds).toContain("moonshotai/kimi-k3");
+    expect(optionIds).toContain("anthropic/claude-opus-4.8");
+    expect(optionIds).not.toContain("anthropic/claude-sonnet-5");
+    expect(optionIds).not.toContain("google/gemini-3.5-flash");
+    expect(optionIds).not.toContain("moonshotai/kimi-k3");
     expect(optionIds).not.toContain("google/gemini-2.5-pro");
     expect(optionIds).not.toContain("anthropic/claude-3.5-sonnet");
     expect(optionIds.length).toBeGreaterThan(1);
@@ -232,6 +235,43 @@ describe("LLM provider selection", () => {
 });
 
 describe("hybrid council engine", () => {
+  it("does not multiply provider retries at the workflow layer", async () => {
+    class FailingProvider extends MockLlmProvider {
+      calls = 0;
+
+      override async generateStructured<T>(
+        request: LlmRequest
+      ): Promise<{ data: T; snapshot: ModelSnapshot }> {
+        this.calls += 1;
+        throw new LlmProviderFailure("provider attempts exhausted", {
+          id: "failed-provider",
+          provider: "openrouter",
+          model: "moonshotai/kimi-k3",
+          role: request.role,
+          configured: true,
+          failure: "provider attempts exhausted"
+        });
+      }
+    }
+
+    const provider = new FailingProvider();
+    const config = loadDebateRuntimeConfig({
+      POLYVISE_ENABLE_MOCK_LLM: "false",
+      POLYVISE_LLM_MAX_ATTEMPTS: "3",
+      POLYVISE_ALLOW_DETERMINISTIC_FALLBACKS: "false"
+    });
+
+    await expect(
+      runHybridCouncilDebate(
+        "debate_no_compounded_retries",
+        { subject: "Should schools have longer recess?" },
+        undefined,
+        { provider, config }
+      )
+    ).rejects.toBeInstanceOf(LlmProviderFailure);
+    expect(provider.calls).toBe(1);
+  });
+
   it("produces a complete cited debate run", async () => {
     const run = await runHybridCouncilDebate("debate_test", {
       subject: "Should a small company adopt AI customer support this year?"

@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { collectEvidenceWithDiagnostics } from "../providers/search";
-import { createDefaultLlmProvider, type LlmProvider } from "../providers/llm";
+import {
+  createDefaultLlmProvider,
+  LlmProviderFailure,
+  type LlmProvider
+} from "../providers/llm";
 import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "./config";
 import {
   claimOutputSchema,
@@ -557,7 +561,12 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
       };
     } catch (error) {
       lastReason = error instanceof Error ? error.message : "Structured generation failed.";
-      if (attempt < config.llmMaxAttempts) continue;
+      if (error instanceof LlmProviderFailure) {
+        lastSnapshot = error.snapshot;
+      }
+      if (!config.allowDeterministicFallbacks) {
+        throw error;
+      }
       break;
     }
   }

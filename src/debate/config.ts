@@ -1,5 +1,5 @@
 import type { ModelSnapshot } from "./types";
-import { getAvailableModel, getAvailableModels } from "../models/catalog";
+import { getAvailableModels, getKnownModel } from "../models/catalog";
 
 export type EvidenceProviderName = "brave" | "mock" | "tavily";
 
@@ -143,7 +143,7 @@ export function modelOptionsFromConfig(config: DebateRuntimeConfig): {
 }
 
 function labelForModel(id: string): string {
-  const catalogModel = getAvailableModel(id);
+  const catalogModel = getKnownModel(id);
   if (catalogModel) {
     return catalogModel.label;
   }

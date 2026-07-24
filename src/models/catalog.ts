@@ -9,6 +9,7 @@ export type ModelProvider =
 
 export type ModelSpeed = "fast" | "balanced" | "deliberate";
 export type ModelTier = "economy" | "standard" | "premium";
+export type ModelCompatibility = "supported" | "experimental";
 
 export interface AvailableModel {
   id: string;
@@ -17,17 +18,20 @@ export interface AvailableModel {
   speed: ModelSpeed;
   tier: ModelTier;
   reasoning: boolean;
+  compatibility: ModelCompatibility;
+  compatibilityNote?: string;
   notes?: string;
 }
 
-const AVAILABLE_MODELS = [
+const KNOWN_MODELS = [
   {
     id: "openai/gpt-5.5",
     label: "GPT-5.5",
     provider: "openai",
     speed: "balanced",
     tier: "premium",
-    reasoning: true
+    reasoning: true,
+    compatibility: "supported"
   },
   {
     id: "openai/gpt-5.6-sol",
@@ -36,6 +40,7 @@ const AVAILABLE_MODELS = [
     speed: "deliberate",
     tier: "premium",
     reasoning: true,
+    compatibility: "supported",
     notes: "Deep reasoning"
   },
   {
@@ -44,7 +49,8 @@ const AVAILABLE_MODELS = [
     provider: "openai",
     speed: "balanced",
     tier: "standard",
-    reasoning: true
+    reasoning: true,
+    compatibility: "supported"
   },
   {
     id: "openai/gpt-4o-mini",
@@ -53,6 +59,7 @@ const AVAILABLE_MODELS = [
     speed: "fast",
     tier: "economy",
     reasoning: false,
+    compatibility: "supported",
     notes: "Fast, economical"
   },
   {
@@ -61,7 +68,10 @@ const AVAILABLE_MODELS = [
     provider: "anthropic",
     speed: "balanced",
     tier: "premium",
-    reasoning: true
+    reasoning: true,
+    compatibility: "experimental",
+    compatibilityNote:
+      "Returned empty content for Polyvise's production-sized scout contract on July 24, 2026."
   },
   {
     id: "anthropic/claude-opus-4.8",
@@ -70,6 +80,7 @@ const AVAILABLE_MODELS = [
     speed: "deliberate",
     tier: "premium",
     reasoning: true,
+    compatibility: "supported",
     notes: "Deep reasoning"
   },
   {
@@ -78,7 +89,8 @@ const AVAILABLE_MODELS = [
     provider: "anthropic",
     speed: "balanced",
     tier: "standard",
-    reasoning: true
+    reasoning: true,
+    compatibility: "supported"
   },
   {
     id: "google/gemini-3.5-flash",
@@ -87,6 +99,9 @@ const AVAILABLE_MODELS = [
     speed: "fast",
     tier: "standard",
     reasoning: true,
+    compatibility: "experimental",
+    compatibilityNote:
+      "Requires strict JSON Schema mode for Polyvise's production-sized scout contract.",
     notes: "Fast"
   },
   {
@@ -96,6 +111,7 @@ const AVAILABLE_MODELS = [
     speed: "fast",
     tier: "economy",
     reasoning: false,
+    compatibility: "supported",
     notes: "Fast, economical"
   },
   {
@@ -105,6 +121,7 @@ const AVAILABLE_MODELS = [
     speed: "fast",
     tier: "economy",
     reasoning: true,
+    compatibility: "supported",
     notes: "Fast, economical"
   },
   {
@@ -113,7 +130,8 @@ const AVAILABLE_MODELS = [
     provider: "deepseek",
     speed: "deliberate",
     tier: "standard",
-    reasoning: true
+    reasoning: true,
+    compatibility: "supported"
   },
   {
     id: "deepseek/deepseek-v4-flash",
@@ -122,6 +140,7 @@ const AVAILABLE_MODELS = [
     speed: "fast",
     tier: "economy",
     reasoning: true,
+    compatibility: "supported",
     notes: "Fast"
   },
   {
@@ -130,7 +149,8 @@ const AVAILABLE_MODELS = [
     provider: "xai",
     speed: "balanced",
     tier: "premium",
-    reasoning: true
+    reasoning: true,
+    compatibility: "supported"
   },
   {
     id: "z-ai/glm-5.2",
@@ -138,7 +158,8 @@ const AVAILABLE_MODELS = [
     provider: "zai",
     speed: "balanced",
     tier: "standard",
-    reasoning: true
+    reasoning: true,
+    compatibility: "supported"
   },
   {
     id: "moonshotai/kimi-k3",
@@ -146,7 +167,10 @@ const AVAILABLE_MODELS = [
     provider: "moonshot",
     speed: "balanced",
     tier: "standard",
-    reasoning: true
+    reasoning: true,
+    compatibility: "experimental",
+    compatibilityNote:
+      "Returned empty content for both production-sized scout and claim contracts on July 24, 2026."
   }
 ] as const satisfies readonly AvailableModel[];
 
@@ -158,10 +182,23 @@ const AVAILABLE_MODELS = [
  * cannot mutate the shared catalog.
  */
 export function getAvailableModels(): AvailableModel[] {
-  return AVAILABLE_MODELS.map((model) => ({ ...model }));
+  return KNOWN_MODELS
+    .filter((model) => model.compatibility === "supported")
+    .map((model) => ({ ...model }));
 }
 
 export function getAvailableModel(id: string): AvailableModel | undefined {
-  const model = AVAILABLE_MODELS.find((candidate) => candidate.id === id);
+  const model = KNOWN_MODELS.find(
+    (candidate) => candidate.id === id && candidate.compatibility === "supported"
+  );
+  return model ? { ...model } : undefined;
+}
+
+export function getKnownModels(): AvailableModel[] {
+  return KNOWN_MODELS.map((model) => ({ ...model }));
+}
+
+export function getKnownModel(id: string): AvailableModel | undefined {
+  const model = KNOWN_MODELS.find((candidate) => candidate.id === id);
   return model ? { ...model } : undefined;
 }

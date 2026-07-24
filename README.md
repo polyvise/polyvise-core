@@ -43,6 +43,69 @@ Applications own:
 - environment and secret management
 - UI, brand copy, deployment, and operations
 
+## Architecture
+
+Each product is an independently deployed application with its own UI, API,
+services, and persistence. Both consume the same framework-neutral core
+package. Debatefrog is the primary reference implementation; additional
+products and interfaces can reuse the same package without moving
+application-specific behavior into the core.
+
+```mermaid
+flowchart TB
+    users["Browser users"]
+    cli["CLI<br/><i>planned consumer</i>"]
+
+    subgraph apps["Application repositories"]
+        direction LR
+        debatefrog["polyvise/debatefrog<br/>debatefrog.com<br/><b>primary reference app</b>"]
+        polyviseai["polyvise/polyvise-ai<br/>polyvise.ai<br/><b>professional workspace</b>"]
+    end
+
+    subgraph runtime["Application-owned runtime"]
+        direction LR
+        ui["Web UI"]
+        api["HTTP + streaming API"]
+        services["Services + event delivery"]
+        persistence["Persistence + migrations"]
+        ui --> api --> services --> persistence
+    end
+
+    subgraph core["polyvise/core · @polyvise/core"]
+        direction LR
+        contracts["Schemas + domain contracts"]
+        debate["Debate engine<br/>framing · agents · judge"]
+        workflow["Workflow orchestration"]
+        providers["Provider ports + adapters<br/>LLM · evidence"]
+        artifacts["Traces + artifact manifests"]
+        contracts --> debate --> workflow
+        providers --> workflow --> artifacts
+    end
+
+    subgraph infrastructure["External infrastructure"]
+        direction LR
+        models["Model providers"]
+        evidence["Search + evidence"]
+        stores["App data stores"]
+        cloud["Cloud deployment"]
+    end
+
+    users --> debatefrog
+    users --> polyviseai
+    debatefrog --> runtime
+    polyviseai --> runtime
+    runtime --> core
+    cli -. future .-> core
+    providers --> models
+    providers --> evidence
+    persistence --> stores
+    apps --> cloud
+```
+
+The CLI is intentionally shown as planned: it is a natural thin consumer of
+`@polyvise/core`, but it is not currently implemented. The richer editable
+architecture map lives in the project Obsidian vault.
+
 ## Development
 
 ```bash

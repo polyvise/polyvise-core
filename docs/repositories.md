@@ -4,7 +4,7 @@ The Polyvise organization uses independent release units:
 
 | Repository | Responsibility |
 | --- | --- |
-| `polyvise/core` | Core library |
+| `polyvise/polyvise-core` | Core library |
 | `polyvise/polyvise-ai` | `polyvise.ai` website |
 | `polyvise/debatefrog` | `debatefrog.com` reference implementation |
 

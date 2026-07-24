@@ -71,7 +71,7 @@ flowchart TB
         ui --> api --> services --> persistence
     end
 
-    subgraph core["polyvise/core · @polyvise/core"]
+    subgraph core["polyvise/polyvise-core · @polyvise/core"]
         direction LR
         contracts["Schemas + domain contracts"]
         debate["Debate engine<br/>framing · agents · judge"]

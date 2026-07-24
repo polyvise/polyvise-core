@@ -1,4 +1,5 @@
 import type { ModelSnapshot } from "./types";
+import { getAvailableModel, getAvailableModels } from "../models/catalog";
 
 export type EvidenceProviderName = "brave" | "mock" | "tavily";
 
@@ -19,14 +20,6 @@ export interface DebateRuntimeConfig {
   useStrictJsonSchema: boolean;
   modelOptions: string[];
 }
-
-const DEFAULT_OPENROUTER_MODEL_OPTIONS = [
-  "google/gemini-2.5-flash",
-  "anthropic/claude-3.5-haiku",
-  "openai/gpt-4o-mini",
-  "openai/gpt-4.1",
-  "openai/gpt-4o"
-];
 
 export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): DebateRuntimeConfig {
   const isProduction = env.NODE_ENV === "production";
@@ -51,7 +44,7 @@ export function loadDebateRuntimeConfig(env: NodeJS.ProcessEnv = process.env): D
       env.POLYVISE_YES_MODEL || "google/gemini-2.5-flash",
       env.POLYVISE_NO_MODEL || "google/gemini-2.5-flash",
       env.POLYVISE_JUDGE_MODEL || "openai/gpt-4.1",
-      ...DEFAULT_OPENROUTER_MODEL_OPTIONS
+      ...getAvailableModels().map((model) => model.id)
     ])
   };
 }
@@ -150,6 +143,11 @@ export function modelOptionsFromConfig(config: DebateRuntimeConfig): {
 }
 
 function labelForModel(id: string): string {
+  const catalogModel = getAvailableModel(id);
+  if (catalogModel) {
+    return catalogModel.label;
+  }
+
   return id
     .split("/")
     .pop()!

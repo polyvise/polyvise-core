@@ -223,7 +223,8 @@ describe("LLM provider selection", () => {
     expect(optionIds).toContain("openai/gpt-4o-mini");
     expect(optionIds).toContain("openai/gpt-4.1");
     expect(optionIds).toContain("google/gemini-2.5-flash");
-    expect(optionIds).toContain("anthropic/claude-3.5-haiku");
+    expect(optionIds).toContain("anthropic/claude-sonnet-5");
+    expect(optionIds).toContain("moonshotai/kimi-k3");
     expect(optionIds).not.toContain("google/gemini-2.5-pro");
     expect(optionIds).not.toContain("anthropic/claude-3.5-sonnet");
     expect(optionIds.length).toBeGreaterThan(1);

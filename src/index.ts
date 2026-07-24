@@ -3,6 +3,7 @@ export * from "./debate/engine";
 export * from "./debate/schema";
 export * from "./debate/topic";
 export * from "./debate/types";
+export * from "./models/catalog";
 export * from "./providers/llm";
 export * from "./providers/search";
 export * from "./publishing/manifest";

@@ -92,6 +92,11 @@ export interface DebateRun {
   status: DebateStatus;
   startedAt: string;
   completedAt?: string;
+  /**
+   * The council shape this run actually used. Optional because runs persisted
+   * before this field existed cannot report it.
+   */
+  councilSize?: CouncilSize;
   events: DebateEvent[];
   scouts: StanceScout[];
   teams: DebateTeam;
@@ -105,6 +110,31 @@ export interface DebateRun {
   modelSnapshots: ModelSnapshot[];
   artifactManifest: RunArtifact[];
   trace: RunTraceEntry[];
+  /**
+   * Which parts of this run are deterministic filler rather than model output.
+   *
+   * The live event stream carries a per-step `placeholder`, but a consumer
+   * reading a stored run has no other way to tell: fallback turns sit in
+   * `turns` looking exactly like real ones. Anything named here MUST NOT be
+   * presented as a real answer.
+   *
+   * Optional because runs persisted before this field existed cannot report
+   * it — absent means "unknown", not "nothing fell back".
+   */
+  placeholders?: RunPlaceholders;
+}
+
+/**
+ * Deterministic-fallback markers for a whole run, keyed by the step that fell
+ * back. Turns are keyed by round, so one failed round doesn't discard the
+ * rounds that succeeded.
+ */
+export interface RunPlaceholders {
+  scouts?: PlaceholderInfo;
+  claims?: PlaceholderInfo;
+  turns?: Partial<Record<DebateRound, PlaceholderInfo>>;
+  scorecard?: PlaceholderInfo;
+  summary?: PlaceholderInfo;
 }
 
 export interface DebateEvent {
@@ -195,6 +225,12 @@ export interface RoundTurn {
   claimIds: string[];
   sourceIds: string[];
   createdAt: string;
+  /**
+   * The model that actually wrote this turn. Only set when a real model call
+   * produced it — a turn left over from a fallback batch has no model to name,
+   * and claiming one would be worse than leaving it blank.
+   */
+  model?: string;
 }
 
 export interface Scorecard {

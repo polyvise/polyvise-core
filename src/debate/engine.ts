@@ -32,6 +32,7 @@ import type {
   ProductNote,
   RoundTurn,
   RunArtifact,
+  RunPlaceholders,
   RunTraceEntry,
   Scorecard,
   StanceScout,
@@ -133,6 +134,9 @@ class DebateWorkflowExecutor {
     const events: DebateEvent[] = [];
     const trace: RunTraceEntry[] = [];
     const snapshots: ModelSnapshot[] = [];
+    // Mirrors the per-step `placeholder` on the event stream so a consumer
+    // reading the stored run can tell filler from model output.
+    const placeholders: RunPlaceholders = {};
     // "quartet" is the legacy shape (2 pro + 2 con). "duo" is the simpler
     // 1-on-1 shape used by the /froglings funner experience.
     const councilSize: CouncilSize = request.councilSize ?? "quartet";
@@ -188,6 +192,7 @@ class DebateWorkflowExecutor {
       };
     });
     const scouts = scoutResult;
+    if (scoutsPlaceholder) placeholders.scouts = scoutsPlaceholder;
     this.emit({ kind: "scouts", scouts, ...(scoutsPlaceholder ? { placeholder: scoutsPlaceholder } : {}) });
 
     const teams = await runStep(trace, "team_builder", async () => {
@@ -270,6 +275,7 @@ class DebateWorkflowExecutor {
       };
     });
     const claims = claimOutput;
+    if (claimsPlaceholder) placeholders.claims = claimsPlaceholder;
     this.emit({ kind: "claims", claims, ...(claimsPlaceholder ? { placeholder: claimsPlaceholder } : {}) });
     const { nodes, edges } = buildArgumentMap(framed, claims, sources);
     this.emit({ kind: "argument_map", nodes, edges });
@@ -342,7 +348,11 @@ class DebateWorkflowExecutor {
           recordSnapshot(snapshot);
           roundPlaceholder = roundPlaceholder ?? placeholder;
           const batchTurns = reconcileGeneratedTurns(data.turns, batch.turns, this.config);
-          generatedTurns.push(...batchTurns);
+          // Only name a model on turns a model actually wrote. A fallback batch
+          // has a requested model, but it didn't produce this text.
+          generatedTurns.push(
+            ...(placeholder ? batchTurns : batchTurns.map((turn) => ({ ...turn, model: snapshot.model })))
+          );
         }
 
         return {
@@ -357,6 +367,9 @@ class DebateWorkflowExecutor {
       });
 
       openingTurns.push(...turnsForRound);
+      if (roundPlaceholder) {
+        placeholders.turns = { ...placeholders.turns, [round]: roundPlaceholder };
+      }
       this.emit({
         kind: "turns",
         round,
@@ -396,6 +409,7 @@ class DebateWorkflowExecutor {
         value: calibrateScorecardForPolicyBurden(data, framed, claims, openingTurns)
       };
     });
+    if (scorecardPlaceholder) placeholders.scorecard = scorecardPlaceholder;
     this.emit({
       kind: "scorecard",
       scorecard,
@@ -431,6 +445,7 @@ class DebateWorkflowExecutor {
         value: normalizeSummary(data, scorecard.confidence)
       };
     });
+    if (summaryPlaceholder) placeholders.summary = summaryPlaceholder;
     this.emit({
       kind: "summary",
       summary,
@@ -458,6 +473,7 @@ class DebateWorkflowExecutor {
       status: "complete",
       startedAt,
       completedAt: now(),
+      councilSize,
       events,
       scouts,
       teams,
@@ -470,7 +486,8 @@ class DebateWorkflowExecutor {
       summary,
       modelSnapshots,
       artifactManifest,
-      trace
+      trace,
+      placeholders
     };
   }
 }
@@ -586,7 +603,10 @@ async function generateStructured<TSchema extends z.ZodTypeAny>(
   return {
     data: fallbackParse.data,
     snapshot: {
-      id: `fallback-${schemaName}`,
+      // Role, not just schema name: several steps share a schema (every turn
+      // round uses debateTurnOutput), and `mergeModelSnapshots` dedupes on id,
+      // so a schema-only id silently discarded all but the last failure.
+      id: `fallback-${schemaName}-${role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
       provider: "local",
       model: requestedModel,
       role,

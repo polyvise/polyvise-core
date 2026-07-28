@@ -884,3 +884,205 @@ describe("hybrid council engine", () => {
     expect(run.summary.confidence).toBe(run.scorecard.confidence);
   });
 });
+
+describe("fallback reporting on a stored run", () => {
+  /** Fails only for the roles named, so the rest of the run succeeds normally. */
+  class SelectivelyFailingProvider extends MockLlmProvider {
+    constructor(private readonly failingRoles: string[]) {
+      super();
+    }
+
+    override async generateStructured<T>(
+      request: LlmRequest
+    ): Promise<{ data: T; snapshot: ModelSnapshot }> {
+      if (this.failingRoles.some((role) => request.role.includes(role))) {
+        throw new LlmProviderFailure(`no usable response for ${request.role}`, {
+          id: `failed-${request.role}`,
+          provider: "openrouter",
+          model: "openai/gpt-4o-mini",
+          role: request.role,
+          configured: true,
+          failure: `no usable response for ${request.role}`
+        });
+      }
+
+      return super.generateStructured<T>(request);
+    }
+  }
+
+  it("records nothing when every step got a real answer", async () => {
+    const run = await runHybridCouncilDebate("debate_no_placeholders", {
+      subject: "Should schools have longer recess for kids?"
+    });
+
+    expect(run.placeholders).toEqual({});
+  });
+
+  it("names the steps that fell back, keyed by round for turns", async () => {
+    const run = await runHybridCouncilDebate(
+      "debate_placeholders_recorded",
+      { subject: "Should schools have longer recess for kids?" },
+      undefined,
+      { provider: new SelectivelyFailingProvider(["rebuttal round", "final summary"]) }
+    );
+
+    expect(run.status).toBe("complete");
+    // The rebuttal round and the summary fell back...
+    expect(run.placeholders?.turns?.rebuttal?.reason).toContain("no usable response");
+    expect(run.placeholders?.summary?.reason).toContain("no usable response");
+    // ...and nothing else did, so a reader can still trust the other rounds.
+    expect(run.placeholders?.turns?.opening).toBeUndefined();
+    expect(run.placeholders?.scouts).toBeUndefined();
+    expect(run.placeholders?.scorecard).toBeUndefined();
+  });
+
+  /**
+   * A provider that dies without an `LlmProviderFailure` leaves the engine to
+   * synthesise its own fallback snapshot — the path where the id used to be
+   * built from the schema name alone.
+   */
+  class PlainErrorProvider extends MockLlmProvider {
+    constructor(private readonly failingRoles: string[]) {
+      super();
+    }
+
+    override async generateStructured<T>(
+      request: LlmRequest
+    ): Promise<{ data: T; snapshot: ModelSnapshot }> {
+      if (this.failingRoles.some((role) => request.role.includes(role))) {
+        throw new Error(`no usable response for ${request.role}`);
+      }
+
+      return super.generateStructured<T>(request);
+    }
+  }
+
+  it("keeps one fallback snapshot per failed step instead of collapsing them", async () => {
+    const run = await runHybridCouncilDebate(
+      "debate_distinct_fallback_snapshots",
+      { subject: "Should schools have longer recess for kids?" },
+      undefined,
+      // Two rounds share the debateTurnOutput schema. Keyed on schema name
+      // alone their snapshots collided, and the id-keyed merge into
+      // modelSnapshots silently kept only the last one.
+      { provider: new PlainErrorProvider(["rebuttal round", "cross-examination round"]) }
+    );
+
+    const failed = run.modelSnapshots.filter((snapshot) => snapshot.failure);
+    const roles = failed.map((snapshot) => snapshot.role);
+
+    expect(roles).toContain("rebuttal round");
+    expect(roles).toContain("cross-examination round");
+    expect(new Set(failed.map((snapshot) => snapshot.id)).size).toBe(failed.length);
+  });
+
+  it("reports both rounds as fallbacks when the provider dies without a snapshot", async () => {
+    const run = await runHybridCouncilDebate(
+      "debate_plain_error_placeholders",
+      { subject: "Should schools have longer recess for kids?" },
+      undefined,
+      { provider: new PlainErrorProvider(["rebuttal round", "cross-examination round"]) }
+    );
+
+    expect(run.placeholders?.turns?.rebuttal).toBeDefined();
+    expect(run.placeholders?.turns?.cross_examination).toBeDefined();
+  });
+
+  it("names the model on real turns and leaves it off fallback turns", async () => {
+    const run = await runHybridCouncilDebate(
+      "debate_turn_model_attribution",
+      { subject: "Should schools have longer recess for kids?" },
+      undefined,
+      { provider: new SelectivelyFailingProvider(["rebuttal round"]) }
+    );
+
+    const opening = run.turns.filter((turn) => turn.round === "opening");
+    const rebuttal = run.turns.filter((turn) => turn.round === "rebuttal");
+
+    expect(opening.length).toBeGreaterThan(0);
+    expect(opening.every((turn) => turn.model === "deterministic-template")).toBe(true);
+    expect(rebuttal.length).toBeGreaterThan(0);
+    expect(rebuttal.every((turn) => turn.model === undefined)).toBe(true);
+  });
+
+  it("records the council shape it actually ran", async () => {
+    const quartet = await runHybridCouncilDebate("debate_shape_quartet", {
+      subject: "Should schools have longer recess for kids?"
+    });
+    const duo = await runHybridCouncilDebate("debate_shape_duo", {
+      subject: "Should schools have longer recess for kids?",
+      councilSize: "duo"
+    });
+
+    expect(quartet.councilSize).toBe("quartet");
+    expect(duo.councilSize).toBe("duo");
+  });
+});
+
+describe("per-call model override", () => {
+  it("calls the requested model instead of the one the role routes to", async () => {
+    const fetchMock = vi.fn(async () =>
+      new Response(
+        JSON.stringify({ choices: [{ message: { content: "{\"ok\":true}" } }] }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const config = loadDebateRuntimeConfig({
+      POLYVISE_ENABLE_MOCK_LLM: "false",
+      POLYVISE_QUICK_MODEL: "google/gemini-2.5-flash"
+    });
+    const provider = new OpenRouterLlmProvider(config, "test-openrouter-key");
+
+    expect(provider.modelForRole("model lab")).toBe("google/gemini-2.5-flash");
+
+    const result = await provider.generateStructured<{ ok: boolean }>({
+      role: "model lab",
+      schemaName: "labAnswerOutput",
+      prompt: "{}",
+      model: "anthropic/claude-opus-4.8"
+    });
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      "https://openrouter.ai/api/v1/chat/completions",
+      expect.objectContaining({
+        body: expect.stringContaining("\"model\":\"anthropic/claude-opus-4.8\"")
+      })
+    );
+    expect(result.snapshot.model).toBe("anthropic/claude-opus-4.8");
+  });
+
+  it("keeps snapshot ids distinct when one role asks several models", async () => {
+    const provider = new MockLlmProvider();
+    const first = await provider.generateStructured({
+      role: "model lab",
+      schemaName: "labAnswerOutput",
+      prompt: "{}",
+      fallback: {},
+      model: "openai/gpt-5.5"
+    });
+    const second = await provider.generateStructured({
+      role: "model lab",
+      schemaName: "labAnswerOutput",
+      prompt: "{}",
+      fallback: {},
+      model: "google/gemini-2.5-flash"
+    });
+
+    expect(first.snapshot.id).not.toBe(second.snapshot.id);
+  });
+
+  it("leaves role-routed snapshot ids unchanged", async () => {
+    const provider = new MockLlmProvider();
+    const { snapshot } = await provider.generateStructured({
+      role: "claim builder",
+      schemaName: "claimOutput",
+      prompt: "{}",
+      fallback: {}
+    });
+
+    expect(snapshot.id).toBe("mock-claim-builder");
+  });
+});

@@ -1,6 +1,6 @@
 {
   "name": "@polyvise/core",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Framework-neutral multi-agent debate engine, schemas, providers, and artifact contracts.",
   "type": "module",
   "license": "MIT",
@@ -19,6 +19,7 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
+    "./package.json": "./package.json",
     "./debate/*": {
       "types": "./dist/debate/*.d.ts",
       "import": "./dist/debate/*.js",

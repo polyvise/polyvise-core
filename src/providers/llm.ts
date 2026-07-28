@@ -8,6 +8,15 @@ export interface LlmRequest {
   jsonSchema?: Record<string, unknown>;
   fallback?: unknown;
   sessionId?: string;
+  /**
+   * Call this exact model instead of the one the role would route to.
+   *
+   * Role-based routing is what the debate engine wants — the slot config
+   * decides which model argues which side. Callers that need to address one
+   * specific model (a side-by-side comparison, an eval harness) set this and
+   * bypass routing entirely.
+   */
+  model?: string;
 }
 
 export interface LlmProvider {
@@ -22,6 +31,21 @@ export interface LlmProvider {
 }
 
 export const modelRoster: ModelSnapshot[] = modelRosterFromConfig(loadDebateRuntimeConfig());
+
+function slug(value: string): string {
+  return value.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+}
+
+/**
+ * Snapshot ids have to stay unique within a run, because `mergeModelSnapshots`
+ * dedupes on them. Role alone is enough for the debate engine, where each role
+ * is called once — but a caller overriding the model asks the same role
+ * repeatedly, so the model has to be part of the id in that case.
+ */
+function snapshotId(prefix: string, request: LlmRequest): string {
+  const base = `${prefix}-${slug(request.role)}`;
+  return request.model ? `${base}-${slug(request.model)}` : base;
+}
 
 export function createDefaultLlmProvider(config = loadDebateRuntimeConfig()): LlmProvider {
   if (config.enableMockLlm) {
@@ -39,7 +63,7 @@ export class MockLlmProvider implements LlmProvider {
     return {
       data: (request.fallback ?? JSON.parse(request.prompt)) as T,
       snapshot: {
-        id: `mock-${request.role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
+        id: snapshotId("mock", request),
         provider: "local",
         model: "deterministic-template",
         role: request.role,
@@ -82,7 +106,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
   ) {}
 
   async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
-    const model = this.modelForRole(request.role);
+    const model = request.model?.trim() || this.modelForRole(request.role);
     const started = Date.now();
     const attempts: ModelCallAttempt[] = [];
 
@@ -163,7 +187,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
 
     const message = lastError instanceof Error ? sanitizeProviderMessage(lastError.message) : "AI model request failed.";
     throw new LlmProviderFailure(message, {
-      id: `openrouter-${request.role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
+      id: snapshotId("openrouter", request),
       provider: "openrouter",
       model,
       role: request.role,
@@ -250,7 +274,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
       return {
         data: JSON.parse(content) as T,
         snapshot: {
-          id: `openrouter-${request.role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
+          id: snapshotId("openrouter", request),
           provider: "openrouter",
           model,
           role: request.role,

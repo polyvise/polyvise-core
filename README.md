@@ -5,7 +5,7 @@ Polyvise is a framework-neutral TypeScript library for structured, cited, multi-
 This repository contains the core library only. Product websites, persistence, API routes, deployment configuration, and brand-specific behavior live in separate repositories:
 
 - [`polyvise/polyvise-ai`](https://github.com/polyvise/polyvise-ai) — `polyvise.ai`
-- [`polyvise/debatefrog`](https://github.com/polyvise/debatefrog) — `debatefrog.com` is the primary reference implementation
+- [`polyvise/debatefrog`](https://github.com/polyvise/debatefrog) — `debatefrog.com` is a cute reference implementation
 
 ## Install
 

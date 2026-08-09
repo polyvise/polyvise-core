@@ -20,10 +20,25 @@
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json",
+    "./consensus/*": {
+      "types": "./dist/consensus/*.d.ts",
+      "import": "./dist/consensus/*.js",
+      "default": "./dist/consensus/*.js"
+    },
     "./debate/*": {
       "types": "./dist/debate/*.d.ts",
       "import": "./dist/debate/*.js",
       "default": "./dist/debate/*.js"
+    },
+    "./panel/*": {
+      "types": "./dist/panel/*.d.ts",
+      "import": "./dist/panel/*.js",
+      "default": "./dist/panel/*.js"
+    },
+    "./runs/*": {
+      "types": "./dist/runs/*.d.ts",
+      "import": "./dist/runs/*.js",
+      "default": "./dist/runs/*.js"
     },
     "./models/*": {
       "types": "./dist/models/*.d.ts",

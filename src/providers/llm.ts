@@ -298,10 +298,24 @@ export class OpenRouterLlmProvider implements LlmProvider {
     if (normalized.includes("no frog")) {
       return this.config.noModel;
     }
-    if (normalized.includes("judge") || normalized.includes("summary") || normalized.includes("scorecard")) {
+    // "chair" joins the judge slot for the same reason judge and summary are
+    // there: it is the step that weighs everything else and writes the verdict.
+    if (
+      normalized.includes("judge") ||
+      normalized.includes("summary") ||
+      normalized.includes("scorecard") ||
+      normalized.includes("chair")
+    ) {
       return this.config.judgeModel;
     }
-    if (normalized.includes("claim") || normalized.includes("rebuttal")) {
+    // Panel advice and consensus positions are the reasoning-heavy steps of
+    // their modes, so they route to the deep slot alongside claims.
+    if (
+      normalized.includes("claim") ||
+      normalized.includes("rebuttal") ||
+      normalized.includes("consensus agent") ||
+      normalized.startsWith("panel ")
+    ) {
       return this.config.deepModel;
     }
     return this.config.quickModel;

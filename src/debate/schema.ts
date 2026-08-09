@@ -18,6 +18,22 @@ export const debateModelSelectionSchema = z
   .partial()
   .optional();
 
+export const consensusOptionsSchema = z
+  .object({
+    agentCount: z.number().int().min(3).max(7).default(5),
+    rounds: z.number().int().min(2).max(5).default(3),
+    convergenceThreshold: z.number().min(0).max(1).default(0.25)
+  })
+  .partial()
+  .optional();
+
+export const advisoryPanelOptionsSchema = z
+  .object({
+    lenses: z.array(z.enum(["economist", "ethicist", "operator", "skeptic"])).min(2).max(4)
+  })
+  .partial()
+  .optional();
+
 export const debateRequestSchema = z.object({
   subject: z
     .string()
@@ -25,12 +41,16 @@ export const debateRequestSchema = z.object({
     .min(4, "Enter at least a short subject.")
     .max(600, "Keep the subject under 600 characters."),
   context: z.string().trim().max(1600, "Keep context under 1600 characters.").optional(),
-  mode: z.literal("hybrid_council").default("hybrid_council"),
+  // Defaults to hybrid_council so a request that predates the other modes
+  // still parses to exactly what it used to mean.
+  mode: z.enum(["hybrid_council", "consensus", "advisory_panel"]).default("hybrid_council"),
   evidence: z.literal("cited").default("cited"),
   models: debateModelSelectionSchema,
   // Defaults to "quartet" so legacy callers keep the canonical 2+2+judge
   // shape. The /froglings UI sends "duo" for a 1-on-1 debate.
   councilSize: z.enum(["duo", "quartet"]).default("quartet"),
+  consensus: consensusOptionsSchema,
+  panel: advisoryPanelOptionsSchema,
   devOptions: z
     .object({
       liveApis: z.boolean().optional()

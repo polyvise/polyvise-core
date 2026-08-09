@@ -40,7 +40,12 @@ import type {
 } from "./types";
 import { z } from "zod";
 
-type FramedDebate = {
+/**
+ * The framed question every mode starts from. Exported because consensus and
+ * the advisory panel frame their input exactly the same way — only what they
+ * do afterwards differs.
+ */
+export type FramedDebate = {
   subject: string;
   context?: string;
   resolution: string;

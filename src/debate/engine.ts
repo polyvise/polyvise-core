@@ -1,10 +1,14 @@
-import { randomUUID } from "node:crypto";
 import { collectEvidenceWithDiagnostics } from "../providers/search";
+import { createDefaultLlmProvider, type LlmProvider } from "../providers/llm";
 import {
-  createDefaultLlmProvider,
-  LlmProviderFailure,
-  type LlmProvider
-} from "../providers/llm";
+  average,
+  generateStructured,
+  makeId,
+  mergeModelSnapshots,
+  now,
+  pushEvent as pushRunEvent,
+  runStep
+} from "../runs/execution";
 import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "./config";
 import {
   claimOutputSchema,
@@ -495,141 +499,6 @@ class DebateWorkflowExecutor {
       placeholders
     };
   }
-}
-
-type StepResult<T> =
-  | string
-  | {
-      message: string;
-      status?: RunTraceEntry["status"];
-      value: T;
-    };
-
-async function runStep<T>(
-  trace: RunTraceEntry[],
-  step: RunTraceEntry["step"],
-  execute: () => Promise<StepResult<T>> | StepResult<T>
-): Promise<T> {
-  const started = Date.now();
-
-  try {
-    const result = await execute();
-    const durationMs = Date.now() - started;
-
-    if (typeof result === "string") {
-      trace.push(traceEntry(step, "ok", result, durationMs));
-      return undefined as T;
-    }
-
-    trace.push(traceEntry(step, result.status ?? "ok", result.message, durationMs));
-    return result.value;
-  } catch (error) {
-    trace.push(
-      traceEntry(step, "failed", error instanceof Error ? error.message : "Workflow step failed.", Date.now() - started)
-    );
-    throw error;
-  }
-}
-
-async function generateStructured<TSchema extends z.ZodTypeAny>(
-  provider: LlmProvider,
-  role: string,
-  schemaName: string,
-  fallback: z.infer<TSchema>,
-  schema: TSchema,
-  config: DebateRuntimeConfig,
-  prompt?: string,
-  sessionId?: string
-): Promise<{
-  data: z.infer<TSchema>;
-  snapshot: ModelSnapshot;
-  placeholder: PlaceholderInfo | null;
-}> {
-  const fallbackParse = schema.safeParse(fallback);
-  if (!fallbackParse.success) {
-    throw new Error(`Invalid deterministic fallback for ${schemaName}: ${fallbackParse.error.message}`);
-  }
-
-  const requestedModel = provider.modelForRole(role);
-  let lastReason = "Structured generation failed.";
-  let lastSnapshot: ModelSnapshot | null = null;
-
-  for (let attempt = 1; attempt <= config.llmMaxAttempts; attempt += 1) {
-    try {
-      const result = await provider.generateStructured<unknown>({
-        role,
-        schemaName,
-        prompt: prompt ?? JSON.stringify(fallbackParse.data),
-        fallback: fallbackParse.data,
-        jsonSchema: z.toJSONSchema(schema),
-        sessionId
-      });
-      const parsed = schema.safeParse(result.data);
-
-      if (!parsed.success) {
-        lastReason = `Structured output validation failed: ${parsed.error.message}`;
-        lastSnapshot = {
-          ...result.snapshot,
-          failure: lastReason
-        };
-        if (attempt < config.llmMaxAttempts) continue;
-        break;
-      }
-
-      return {
-        data: parsed.data,
-        snapshot: result.snapshot,
-        placeholder: null
-      };
-    } catch (error) {
-      lastReason = error instanceof Error ? error.message : "Structured generation failed.";
-      if (error instanceof LlmProviderFailure) {
-        lastSnapshot = error.snapshot;
-      }
-      if (!config.allowDeterministicFallbacks) {
-        throw error;
-      }
-      break;
-    }
-  }
-
-  if (!config.allowDeterministicFallbacks) {
-    throw new Error(lastReason);
-  }
-
-  if (lastSnapshot) {
-    return {
-      data: fallbackParse.data,
-      snapshot: lastSnapshot,
-      placeholder: { requestedModel: lastSnapshot.model || requestedModel, reason: lastReason }
-    };
-  }
-
-  return {
-    data: fallbackParse.data,
-    snapshot: {
-      // Role, not just schema name: several steps share a schema (every turn
-      // round uses debateTurnOutput), and `mergeModelSnapshots` dedupes on id,
-      // so a schema-only id silently discarded all but the last failure.
-      id: `fallback-${schemaName}-${role.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`,
-      provider: "local",
-      model: requestedModel,
-      role,
-      configured: true,
-      failure: lastReason
-    },
-    placeholder: { requestedModel, reason: lastReason }
-  };
-}
-
-function mergeModelSnapshots(roster: ModelSnapshot[], generated: ModelSnapshot[]): ModelSnapshot[] {
-  const snapshots = new Map<string, ModelSnapshot>();
-
-  for (const snapshot of [...roster, ...generated]) {
-    snapshots.set(snapshot.id, snapshot);
-  }
-
-  return Array.from(snapshots.values());
 }
 
 function buildGenerationPrompt(input: {
@@ -1731,42 +1600,9 @@ function summaryScopeMindChangers(framed: FramedDebate): string[] {
   return [];
 }
 
-function pushEvent(
-  events: DebateEvent[],
-  debateId: string,
-  runId: string,
-  status: DebateEvent["status"]
-): void {
-  const copy = stageCopy[status] ?? {
-    label: status,
-    detail: "Debate stage updated."
-  };
-
-  events.push({
-    id: makeId("event"),
-    debateId,
-    runId,
-    status,
-    label: copy.label,
-    detail: copy.detail,
-    createdAt: now()
-  });
-}
-
-function traceEntry(
-  step: RunTraceEntry["step"],
-  status: RunTraceEntry["status"],
-  message: string,
-  durationMs?: number
-): RunTraceEntry {
-  return {
-    id: makeId("trace"),
-    step,
-    status,
-    message,
-    at: now(),
-    durationMs
-  };
+/** Binds the debate's stage copy so call sites stay as they were. */
+function pushEvent(events: DebateEvent[], debateId: string, runId: string, status: DebateEvent["status"]): void {
+  pushRunEvent(events, debateId, runId, status, stageCopy);
 }
 
 function traceStepForRound(round: RoundTurn["round"]): RunTraceEntry["step"] {
@@ -1812,18 +1648,3 @@ function lowercaseFirst(value: string): string {
   return value.charAt(0).toLowerCase() + value.slice(1);
 }
 
-function makeId(prefix: string): string {
-  return `${prefix}_${randomUUID().slice(0, 8)}`;
-}
-
-function now(): string {
-  return new Date().toISOString();
-}
-
-function average(values: number[]): number {
-  if (values.length === 0) {
-    return 0;
-  }
-
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
-}

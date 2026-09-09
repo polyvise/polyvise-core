@@ -15,19 +15,22 @@ export const topicKinds = ["policy", "value", "empirical", "decision", "comparis
 
 export type TopicKind = (typeof topicKinds)[number];
 
-export type DebateMode = "hybrid_council";
+/**
+ * The deliberation modes a run can use. Named `DebateMode` for continuity with
+ * the persisted column and the existing request shape; `RunMode` in
+ * `../runs/types` is the same union under the name the newer code uses.
+ */
+export type DebateMode = "hybrid_council" | "consensus" | "advisory_panel";
 export type EvidenceMode = "cited";
 export type PerspectiveSide = "pro" | "con" | "neutral";
 
 /**
- * How many debaters per side appear on the lily pad.
+ * How many debaters per side participate in a Hybrid Council run.
  *
  * - "quartet" (default): two pro agents + two con agents + a neutral judge.
  *   This is the canonical Hybrid Council shape.
  * - "duo": one pro agent + one con agent + a neutral judge. The single pro
- *   and single con agent each speak in every round, which makes the debate
- *   easier to follow for younger or first-time viewers. Used by the
- *   /froglings funner experience.
+ *   and single con agent each speak in every round.
  */
 export type CouncilSize = "duo" | "quartet";
 
@@ -51,6 +54,29 @@ export interface DebateDevOptions {
   liveApis?: boolean;
 }
 
+/** Tuning for a `consensus` run. Ignored by the other modes. */
+export interface ConsensusOptions {
+  /** How many agents answer independently. 3–7, default 5. */
+  agentCount?: number;
+  /** Total rounds including the opening independent answer. 2–5, default 3. */
+  rounds?: number;
+  /**
+   * Spread at or below which the panel counts as converged, 0..1. Default 0.25.
+   * Raising it calls looser agreement "converged", so it is deliberately a
+   * caller decision rather than a constant.
+   */
+  convergenceThreshold?: number;
+}
+
+/** Tuning for an `advisory_panel` run. Ignored by the other modes. */
+export interface AdvisoryPanelOptions {
+  /**
+   * Which lenses sit on the panel. Defaults to all four. Order is preserved in
+   * the rendered panel.
+   */
+  lenses?: Array<"economist" | "ethicist" | "operator" | "skeptic">;
+}
+
 export interface DebateRequest {
   subject: string;
   context?: string;
@@ -59,10 +85,14 @@ export interface DebateRequest {
   models?: DebateModelSelection;
   /**
    * Number of debaters per side. Defaults to "quartet" when omitted so
-   * existing callers see no behavior change. Set to "duo" for a simpler
-   * 1-on-1 debate suitable for the /froglings experience.
+   * existing callers see no behavior change. Set to "duo" for a focused
+   * 1-on-1 debate.
+   *
+   * Only meaningful when `mode` is "hybrid_council".
    */
   councilSize?: CouncilSize;
+  consensus?: ConsensusOptions;
+  panel?: AdvisoryPanelOptions;
   /**
    * Development-only overrides. Ignored in production.
    */
@@ -92,6 +122,11 @@ export interface DebateRun {
   status: DebateStatus;
   startedAt: string;
   completedAt?: string;
+  /**
+   * The council shape this run actually used. Optional because runs persisted
+   * before this field existed cannot report it.
+   */
+  councilSize?: CouncilSize;
   events: DebateEvent[];
   scouts: StanceScout[];
   teams: DebateTeam;
@@ -105,6 +140,31 @@ export interface DebateRun {
   modelSnapshots: ModelSnapshot[];
   artifactManifest: RunArtifact[];
   trace: RunTraceEntry[];
+  /**
+   * Which parts of this run are deterministic filler rather than model output.
+   *
+   * The live event stream carries a per-step `placeholder`, but a consumer
+   * reading a stored run has no other way to tell: fallback turns sit in
+   * `turns` looking exactly like real ones. Anything named here MUST NOT be
+   * presented as a real answer.
+   *
+   * Optional because runs persisted before this field existed cannot report
+   * it — absent means "unknown", not "nothing fell back".
+   */
+  placeholders?: RunPlaceholders;
+}
+
+/**
+ * Deterministic-fallback markers for a whole run, keyed by the step that fell
+ * back. Turns are keyed by round, so one failed round doesn't discard the
+ * rounds that succeeded.
+ */
+export interface RunPlaceholders {
+  scouts?: PlaceholderInfo;
+  claims?: PlaceholderInfo;
+  turns?: Partial<Record<DebateRound, PlaceholderInfo>>;
+  scorecard?: PlaceholderInfo;
+  summary?: PlaceholderInfo;
 }
 
 export interface DebateEvent {
@@ -195,6 +255,12 @@ export interface RoundTurn {
   claimIds: string[];
   sourceIds: string[];
   createdAt: string;
+  /**
+   * The model that actually wrote this turn. Only set when a real model call
+   * produced it — a turn left over from a fallback batch has no model to name,
+   * and claiming one would be worse than leaving it blank.
+   */
+  model?: string;
 }
 
 export interface Scorecard {
@@ -243,7 +309,25 @@ export interface ModelCallAttempt {
 
 export interface RunArtifact {
   id: string;
-  kind: "run_state" | "scouts" | "evidence" | "claims" | "turns" | "scorecard" | "summary" | "models";
+  /**
+   * Artifact kinds across every mode. `scouts` through `scorecard` are the
+   * debate's; `positions` and `convergence` belong to consensus, `lenses`,
+   * `advice` and `synthesis` to the advisory panel.
+   */
+  kind:
+    | "run_state"
+    | "scouts"
+    | "evidence"
+    | "claims"
+    | "turns"
+    | "scorecard"
+    | "summary"
+    | "models"
+    | "positions"
+    | "convergence"
+    | "lenses"
+    | "advice"
+    | "synthesis";
   label: string;
   recordCount: number;
   createdAt: string;
@@ -277,6 +361,11 @@ export interface UserFeedback {
 
 export interface RunTraceEntry {
   id: string;
+  /**
+   * Steps from every mode share one union so a single trace viewer can render
+   * any run. The debate steps come first; `answer` through `chair` belong to
+   * consensus and the advisory panel.
+   */
   step:
     | "frame"
     | "scout"
@@ -288,7 +377,13 @@ export interface RunTraceEntry {
     | "closing"
     | "judge_review"
     | "judge"
-    | "persist";
+    | "persist"
+    | "panel_builder"
+    | "answer"
+    | "revise"
+    | "converge"
+    | "advise"
+    | "chair";
   status: "ok" | "warning" | "failed";
   message: string;
   at: string;

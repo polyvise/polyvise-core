@@ -76,14 +76,14 @@ export function modelRosterFromConfig(config: DebateRuntimeConfig): ModelSnapsho
       id: "polyvise-yes",
       provider: inferProvider(config.yesModel),
       model: config.yesModel,
-      role: "YES frog claims and turns",
+      role: "pro-side claims and turns",
       configured: isConfigured(config.yesModel)
     },
     {
       id: "polyvise-no",
       provider: inferProvider(config.noModel),
       model: config.noModel,
-      role: "NO frog claims and turns",
+      role: "con-side claims and turns",
       configured: isConfigured(config.noModel)
     },
     {

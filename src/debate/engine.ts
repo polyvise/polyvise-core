@@ -87,11 +87,15 @@ const stageCopy: Record<string, { label: string; detail: string }> = {
 
 export function frameDebateRequest(request: DebateRequest): FramedDebate {
   const topicKind = classifyTopic(request.subject, request.context);
+  const subject = request.subject.trim();
 
   return {
-    subject: request.subject.trim(),
+    subject,
     context: request.context?.trim() || undefined,
-    resolution: frameResolution(request.subject, topicKind),
+    resolution:
+      request.mode && request.mode !== "hybrid_council"
+        ? subject.replace(/^resolved:\s*/i, "").replace(/\s+/g, " ")
+        : frameResolution(subject, topicKind),
     topicKind,
     highStakes: detectHighStakes(request.subject, request.context)
   };
@@ -146,8 +150,8 @@ class DebateWorkflowExecutor {
     // Mirrors the per-step `placeholder` on the event stream so a consumer
     // reading the stored run can tell filler from model output.
     const placeholders: RunPlaceholders = {};
-    // "quartet" is the legacy shape (2 pro + 2 con). "duo" is the simpler
-    // 1-on-1 shape used by the /froglings funner experience.
+    // "quartet" is the legacy shape (2 pro + 2 con). "duo" is the focused
+    // 1-on-1 shape.
     const councilSize: CouncilSize = request.councilSize ?? "quartet";
 
     const recordSnapshot = (snapshot: ModelSnapshot) => {
@@ -243,8 +247,8 @@ class DebateWorkflowExecutor {
       const claimBatches =
         councilSize === "duo"
           ? [
-              { side: "pro" as const, role: "yes frog claim builder" },
-              { side: "con" as const, role: "no frog claim builder" }
+              { side: "pro" as const, role: "pro advocate claim builder" },
+              { side: "con" as const, role: "con advocate claim builder" }
             ]
           : [{ side: null, role: "claim builder" }];
 
@@ -319,11 +323,11 @@ class DebateWorkflowExecutor {
           councilSize === "duo" && round !== "judge_review"
             ? [
                 {
-                  role: `yes frog ${roleForRound(round)}`,
+                  role: `pro advocate ${roleForRound(round)}`,
                   turns: roundFallback.filter((turn) => turn.side === "pro")
                 },
                 {
-                  role: `no frog ${roleForRound(round)}`,
+                  role: `con advocate ${roleForRound(round)}`,
                   turns: roundFallback.filter((turn) => turn.side === "con")
                 }
               ]
@@ -436,7 +440,7 @@ class DebateWorkflowExecutor {
         this.config,
         buildGenerationPrompt({
           task:
-            "Write the final verdict for this exact resolution for a grades 5-8 reader. Be willing to say NO when the pink frog made the stronger case. Do not soften a NO result into uncertainty unless the scorecard is mixed. The headline and recommendation must name the debate hinge, the strongest point from each side, and the reason for the verdict in plain language. Headline: one complete sentence or headline phrase, around 90 characters or less; 120 is the hard maximum. Recommendation: 2 to 3 complete sentences, around 240 characters or less; 320 is the hard maximum. Never end mid-word, mid-clause, or with a dangling word like while, because, or and. If the copy is too long, rewrite it shorter instead of truncating it. If the broad and narrow versions of the question have different answers, say that directly instead of pretending there is one simple answer. Use green frog and pink frog language in visible copy, not pro side, con side, YES frog, or NO frog. For school, child, animal, safety, voting, legal, or accommodation policies, do not treat warm benefits as enough for YES unless the green frog addressed the concrete risks and implementation burdens.",
+            "Write the final verdict for this exact resolution. Be willing to recommend either side when its case is stronger. Do not soften a negative result into uncertainty unless the scorecard is mixed. The headline and recommendation must name the debate hinge, the strongest point from each side, and the reason for the verdict in clear language. Headline: one complete sentence or headline phrase, around 90 characters or less; 120 is the hard maximum. Recommendation: 2 to 3 complete sentences, around 240 characters or less; 320 is the hard maximum. Never end mid-word, mid-clause, or with a dangling conjunction. If the copy is too long, rewrite it shorter instead of truncating it. If broad and narrow versions of the question have different answers, say that directly. Refer to the pro side and con side consistently. For high-impact policies, require the side proposing change to address concrete risks and implementation burdens.",
           framed,
           sources,
           claims,
@@ -520,8 +524,8 @@ function buildGenerationPrompt(input: {
         "Return only JSON matching the requested schema.",
         "Make every visible sentence specific to the resolution and cited evidence.",
         "Do not preserve deterministic fallback wording when it is generic.",
-        "Write for grades 5-8: short sentences, real debate moves, no baby talk.",
-        "Do not write narrator voice in visible debate turns: avoid 'The YES side argues', 'The NO side says', 'the pro side', and 'the con side'. The frog must speak as I or my side.",
+        "Use clear, concise sentences and substantive debate moves.",
+        "Do not write narrator voice in visible debate turns. Each advocate must speak as I or my side.",
         "Do not write 'studies show', 'research says', 'evidence shows', or similar unless the claim is tied to a relevant source id in this JSON. If the source is only a debate-method source or placeholder, use a modest phrase like 'one reason is' instead.",
         "Do not mention pilots, rollback triggers, implementation phases, local accountability, or stakeholder safeguards unless the resolution actually asks about an implementation decision.",
         "For broad words such as kids, students, phones, AI, pets, animals, school, voting, or elections, name the scope when it matters instead of arguing as if every version of the idea is the same.",
@@ -617,7 +621,7 @@ function buildRoundGuide(input: {
 
   if (input.round === "cross_examination") {
     return {
-      job: "Ask exactly one pointed question that would make the other frog defend its weakest point.",
+      job: "Ask exactly one pointed question that would make the opposing advocate defend the weakest point in its case.",
       expectedQuestionCount: expectedTurns.length
     };
   }
@@ -789,11 +793,11 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
   }
 
   const commonRules = [
-    "Visible debate turns should read like a clean transcript of a frog speaking, not like a narrator summarizing a side.",
-    "Each frog must speak in first person for its own argument: use I, me, my, or my side. Do not write 'The YES side argues' when the YES frog means itself, and do not write 'The NO side argues' when the NO frog means itself.",
-    "When referring to the other debater, say my opponent, the other frog, you, or your side. Do not use Yes Frog or No Frog inside the spoken debate text because those names can be confusing in sentences.",
+    "Visible debate turns should read like a clean transcript of an advocate speaking, not like a narrator summarizing a side.",
+    "Each advocate must speak in first person for its own argument: use I, me, my, or my side.",
+    "When referring to the other debater, say my opponent, the opposing advocate, you, or your side.",
     "Avoid repeating a point from an earlier round unless this turn adds a new example, answers the opponent directly, or explains why one concern matters more.",
-    "Keep each turn to 1 or 2 short paragraphs, about 35 to 75 words total, in kid-friendly spoken language.",
+    "Keep each turn to 1 or 2 focused paragraphs, about 35 to 100 words total.",
     "Do not include the speaker name inside content; agentName already identifies the speaker."
   ];
 
@@ -802,12 +806,12 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
       return [
         ...commonRules,
         "Opening round job: state your answer clearly, give your strongest reason, and include one simple concrete example. Do not rebut yet unless absolutely necessary.",
-        "Good opening patterns: 'I think YES because...' or 'I do not think kids should...' Avoid 'the YES side' and 'the NO side' narration."
+        "State the position in first person and avoid narrator-style labels such as 'the pro side' or 'the con side'."
       ];
     case "cross_examination":
       return [
         ...commonRules,
-        "Tough Questions round job: ask exactly one pointed question to the opposing frog. The content must end with a question mark.",
+        "Cross-examination round job: ask exactly one pointed question to the opposing advocate. The content must end with a question mark.",
         "Do not summarize both sides in this round. Do not answer your own question.",
         "Good question patterns: 'If your plan..., why...?' or 'How would you answer...?'"
       ];
@@ -816,14 +820,14 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
         ...commonRules,
         "Comeback round job: answer one specific thing the opponent said, then explain why your side still wins that clash.",
         "If this round has an opponent question in roundGuide.questionsToAnswer, answer that exact question first. Do not dodge it or switch to a different issue.",
-        "Start by naming the opponent's point in plain speech, such as 'My opponent is right that...' or 'The other frog says...', then respond.",
+        "Start by naming the opponent's point in plain speech, then respond.",
         "Do not merely restate your opening. Add a comparison, an example, or a reason the opponent's point is not enough."
       ];
     case "closing":
       return [
         ...commonRules,
-        "Last Word round job: tell the viewer why your side should win overall. Weigh the tradeoff; do not introduce a brand-new argument.",
-        "Use a direct spoken close such as 'Vote YES because...' or 'Vote NO because...'.",
+        "Closing round job: explain why your side should win overall. Weigh the tradeoff; do not introduce a brand-new argument.",
+        "Use a direct spoken close that identifies the decisive reason.",
         "Do not say 'The YES side has shown' or 'The NO side has shown'; say what I showed, what my opponent missed, and what matters most."
       ];
     default:
@@ -851,24 +855,12 @@ function polishDebateTurnContent(content: string, turn: GeneratedRoundTurn): str
     polished = polishOwnSideNarration(polished, "NO", "YES");
   }
 
-  return polishSentenceStarts(polishNarratorSideLabels(polishFrogRoleNames(polished), turn.side));
+  return polishSentenceStarts(polishNarratorSideLabels(polished, turn.side));
 }
 
 function polishOwnSideNarration(content: string, ownSide: "YES" | "NO", opponentSide: "YES" | "NO"): string {
   const own = ownSide === "YES" ? "YES" : "NO";
-  const ownFrog = ownSide === "YES" ? "Yes Frog" : "No Frog";
-  const opponentFrog = opponentSide === "YES" ? "Yes Frog" : "No Frog";
-
   return content
-    .replace(new RegExp(`\\bThe ${ownFrog}\\b`, "gi"), "I")
-    .replace(new RegExp(`\\b${ownFrog}\\s+(?:says|said|argues?|claims?|points out)\\b`, "gi"), "I say")
-    .replace(new RegExp(`\\b${ownFrog}'s\\s+case\\b`, "gi"), "my case")
-    .replace(new RegExp(`\\b${ownFrog}\\b`, "gi"), "I")
-    .replace(new RegExp(`\\bThe ${opponentFrog}\\b`, "gi"), "my opponent")
-    .replace(new RegExp(`\\b${opponentFrog},\\s*`, "gi"), "My opponent, ")
-    .replace(new RegExp(`\\b${opponentFrog}\\s+(says|said|argues?|claims?|points out)\\b`, "gi"), "my opponent $1")
-    .replace(new RegExp(`\\b${opponentFrog}'s\\s+case\\b`, "gi"), "my opponent's case")
-    .replace(new RegExp(`\\b${opponentFrog}\\b`, "gi"), "my opponent")
     .replace(new RegExp(`\\bThe ${own} side has shown that\\b`, "gi"), "I have shown that")
     .replace(new RegExp(`\\bThe ${own} side has shown\\b`, "gi"), "I have shown")
     .replace(new RegExp(`\\bThe ${own} side argues that\\b`, "gi"), "I argue that")
@@ -883,32 +875,13 @@ function polishOwnSideNarration(content: string, ownSide: "YES" | "NO", opponent
     .replace(new RegExp(`\\bthe ${opponentSide} case\\b`, "gi"), "my opponent's case");
 }
 
-function polishFrogRoleNames(content: string): string {
-  return content
-    .replace(/\bthe YES frog\b/gi, "the green frog")
-    .replace(/\bthe NO frog\b/gi, "the pink frog")
-    .replace(/\bYES frog\b/gi, "green frog")
-    .replace(/\bNO frog\b/gi, "pink frog")
-    .replace(/\bYes Frog\b/g, "the green frog")
-    .replace(/\bNo Frog\b/g, "the pink frog")
-    .replace(/\s+([,.?!])/g, "$1")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}
-
 function polishNarratorSideLabels(content: string, side: GeneratedRoundTurn["side"]): string {
   if (side !== "pro" && side !== "con") {
     return content
-      .replace(/\bThe YES side\b/gi, "the green frog")
-      .replace(/\bthe YES side\b/gi, "the green frog")
-      .replace(/\bYES side\b/gi, "green frog")
-      .replace(/\bThe NO side\b/gi, "the pink frog")
-      .replace(/\bthe NO side\b/gi, "the pink frog")
-      .replace(/\bNO side\b/gi, "pink frog")
-      .replace(/\bthe pro side\b/gi, "the green frog")
-      .replace(/\bthe con side\b/gi, "the pink frog")
-      .replace(/\bpro side\b/gi, "green frog")
-      .replace(/\bcon side\b/gi, "pink frog")
+      .replace(/\bthe YES side\b/gi, "the pro side")
+      .replace(/\bYES side\b/gi, "pro side")
+      .replace(/\bthe NO side\b/gi, "the con side")
+      .replace(/\bNO side\b/gi, "con side")
       .replace(/\s+([,.?!])/g, "$1")
       .replace(/\s{2,}/g, " ")
       .trim();
@@ -944,7 +917,7 @@ function polishSentenceStarts(content: string): string {
   return content
     .replace(/([.!?]\s+)my\b/g, "$1My")
     .replace(/([.!?]\s+)i\b/g, "$1I")
-    .replace(/([.!?]\s+)the other frog\b/g, "$1The other frog")
+    .replace(/([.!?]\s+)the opposing advocate\b/g, "$1The opposing advocate")
     .replace(/([.!?]\s+)my opponent\b/g, "$1My opponent")
     .trim();
 }
@@ -958,7 +931,7 @@ function turnGenerationTask(councilSize: CouncilSize, expectedTurns: RoundTurn[]
     .map((turn) => `${turn.agentName} must be side "${turn.side}" in round "${turn.round}"`)
     .join("; ");
 
-  return `Write only the requested kid-friendly debate turn or turns for the exact question. ${expected}. Return exactly ${expectedTurns.length} turn(s), preserving each requested agent id, agent name, side, round, claim ids, and source ids. The visible content must sound like that frog speaking in first person, not a narrator summarizing "the YES side" or "the NO side." Refer to the other debater as my opponent, the other frog, you, or your side; do not write Yes Frog or No Frog inside the spoken text. Do not use pro, con, affirmative, or negative language in visible content. Make the content short, topic-specific, grounded in the claims and evidence, clear about scope when the question is broad, and meaningfully different from earlier turns.`;
+  return `Write only the requested debate turn or turns for the exact question. ${expected}. Return exactly ${expectedTurns.length} turn(s), preserving each requested agent id, agent name, side, round, claim ids, and source ids. The visible content must sound like that advocate speaking in first person, not a narrator summarizing a side. Refer to the other debater as my opponent, the opposing advocate, you, or your side. Make the content concise, topic-specific, grounded in the claims and evidence, clear about scope when the question is broad, and meaningfully different from earlier turns.`;
 }
 
 function reconcileGeneratedTurns(
@@ -1019,16 +992,10 @@ function normalizeSummary(
 
 function polishJudgeVisibleCopy(value: string): string {
   return value
-    .replace(/\bthe pro side\b/gi, "the green frog")
-    .replace(/\bthe con side\b/gi, "the pink frog")
-    .replace(/\bpro side\b/gi, "green frog")
-    .replace(/\bcon side\b/gi, "pink frog")
-    .replace(/\bPro side\b/g, "green frog")
-    .replace(/\bCon side\b/g, "pink frog")
-    .replace(/\bthe YES frog\b/gi, "the green frog")
-    .replace(/\bthe NO frog\b/gi, "the pink frog")
-    .replace(/\bYES frog\b/gi, "green frog")
-    .replace(/\bNO frog\b/gi, "pink frog")
+    .replace(/\bthe YES side\b/gi, "the pro side")
+    .replace(/\bYES side\b/gi, "pro side")
+    .replace(/\bthe NO side\b/gi, "the con side")
+    .replace(/\bNO side\b/gi, "con side")
     .replace(/\s+([,.?!])/g, "$1")
     .replace(/\s{2,}/g, " ")
     .trim();
@@ -1217,23 +1184,23 @@ function buildClaims(framed: FramedDebate, sources: EvidenceSource[]): Claim[] {
     {
       id: makeId("claim"),
       side: "pro",
-      text: `The YES frog can win if it clearly explains what would make "${subject}" a good idea and backs that up with more than one kind of evidence.`,
-      warrant: `A source such as "${sourceTitle(0)}" can help show the scope, mechanisms, or real-world reach behind the YES position.`,
+      text: `The pro case can prevail if it clearly explains what would make "${subject}" a good idea and supports that claim with more than one kind of evidence.`,
+      warrant: `A source such as "${sourceTitle(0)}" can help show the scope, mechanisms, or real-world reach behind the pro position.`,
       evidenceSourceIds: pick(0),
       confidence: civicAgeQuestion ? 0.58 : 0.72
     },
     {
       id: makeId("claim"),
       side: "pro",
-      text: "The YES frog can win if the benefits reach enough students and matter enough to justify the change.",
-      warrant: "A strong YES case should count both direct effects and important downstream consequences.",
+      text: "The pro case strengthens when the benefits are material and reach the people affected by the decision.",
+      warrant: "A strong pro case should count both direct effects and important downstream consequences.",
       evidenceSourceIds: pick(1),
       confidence: civicAgeQuestion ? 0.56 : 0.68
     },
     {
       id: makeId("claim"),
       side: "pro",
-      text: "The YES frog should point to evidence that the change would improve the school day more than keeping things as they are.",
+      text: "The pro case should show that the proposed change improves outcomes relative to the status quo.",
       warrant: "Downstream effects can matter as much as immediate or obvious effects when judging a contested resolution.",
       evidenceSourceIds: pick(2),
       confidence: civicAgeQuestion ? 0.54 : 0.64
@@ -1241,15 +1208,15 @@ function buildClaims(framed: FramedDebate, sources: EvidenceSource[]): Claim[] {
     {
       id: makeId("claim"),
       side: "con",
-      text: `The NO frog can win if the evidence does not show that "${subject}" would work better than the current approach.`,
-      warrant: `A source such as "${sourceTitle(3)}" can expose whether the YES side is overstating reach relative to the alternative.`,
+      text: `The con case can prevail if the evidence does not show that "${subject}" would work better than the current approach.`,
+      warrant: `A source such as "${sourceTitle(3)}" can expose whether the pro side is overstating reach relative to the alternative.`,
       evidenceSourceIds: pick(3),
       confidence: civicAgeQuestion ? 0.82 : 0.7
     },
     {
       id: makeId("claim"),
       side: "con",
-      text: "The NO frog can win by separating what sounds appealing from what is actually proven to help.",
+      text: "The con case strengthens by separating what sounds appealing from what is actually proven to help.",
       warrant: "A position can be rhetorically attractive while a rival explanation or benchmark does more actual work.",
       evidenceSourceIds: pick(4),
       confidence: civicAgeQuestion ? 0.78 : 0.66
@@ -1439,7 +1406,7 @@ function buildRoundTurns(
       "closing",
       conB,
       "con",
-      `${conB.name}: Vote NO because my side explains the evidence better when both frogs are judged the same way.`,
+      `${conB.name}: Vote NO because my side explains the evidence better when both sides are judged by the same standard.`,
       conClaims.map((claim) => claim.id)
     ),
     turn(
@@ -1539,8 +1506,8 @@ function buildSummary(framed: FramedDebate, claims: Claim[], scorecard: Scorecar
   const hinge = scopeUncertainties[0] ?? "Which definition or standard should control the verdict.";
 
   return {
-    headline: `The judge weighs the strongest green and pink frog points.`,
-    recommendation: `The verdict is ${scorecard.recommendation.replace("_", " ")}. The green frog's best point is ${shortClaim(proClaims[0]?.text, "the idea could help")}. The pink frog's best point is ${shortClaim(conClaims[0]?.text, "the idea may be risky or too broad")}.`,
+    headline: "The judge weighs the strongest arguments from both sides.",
+    recommendation: `The verdict is ${scorecard.recommendation.replace("_", " ")}. The pro side's strongest point is ${shortClaim(proClaims[0]?.text, "the idea could help")}. The con side's strongest point is ${shortClaim(conClaims[0]?.text, "the idea may be risky or too broad")}.`,
     strongestPro: proClaims.map((claim) => claim.text),
     strongestCon: conClaims.map((claim) => claim.text),
     unresolvedUncertainties: [
@@ -1647,4 +1614,3 @@ function roleForRound(round: RoundTurn["round"]): string {
 function lowercaseFirst(value: string): string {
   return value.charAt(0).toLowerCase() + value.slice(1);
 }
-

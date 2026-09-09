@@ -292,10 +292,10 @@ export class OpenRouterLlmProvider implements LlmProvider {
 
   modelForRole(role: string): string {
     const normalized = role.toLowerCase();
-    if (normalized.includes("yes frog")) {
+    if (normalized.includes("pro advocate")) {
       return this.config.yesModel;
     }
-    if (normalized.includes("no frog")) {
+    if (normalized.includes("con advocate")) {
       return this.config.noModel;
     }
     // "chair" joins the judge slot for the same reason judge and summary are

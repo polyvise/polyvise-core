@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { runHybridCouncilDebate } from "@polyvise/core/debate/engine";
+import { frameDebateRequest, runHybridCouncilDebate } from "@polyvise/core/debate/engine";
 import { debateRequestSchema } from "@polyvise/core/debate/schema";
 import { classifyTopic, detectHighStakes, frameResolution } from "@polyvise/core/debate/topic";
 import { loadDebateRuntimeConfig, modelOptionsFromConfig } from "@polyvise/core/debate/config";
@@ -46,6 +46,15 @@ describe("topic framing", () => {
 
     expect(classifyTopic(subject)).toBe("empirical");
     expect(frameResolution(subject, "empirical")).toBe("Is Trump a corrupt president?");
+  });
+
+  it("preserves open-ended subjects for non-debate modes", () => {
+    expect(
+      frameDebateRequest({
+        subject: "How should a 20-person company introduce AI into customer support?",
+        mode: "advisory_panel"
+      }).resolution
+    ).toBe("How should a 20-person company introduce AI into customer support?");
   });
 
   it("flags high-stakes topics", () => {
@@ -164,7 +173,7 @@ describe("LLM provider selection", () => {
     });
     const provider = new OpenRouterLlmProvider(config, "test-openrouter-key");
     const result = await provider.generateStructured<{ ok: boolean }>({
-      role: "yes frog claim builder",
+      role: "pro advocate claim builder",
       schemaName: "testSchema",
       prompt: "{\"ok\":true}",
       jsonSchema: { type: "object" },
@@ -203,7 +212,7 @@ describe("LLM provider selection", () => {
     expect(modelOptions.options.map((option) => option.id)).toContain("anthropic/claude-3.5-haiku");
   });
 
-  it("uses Debatefrog's default model lineup", () => {
+  it("uses the configured default model lineup", () => {
     const modelOptions = modelOptionsFromConfig(loadDebateRuntimeConfig({}));
 
     expect(modelOptions.defaults).toEqual({
@@ -379,7 +388,7 @@ describe("hybrid council engine", () => {
       override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
         const result = await super.generateStructured<Record<string, unknown>>(request);
         if (request.schemaName === "claimOutput") {
-          const side = request.role.toLowerCase().includes("no frog") ? "con" : "pro";
+          const side = request.role.toLowerCase().includes("con advocate") ? "con" : "pro";
           return {
             data: {
               claims: [
@@ -436,7 +445,7 @@ describe("hybrid council engine", () => {
           };
         }
 
-        if (request.schemaName === "debateTurnOutput" && request.role.toLowerCase().includes("yes frog")) {
+        if (request.schemaName === "debateTurnOutput" && request.role.toLowerCase().includes("pro advocate")) {
           const turnResult = result as { data: { turns?: Array<{ content: string }> }; snapshot: ModelSnapshot };
           if (Array.isArray(turnResult.data.turns)) {
             return {
@@ -479,7 +488,7 @@ describe("hybrid council engine", () => {
       override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
         const result = await super.generateStructured<Record<string, unknown>>(request);
         if (request.schemaName === "claimOutput") {
-          const side = request.role.toLowerCase().includes("no frog") ? "con" : "pro";
+          const side = request.role.toLowerCase().includes("con advocate") ? "con" : "pro";
           return {
             data: {
               claims: [
@@ -521,7 +530,7 @@ describe("hybrid council engine", () => {
           };
         }
 
-        if (request.schemaName === "debateTurnOutput" && request.role.toLowerCase().includes("yes frog")) {
+        if (request.schemaName === "debateTurnOutput" && request.role.toLowerCase().includes("pro advocate")) {
           const turnResult = result as { data: { turns?: Array<{ content: string }> }; snapshot: ModelSnapshot };
           if (Array.isArray(turnResult.data.turns)) {
             return {
@@ -600,8 +609,8 @@ describe("hybrid council engine", () => {
     expect(run.turns.some((turn) => turn.content.includes("You said"))).toBe(true);
   });
 
-  it("keeps Yes Frog and No Frog names out of spoken transcript copy", async () => {
-    class AmbiguousFrogNameProvider extends MockLlmProvider {
+  it("normalizes generic side labels in transcript and judge copy", async () => {
+    class SideLabelProvider extends MockLlmProvider {
       override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
         const result = await super.generateStructured<{
           turns?: Array<{ side: "pro" | "con"; content: string }>;
@@ -621,8 +630,8 @@ describe("hybrid council engine", () => {
                 ...turn,
                 content:
                   turn.side === "pro"
-                    ? "No Frog says pets are risky, but Yes Frog argues pets can help students learn."
-                    : "Yes Frog says pets help learning, but No Frog points out allergies can disrupt class."
+                    ? "The NO side says the plan is risky, but the YES side argues the benefits are substantial."
+                    : "The YES side says the plan will help, but the NO side points out an implementation risk."
               }))
             } as T,
             snapshot: result.snapshot
@@ -633,11 +642,11 @@ describe("hybrid council engine", () => {
           return {
             data: {
               ...result.data,
-              headline: "The YES frog made the stronger case.",
-              recommendation: "The NO frog had concerns, but the pro side answered more clearly.",
-              strongestPro: ["The YES frog gave the clearest benefit."],
+              headline: "The YES side made the stronger case.",
+              recommendation: "The NO side had concerns, but the pro side answered more clearly.",
+              strongestPro: ["The YES side gave the clearest benefit."],
               strongestCon: ["The con side raised safety worries."],
-              unresolvedUncertainties: ["The NO frog would need stronger evidence."],
+              unresolvedUncertainties: ["The NO side would need stronger evidence."],
               whatWouldChangeMind: ["More proof from the con side could change the answer."]
             } as T,
             snapshot: result.snapshot
@@ -649,13 +658,13 @@ describe("hybrid council engine", () => {
     }
 
     const run = await runHybridCouncilDebate(
-      "debate_frog_name_test",
+      "debate_side_label_summary_test",
       {
         subject: "Should pets be allowed at school?",
         councilSize: "duo"
       },
       undefined,
-      { provider: new AmbiguousFrogNameProvider() }
+      { provider: new SideLabelProvider() }
     );
 
     const visibleTranscript = run.turns.map((turn) => turn.content).join(" ");
@@ -668,11 +677,11 @@ describe("hybrid council engine", () => {
       ...run.summary.whatWouldChangeMind
     ].join(" ");
 
-    expect(visibleTranscript).not.toMatch(/\b(?:Yes|No) Frog\b/);
+    expect(visibleTranscript).not.toMatch(/\b(?:The\s+)?(?:YES|NO)\s+side\b/);
     expect(visibleTranscript).toContain("my opponent");
-    expect(visibleJudgeCopy).not.toMatch(/\b(?:YES|NO) frog\b/i);
-    expect(visibleJudgeCopy).toContain("green frog");
-    expect(visibleJudgeCopy).toContain("pink frog");
+    expect(visibleJudgeCopy).not.toMatch(/\b(?:YES|NO)\s+side\b/i);
+    expect(visibleJudgeCopy).toContain("pro side");
+    expect(visibleJudgeCopy).toContain("con side");
   });
 
   it("keeps narrator side labels out of spoken transcript copy", async () => {
@@ -723,7 +732,7 @@ describe("hybrid council engine", () => {
       override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
         if (
           request.schemaName === "debateTurnOutput" &&
-          request.role.toLowerCase().includes("yes frog rebuttal")
+          request.role.toLowerCase().includes("pro advocate rebuttal")
         ) {
           rebuttalPrompt = request.prompt;
         }
@@ -750,11 +759,11 @@ describe("hybrid council engine", () => {
     expect(JSON.stringify(promptJson.roundGuide.questionsToAnswer[0]?.opponentQuestion)).toMatch(/\?/);
   });
 
-  it("does not accept a generated duo turn for the wrong frog side", async () => {
+  it("does not accept a generated duo turn for the wrong side", async () => {
     class WrongSideProvider extends MockLlmProvider {
       override async generateStructured<T>(request: LlmRequest): Promise<{ data: T; snapshot: ModelSnapshot }> {
         const result = await super.generateStructured<{ turns?: Array<{ agentId: string; agentName: string; side: string; content: string }> }>(request);
-        if (request.schemaName !== "debateTurnOutput" || !request.role.toLowerCase().includes("no frog") || !Array.isArray(result.data.turns)) {
+        if (request.schemaName !== "debateTurnOutput" || !request.role.toLowerCase().includes("con advocate") || !Array.isArray(result.data.turns)) {
           return result as { data: T; snapshot: ModelSnapshot };
         }
 
@@ -764,9 +773,9 @@ describe("hybrid council engine", () => {
             turns: result.data.turns.map((turn) => ({
               ...turn,
               agentId: "wrong_yes_agent",
-              agentName: "Wrong Yes Frog",
+              agentName: "Wrong Pro Advocate",
               side: "pro",
-              content: "I think YES even though this was the NO frog batch."
+              content: "I support the proposal even though this was the con batch."
             }))
           } as T,
           snapshot: result.snapshot

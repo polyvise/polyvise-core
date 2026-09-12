@@ -65,15 +65,17 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "prepublishOnly": "npm run verify",
-    "verify": "npm run typecheck && npm test && npm run build"
+    "verify": "npm run typecheck && npm run test:coverage && npm run build"
   },
   "dependencies": {
     "zod": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
+    "@vitest/coverage-v8": "^4.1.10",
     "jsdom": "latest",
     "tsup": "latest",
     "typescript": "latest",

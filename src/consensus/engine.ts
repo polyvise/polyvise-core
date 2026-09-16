@@ -320,7 +320,7 @@ export async function runConsensus(
     const fallback = {
       headline: `The panel settled ${finalRound.spread <= threshold ? "into agreement" : "without converging"}.`,
       finding: `After ${rounds.length} rounds the panel's stance spread was ${finalRound.spread.toFixed(2)}.`,
-      finalAnswer: finalRound.positions[0]?.answer ?? "No answer was produced.",
+      finalAnswer: "Summary unavailable. Review the individual positions for the panel’s answers.",
       range: describeRange(finalRound.positions),
       agreed: [] as string[],
       contested: [] as string[],

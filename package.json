@@ -1,6 +1,6 @@
 {
   "name": "@polyvise/core",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Framework-neutral multi-agent debate engine, schemas, providers, and artifact contracts.",
   "type": "module",
   "license": "MIT",

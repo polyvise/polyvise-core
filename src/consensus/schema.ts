@@ -41,10 +41,10 @@ export const consensusPositionOutputSchema = z.object({
 });
 
 export const consensusSummaryOutputSchema = z.object({
-  headline: z.string().min(1).max(120),
-  finding: z.string().min(1).max(400),
-  finalAnswer: z.string().min(1).max(400),
-  range: z.string().min(1).max(400),
+  headline: z.string().min(1),
+  finding: z.string().min(1),
+  finalAnswer: z.string().min(1),
+  range: z.string().min(1),
   agreed: z.array(z.string().min(1)).default([]),
   contested: z.array(z.string().min(1)).default([]),
   unresolvedUncertainties: z.array(z.string().min(1)).default([]),

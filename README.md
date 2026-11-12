@@ -31,6 +31,37 @@ con statement is generated. Append each `turns` event to the live transcript;
 the same turn IDs and content appear in the completed run. The default continues
 to emit one `turns` event per round.
 
+### Resume a failed stage
+
+Pass an awaited `onCheckpoint` callback to store execution progress, then pass
+the saved `checkpoint` to a later call with the same debate ID, request, and
+execution configuration. Core reuses completed steps and speaker batches,
+including their turn IDs, and continues with the first unfinished operation.
+The run ID and start time stay the same. A changed question or round count is
+rejected before provider calls.
+
+```ts
+const run = await runHybridCouncilDebate(debateId, request, undefined, {
+  ...executionOptions,
+  checkpoint: savedCheckpoint,
+  onCheckpoint: async (checkpoint) => {
+    await saveCheckpointPrivately(debateId, checkpoint);
+  }
+});
+```
+
+Checkpoints are JSON-serializable, server-owned state containing intermediate
+model output. Never accept a checkpoint from a browser or expose it in a public
+response. Applications own durable storage, authorization, and an atomic claim
+that permits only one active attempt. Keep the original provider/model settings
+when resuming. Persistence failures stop execution. A crash between a provider
+response and its checkpoint save can still require repeating that operation.
+
+Resume replays completed events so a new subscriber can reconstruct progress.
+Consumers that retain their transcript should deduplicate `turns` events by
+turn ID. Core does not automatically start another attempt or impose an
+application's retry policy.
+
 ## Library Boundary
 
 Polyvise owns:
@@ -38,6 +69,7 @@ Polyvise owns:
 - debate framing, topic classification, and safety notices
 - structured debate types and validation schemas
 - the Hybrid Council workflow executor
+- stage checkpoints and resumable execution
 - LLM and evidence provider contracts and adapters
 - model snapshots, traces, and artifact manifest contracts
 

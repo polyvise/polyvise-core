@@ -43,6 +43,8 @@ import type {
   TopicKind
 } from "./types";
 import { z } from "zod";
+import { DebateCheckpointJournal, type DebateCheckpoint } from "./checkpoint";
+export type { DebateCheckpoint } from "./checkpoint";
 
 /**
  * The framed question every mode starts from. Exported because consensus and
@@ -110,6 +112,10 @@ export interface DebateExecutionOptions {
   /** Emit each validated speaker batch as it completes, instead of waiting for
    * the whole round. Events are append-only and share IDs with the final run. */
   streamTurns?: boolean;
+  /** Resume a private checkpoint from a previous attempt of this same debate. */
+  checkpoint?: DebateCheckpoint;
+  /** Awaited after each completed operation and on failure, before proceeding. */
+  onCheckpoint?: (checkpoint: DebateCheckpoint) => void | Promise<void>;
 }
 
 export async function runHybridCouncilDebate(
@@ -139,7 +145,7 @@ class DebateWorkflowExecutor {
   private readonly emit: DebateEventEmitter;
   private readonly streamTurns: boolean;
 
-  constructor(options: DebateExecutionOptions = {}) {
+  constructor(private readonly options: DebateExecutionOptions = {}) {
     this.config = options.config ?? loadDebateRuntimeConfig();
     this.provider = options.provider ?? createDefaultLlmProvider(this.config);
     this.emit = options.emit ?? (() => {});
@@ -147,26 +153,35 @@ class DebateWorkflowExecutor {
   }
 
   async run(debateId: string, request: DebateRequest, framed: FramedDebate): Promise<DebateRun> {
-    const runId = makeId("run");
-    const startedAt = now();
+    const journal = new DebateCheckpointJournal({
+      version: 1, debateId, runId: makeId("run"), startedAt: now(),
+      inputKey: JSON.stringify({ request, framed, maxRounds: this.config.maxRounds }),
+      completed: {}, snapshots: [], placeholders: {}, trace: []
+    }, this.options.checkpoint, this.options.onCheckpoint);
+    const { runId, startedAt } = journal.state;
     const events: DebateEvent[] = [];
-    const trace: RunTraceEntry[] = [];
-    const snapshots: ModelSnapshot[] = [];
+    const trace = journal.state.trace;
+    const snapshots = journal.state.snapshots;
     // Mirrors the per-step `placeholder` on the event stream so a consumer
     // reading the stored run can tell filler from model output.
-    const placeholders: RunPlaceholders = {};
+    const placeholders = journal.state.placeholders;
     // "quartet" is the legacy shape (2 pro + 2 con). "duo" is the focused
     // 1-on-1 shape.
     const councilSize: CouncilSize = request.councilSize ?? "quartet";
 
     const recordSnapshot = (snapshot: ModelSnapshot) => {
-      snapshots.push(snapshot);
+      const index = snapshots.findIndex((item) => item.id === snapshot.id);
+      if (index === -1) snapshots.push(snapshot);
+      else snapshots[index] = snapshot;
       this.emit({ kind: "model_snapshot", snapshot });
     };
+    for (const snapshot of snapshots) this.emit({ kind: "model_snapshot", snapshot });
+    const step = <T>(key: string, kind: RunTraceEntry["step"], execute: Parameters<typeof runStep<T>>[2]) =>
+      journal.run(key, () => runStep(trace, kind, execute));
 
     pushEvent(events, debateId, runId, "queued");
     this.emit({ kind: "stage", status: "queued" });
-    await runStep(trace, "frame", async () => {
+    await step("frame", "frame", async () => {
       return `Classified as ${framed.topicKind}.`;
     });
     this.emit({
@@ -178,8 +193,8 @@ class DebateWorkflowExecutor {
 
     pushEvent(events, debateId, runId, "framing");
     this.emit({ kind: "stage", status: "framing" });
-    let scoutsPlaceholder: PlaceholderInfo | null = null;
-    const scoutResult = await runStep(trace, "scout", async () => {
+    let scoutsPlaceholder: PlaceholderInfo | null = placeholders.scouts ?? null;
+    const scoutResult = await step("scouts", "scout", async () => {
       const fallback = { scouts: buildStanceScouts(framed, this.config) };
       if (councilSize === "duo") {
         return {
@@ -213,7 +228,7 @@ class DebateWorkflowExecutor {
     if (scoutsPlaceholder) placeholders.scouts = scoutsPlaceholder;
     this.emit({ kind: "scouts", scouts, ...(scoutsPlaceholder ? { placeholder: scoutsPlaceholder } : {}) });
 
-    const teams = await runStep(trace, "team_builder", async () => {
+    const teams = await step("teams", "team_builder", async () => {
       const built = buildDebateTeams(scouts, councilSize);
       return {
         message:
@@ -227,7 +242,7 @@ class DebateWorkflowExecutor {
 
     pushEvent(events, debateId, runId, "researching");
     this.emit({ kind: "stage", status: "researching" });
-    const sources = await runStep(trace, "evidence", async () => {
+    const sources = await step("evidence", "evidence", async () => {
       const { sources: collected, diagnostic } = await collectEvidenceWithDiagnostics(
         framed.subject,
         framed.topicKind,
@@ -244,8 +259,8 @@ class DebateWorkflowExecutor {
     });
     this.emit({ kind: "sources", sources });
 
-    let claimsPlaceholder: PlaceholderInfo | null = null;
-    const claimOutput = await runStep(trace, "opening", async () => {
+    let claimsPlaceholder: PlaceholderInfo | null = placeholders.claims ?? null;
+    const claimOutput = await step("claims", "opening", async () => {
       const fallback = { claims: buildClaims(framed, sources).map(({ id: _id, ...claim }) => claim) };
       const generatedClaims = [];
 
@@ -262,7 +277,7 @@ class DebateWorkflowExecutor {
           batch.side === null
             ? fallback
             : { claims: fallback.claims.filter((claim) => claim.side === batch.side) };
-        const { data, snapshot, placeholder } = await generateStructured(
+        const { data, snapshot, placeholder } = await journal.run(`claims:${batch.role}`, () => generateStructured(
           this.provider,
           batch.role,
           "claimOutput",
@@ -281,7 +296,7 @@ class DebateWorkflowExecutor {
             fallback: batchFallback
           }),
           runId
-        );
+        ));
         recordSnapshot(snapshot);
         claimsPlaceholder = claimsPlaceholder ?? placeholder;
         generatedClaims.push(...data.claims);
@@ -320,8 +335,9 @@ class DebateWorkflowExecutor {
       const roundFallback = allFallbackTurns.filter((turn) => turn.round === round);
       if (roundFallback.length === 0) continue;
 
-      let roundPlaceholder: PlaceholderInfo | null = null;
-      const turnsForRound = await runStep(trace, traceStepForRound(round), async () => {
+      let roundPlaceholder: PlaceholderInfo | null = placeholders.turns?.[round] ?? null;
+      const replayedRound = journal.has(`round:${round}`);
+      const turnsForRound = await step(`round:${round}`, traceStepForRound(round), async () => {
         const generatedTurns: RoundTurn[] = [];
         const turnBatches =
           councilSize === "duo" && round !== "judge_review"
@@ -342,38 +358,41 @@ class DebateWorkflowExecutor {
           const batchFallback = {
             turns: batch.turns.map(({ id: _id, createdAt: _createdAt, ...turn }) => turn)
           };
-          const { data, snapshot, placeholder } = await generateStructured(
-            this.provider,
-            batch.role,
-            "debateTurnOutput",
-            batchFallback,
-            debateTurnOutputSchema,
-            this.config,
-            buildGenerationPrompt({
-              task: turnGenerationTask(councilSize, batch.turns),
-              framed,
-              sources,
-              claims,
-              teams,
-              round,
-              turns: openingTurns,
-              expectedTurns: batch.turns,
-              fallback: batchFallback
-            }),
-            runId
-          );
+          const { snapshot, placeholder, completedTurns } = await journal.run(`turn:${round}:${batch.role}`, async () => {
+            const { data, snapshot, placeholder } = await generateStructured(
+              this.provider,
+              batch.role,
+              "debateTurnOutput",
+              batchFallback,
+              debateTurnOutputSchema,
+              this.config,
+              buildGenerationPrompt({
+                task: turnGenerationTask(councilSize, batch.turns),
+                framed,
+                sources,
+                claims,
+                teams,
+                round,
+                turns: openingTurns,
+                expectedTurns: batch.turns,
+                fallback: batchFallback
+              }),
+              runId
+            );
+            const batchTurns = reconcileGeneratedTurns(data.turns, batch.turns, this.config);
+            // Only name a model on turns a model actually wrote. A fallback batch
+            // has a requested model, but it didn't produce this text.
+            const completedTurns: RoundTurn[] = batchTurns.map((turn) => ({
+              ...turn,
+              ...(!placeholder ? { model: snapshot.model } : {}),
+              content: polishDebateTurnContent(turn.content, turn),
+              id: makeId("turn"),
+              createdAt: now()
+            }));
+            return { snapshot, placeholder, completedTurns };
+          });
           recordSnapshot(snapshot);
           roundPlaceholder = roundPlaceholder ?? placeholder;
-          const batchTurns = reconcileGeneratedTurns(data.turns, batch.turns, this.config);
-          // Only name a model on turns a model actually wrote. A fallback batch
-          // has a requested model, but it didn't produce this text.
-          const completedTurns: RoundTurn[] = batchTurns.map((turn) => ({
-            ...turn,
-            ...(!placeholder ? { model: snapshot.model } : {}),
-            content: polishDebateTurnContent(turn.content, turn),
-            id: makeId("turn"),
-            createdAt: now()
-          }));
           generatedTurns.push(...completedTurns);
           if (this.streamTurns) {
             this.emit({
@@ -395,7 +414,7 @@ class DebateWorkflowExecutor {
       if (roundPlaceholder) {
         placeholders.turns = { ...placeholders.turns, [round]: roundPlaceholder };
       }
-      if (!this.streamTurns) {
+      if (!this.streamTurns || replayedRound) {
         this.emit({
           kind: "turns",
           round,
@@ -407,8 +426,8 @@ class DebateWorkflowExecutor {
 
     pushEvent(events, debateId, runId, "judging");
     this.emit({ kind: "stage", status: "judging" });
-    let scorecardPlaceholder: PlaceholderInfo | null = null;
-    const scorecard = await runStep(trace, "rebuttal", async () => {
+    let scorecardPlaceholder: PlaceholderInfo | null = placeholders.scorecard ?? null;
+    const scorecard = await step("scorecard", "rebuttal", async () => {
       const fallback = buildScorecard(claims, framed);
       const { data, snapshot, placeholder } = await generateStructured(
         this.provider,
@@ -442,8 +461,8 @@ class DebateWorkflowExecutor {
       scorecard,
       ...(scorecardPlaceholder ? { placeholder: scorecardPlaceholder } : {})
     });
-    let summaryPlaceholder: PlaceholderInfo | null = null;
-    const summary = await runStep(trace, "judge", async () => {
+    let summaryPlaceholder: PlaceholderInfo | null = placeholders.summary ?? null;
+    const summary = await step("summary", "judge", async () => {
       const fallback = buildSummary(framed, claims, scorecard);
       const { data, snapshot, placeholder } = await generateStructured(
         this.provider,

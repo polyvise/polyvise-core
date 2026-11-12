@@ -107,6 +107,9 @@ export interface DebateExecutionOptions {
   provider?: LlmProvider;
   config?: DebateRuntimeConfig;
   emit?: DebateEventEmitter;
+  /** Emit each validated speaker batch as it completes, instead of waiting for
+   * the whole round. Events are append-only and share IDs with the final run. */
+  streamTurns?: boolean;
 }
 
 export async function runHybridCouncilDebate(
@@ -134,11 +137,13 @@ class DebateWorkflowExecutor {
   private readonly config: DebateRuntimeConfig;
   private readonly provider: LlmProvider;
   private readonly emit: DebateEventEmitter;
+  private readonly streamTurns: boolean;
 
   constructor(options: DebateExecutionOptions = {}) {
     this.config = options.config ?? loadDebateRuntimeConfig();
     this.provider = options.provider ?? createDefaultLlmProvider(this.config);
     this.emit = options.emit ?? (() => {});
+    this.streamTurns = options.streamTurns ?? false;
   }
 
   async run(debateId: string, request: DebateRequest, framed: FramedDebate): Promise<DebateRun> {
@@ -296,9 +301,8 @@ class DebateWorkflowExecutor {
     pushEvent(events, debateId, runId, "debating");
     this.emit({ kind: "stage", status: "debating" });
 
-    // Generate turns one round at a time so they stream to the client as they
-    // arrive instead of landing as a single dump at the end of the debating
-    // phase. Each round is its own LLM call with role-derived model routing.
+    // Each round contains one or more speaker batches. Streaming consumers
+    // can start displaying a completed batch while the next is generated.
     const allFallbackTurns = buildRoundTurns(teams, claims, sources, framed, this.config.maxRounds);
     const roundOrder: RoundTurn["round"][] = [
       "opening",
@@ -318,7 +322,7 @@ class DebateWorkflowExecutor {
 
       let roundPlaceholder: PlaceholderInfo | null = null;
       const turnsForRound = await runStep(trace, traceStepForRound(round), async () => {
-        const generatedTurns = [];
+        const generatedTurns: RoundTurn[] = [];
         const turnBatches =
           councilSize === "duo" && round !== "judge_review"
             ? [
@@ -363,19 +367,27 @@ class DebateWorkflowExecutor {
           const batchTurns = reconcileGeneratedTurns(data.turns, batch.turns, this.config);
           // Only name a model on turns a model actually wrote. A fallback batch
           // has a requested model, but it didn't produce this text.
-          generatedTurns.push(
-            ...(placeholder ? batchTurns : batchTurns.map((turn) => ({ ...turn, model: snapshot.model })))
-          );
+          const completedTurns: RoundTurn[] = batchTurns.map((turn) => ({
+            ...turn,
+            ...(!placeholder ? { model: snapshot.model } : {}),
+            content: polishDebateTurnContent(turn.content, turn),
+            id: makeId("turn"),
+            createdAt: now()
+          }));
+          generatedTurns.push(...completedTurns);
+          if (this.streamTurns) {
+            this.emit({
+              kind: "turns",
+              round,
+              turns: completedTurns,
+              ...(placeholder ? { placeholder } : {})
+            });
+          }
         }
 
         return {
           message: `${generatedTurns.length} turns generated for ${round.replace("_", " ")}.`,
-          value: generatedTurns.map((turn) => ({
-            ...turn,
-            content: polishDebateTurnContent(turn.content, turn),
-            id: makeId("turn"),
-            createdAt: now()
-          }))
+          value: generatedTurns
         };
       });
 
@@ -383,12 +395,14 @@ class DebateWorkflowExecutor {
       if (roundPlaceholder) {
         placeholders.turns = { ...placeholders.turns, [round]: roundPlaceholder };
       }
-      this.emit({
-        kind: "turns",
-        round,
-        turns: turnsForRound,
-        ...(roundPlaceholder ? { placeholder: roundPlaceholder } : {})
-      });
+      if (!this.streamTurns) {
+        this.emit({
+          kind: "turns",
+          round,
+          turns: turnsForRound,
+          ...(roundPlaceholder ? { placeholder: roundPlaceholder } : {})
+        });
+      }
     }
 
     pushEvent(events, debateId, runId, "judging");

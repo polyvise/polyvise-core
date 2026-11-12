@@ -417,6 +417,8 @@ export type DebateLiveEvent =
   | { kind: "sources"; sources: EvidenceSource[] }
   | { kind: "claims"; claims: Claim[]; placeholder?: PlaceholderInfo }
   | { kind: "argument_map"; nodes: ArgumentNode[]; edges: ArgumentEdge[] }
+  /** Append completed turns. With streamTurns enabled, a round can arrive in
+   * multiple events; turn IDs match the final transcript and are not repeated. */
   | { kind: "turns"; round: DebateRound; turns: RoundTurn[]; placeholder?: PlaceholderInfo }
   | { kind: "scorecard"; scorecard: Scorecard; placeholder?: PlaceholderInfo }
   | { kind: "summary"; summary: DebateSummary; placeholder?: PlaceholderInfo }

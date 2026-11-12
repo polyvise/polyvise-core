@@ -25,6 +25,12 @@ const run = await runHybridCouncilDebate("example-run", {
 
 The deterministic providers are the development default. Applications can pass runtime configuration and provider implementations through `DebateExecutionOptions`.
 
+Set `streamTurns: true` in those options to receive each validated speaker batch
+as soon as it completes. In a duo debate, the pro statement arrives before the
+con statement is generated. Append each `turns` event to the live transcript;
+the same turn IDs and content appear in the completed run. The default continues
+to emit one `turns` event per round.
+
 ## Library Boundary
 
 Polyvise owns:

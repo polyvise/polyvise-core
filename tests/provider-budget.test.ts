@@ -72,3 +72,39 @@ it("bounds timed-out requests without restarting in another format", async () =>
   await expect(generate()).rejects.toThrow("timed out");
   expect(fetch).toHaveBeenCalledTimes(3);
 });
+
+it.each([
+  JSON.stringify({ error: { message: "Invalid schema for response_format: required must include all properties." } }),
+  { error: { message: "json_schema is unsupported" } },
+  "structured output is unsupported"
+])("recognizes wrapped schema errors without exposing raw metadata", async raw => {
+  const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ error: { message: "Provider returned error", metadata: { raw, flagged_input: "private input" } } }, { status: 400 }))
+    .mockResolvedValueOnce(reply('{"answer":"Fixed"}'));
+  vi.stubGlobal("fetch", fetcher);
+  const result = await generate();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(JSON.parse(fetcher.mock.calls[1][1].body).response_format.type).toBe("json_object");
+  expect(result.snapshot.attempts?.[0].message).toBe("Provider rejected the requested JSON schema.");
+  expect(JSON.stringify(result.snapshot)).not.toContain("private input");
+});
+
+it.each([401, 402, 403])("does not format-retry wrapped authorization/quota error %i", async status => {
+  const fetcher = vi.fn(async () => Response.json({ error: { message: "Provider returned error", metadata: { raw: { error: { message: "Not authorized for response_format" } } } } }, { status }));
+  vi.stubGlobal("fetch", fetcher);
+  await expect(generate()).rejects.toBeInstanceOf(LlmProviderFailure);
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});
+
+it("does not mistake echoed inputs for schema errors", async () => {
+  const fetcher = vi.fn(async () => Response.json({ error: { message: "Provider returned error", metadata: { raw: { error: { message: "Invalid model" }, input: "response_format" } } } }, { status: 400 }));
+  vi.stubGlobal("fetch", fetcher);
+  await expect(generate()).rejects.toThrow("Provider returned error");
+  expect(fetcher).toHaveBeenCalledTimes(1);
+});
+
+it.each([401, 429])("uses the embedded error code when HTTP 200 carries error %i", async code => {
+  const fetcher = vi.fn(async () => Response.json({ error: { message: "Provider failed", code } }));
+  vi.stubGlobal("fetch", fetcher);
+  await expect(generate()).rejects.toThrow("Provider failed");
+  expect(fetcher).toHaveBeenCalledTimes(code === 401 ? 1 : 3);
+});

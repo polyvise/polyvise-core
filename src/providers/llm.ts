@@ -145,7 +145,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
         // quota, model selection and exhausted transport retries must not
         // silently receive another full retry budget.
         const schemaRejected = useJsonSchema && error instanceof OpenRouterRequestError &&
-          [400, 404, 422].includes(error.status) && /json.?schema|response_format|structured output/i.test(error.message);
+          [400, 404, 422].includes(error.status) && error.schemaRejected;
         const retryAfter = error instanceof OpenRouterRequestError ? error.retryAfterMs : undefined;
         if (attempt >= budget || (!schemaRejected && !isRetriableOpenRouterError(error)) || (retryAfter ?? 0) > 5000) break;
         if (schemaRejected) {
@@ -223,15 +223,18 @@ export class OpenRouterLlmProvider implements LlmProvider {
       });
 
       const payload = (await response.json().catch(() => ({}))) as OpenRouterChatCompletion & {
-        error?: { message?: string };
+        error?: { message?: string; code?: number; metadata?: { raw?: unknown } };
       };
 
       recordUsage(payload.usage);
-      if (!response.ok) {
+      if (!response.ok || payload.error) {
+        const schemaRejected = isSchemaRejection(payload.error?.message) || isSchemaRejection(payload.error?.metadata?.raw);
+        const status = response.ok && typeof payload.error?.code === "number" ? payload.error.code : response.status;
         throw new OpenRouterRequestError(
-          payload.error?.message ?? `OpenRouter request failed with ${response.status}.`,
-          response.status,
-          retryAfterMs(response.headers.get("retry-after"))
+          schemaRejected ? "Provider rejected the requested JSON schema." : payload.error?.message ?? `OpenRouter request failed with ${status}.`,
+          status,
+          retryAfterMs(response.headers.get("retry-after")),
+          schemaRejected
         );
       }
 
@@ -310,11 +313,25 @@ function retryAfterMs(value: string | null): number | undefined {
   return Number.isFinite(ms) ? Math.max(0, ms) : undefined;
 }
 
+// Inspect only the upstream error message, never echoed inputs or arbitrary
+// metadata. Do not expose raw provider payloads in logs or public snapshots.
+function isSchemaRejection(raw: unknown): boolean {
+  if (typeof raw === "string") {
+    try { return isSchemaRejection(JSON.parse(raw)); } catch { /* plain message */ }
+    return /json.?schema|response[_ ]format|structured output/i.test(raw);
+  }
+  if (!raw || typeof raw !== "object") return false;
+  const value = raw as { error?: { message?: unknown }; message?: unknown };
+  const message = value.error?.message ?? value.message;
+  return typeof message === "string" && /json.?schema|response[_ ]format|structured output/i.test(message);
+}
+
 class OpenRouterRequestError extends Error {
   constructor(
     message: string,
     readonly status: number,
-    readonly retryAfterMs?: number
+    readonly retryAfterMs?: number,
+    readonly schemaRejected = false
   ) {
     super(message);
   }

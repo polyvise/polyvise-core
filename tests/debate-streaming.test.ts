@@ -25,6 +25,38 @@ const request = { subject: "Should schools have longer recess?", councilSize: "d
 const config = { ...loadDebateRuntimeConfig({}), maxRounds: 4 };
 
 describe("speaker turn delivery", () => {
+  it("requests brief turns for every speaker and round without cutting a longer model response", async () => {
+    const prompts: Array<{ round: string; rules: string[]; expectedTurns: Array<{ side: string }> }> = [];
+    const longAnswer = "I support more recess because students need time to move, rest, and talk with friends. ".repeat(8).trim();
+    class PromptCaptureProvider extends MockLlmProvider {
+      async generateStructured<T>(input: LlmRequest) {
+        if (input.schemaName === "debateTurnOutput") {
+          prompts.push(JSON.parse(input.prompt));
+          if (input.role === "pro advocate opening round") {
+            const fallback = structuredClone(input.fallback) as { turns: Array<{ content: string }> };
+            fallback.turns[0].content = longAnswer;
+            return super.generateStructured<T>({ ...input, fallback });
+          }
+        }
+        return super.generateStructured<T>(input);
+      }
+    }
+    const run = await runHybridCouncilDebate("brief-turns", request, undefined, {
+      provider: new PromptCaptureProvider(), config, streamTurns: true
+    });
+    expect(prompts).toHaveLength(9);
+    for (const prompt of prompts) {
+      expect(prompt.rules.join(" ")).toContain("30-60 words");
+      expect(prompt.rules.join(" ")).toContain("never truncate");
+      expect(prompt.rules.join(" ")).not.toContain("35 to 100 words");
+      if (prompt.round === "cross_examination") {
+        expect(prompt.rules.join(" ")).toContain("15-35 words");
+        expect(prompt.rules.join(" ")).toContain("exactly one");
+      }
+    }
+    expect(run.turns.find((turn) => turn.round === "opening" && turn.side === "pro")?.content).toBe(longAnswer);
+  });
+
   it.each([true, false])("streams only when opted in (streamTurns: %s)", async (streamTurns) => {
     const conStarted = deferred();
     const releaseCon = deferred();

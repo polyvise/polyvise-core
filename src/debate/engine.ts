@@ -802,16 +802,25 @@ function sideText(side: "pro" | "con", claims: Claim[], turns: RoundTurn[]): str
 }
 
 function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
-  if (!round || round === "judge_review" || round === "synthesis") {
+  if (!round) {
     return [];
   }
 
+  const lengthRules = [
+    "Aim for about 30-60 words in each turn's content. Prefer the shorter end when the point is clear; do not pad a short answer or question to reach the target.",
+    "Use one short paragraph with 2 or 3 brief sentences, or one question for cross-examination. Make one main point; cut filler, repeated setup, and extra examples.",
+    "Finish every sentence. If your draft is too long, rewrite it more simply before returning it; never truncate it or leave a thought unfinished."
+  ];
+  if (round === "judge_review" || round === "synthesis") {
+    return [...lengthRules, "Briefly name the strongest point on each side and the deciding tradeoff; do not recap every round."];
+  }
+
   const commonRules = [
+    ...lengthRules,
     "Visible debate turns should read like a clean transcript of an advocate speaking, not like a narrator summarizing a side.",
     "Each advocate must speak in first person for its own argument: use I, me, my, or my side.",
     "When referring to the other debater, say my opponent, the opposing advocate, you, or your side.",
     "Avoid repeating a point from an earlier round unless this turn adds a new example, answers the opponent directly, or explains why one concern matters more.",
-    "Keep each turn to 1 or 2 focused paragraphs, about 35 to 100 words total.",
     "Do not include the speaker name inside content; agentName already identifies the speaker."
   ];
 
@@ -819,13 +828,13 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
     case "opening":
       return [
         ...commonRules,
-        "Opening round job: state your answer clearly, give your strongest reason, and include one simple concrete example. Do not rebut yet unless absolutely necessary.",
+        "Opening round job: state your answer and one strongest reason. Add a brief concrete example only if needed to make that reason clear. Do not rebut yet unless absolutely necessary.",
         "State the position in first person and avoid narrator-style labels such as 'the pro side' or 'the con side'."
       ];
     case "cross_examination":
       return [
         ...commonRules,
-        "Cross-examination round job: ask exactly one pointed question to the opposing advocate. The content must end with a question mark.",
+        "Cross-examination round job: ask exactly one short, pointed question to the opposing advocate, usually 15-35 words, without a long preamble. The content must end with a question mark.",
         "Do not summarize both sides in this round. Do not answer your own question.",
         "Good question patterns: 'If your plan..., why...?' or 'How would you answer...?'"
       ];
@@ -834,15 +843,14 @@ function debateTranscriptRules(round?: RoundTurn["round"]): string[] {
         ...commonRules,
         "Comeback round job: answer one specific thing the opponent said, then explain why your side still wins that clash.",
         "If this round has an opponent question in roundGuide.questionsToAnswer, answer that exact question first. Do not dodge it or switch to a different issue.",
-        "Start by naming the opponent's point in plain speech, then respond.",
-        "Do not merely restate your opening. Add a comparison, an example, or a reason the opponent's point is not enough."
+        "Refer to the opponent's point in a short phrase, without repeating their argument. Give one direct answer and why it matters."
       ];
     case "closing":
       return [
         ...commonRules,
         "Closing round job: explain why your side should win overall. Weigh the tradeoff; do not introduce a brand-new argument.",
         "Use a direct spoken close that identifies the decisive reason.",
-        "Do not say 'The YES side has shown' or 'The NO side has shown'; say what I showed, what my opponent missed, and what matters most."
+        "Do not recap every point or use labels like 'The YES side has shown'. State the one decisive tradeoff and why it favors your answer."
       ];
     default:
       return commonRules;

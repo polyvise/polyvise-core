@@ -1,3 +1,4 @@
+import { RunCheckpointJournal, type RunCheckpoint } from "../runs/checkpoint";
 import { collectEvidenceWithDiagnostics } from "../providers/search";
 import { createDefaultLlmProvider, type LlmProvider } from "../providers/llm";
 import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "../debate/config";
@@ -117,6 +118,8 @@ export type ConsensusLiveEvent =
   | { kind: "error"; message: string };
 
 export interface ConsensusExecutionOptions {
+  checkpoint?: RunCheckpoint;
+  onCheckpoint?: (checkpoint: RunCheckpoint) => void | Promise<void>;
   provider?: LlmProvider;
   config?: DebateRuntimeConfig;
   emit?: ConsensusEventEmitter;
@@ -132,25 +135,32 @@ export async function runConsensus(
   const provider = options.provider ?? createDefaultLlmProvider(config);
   const emit = options.emit ?? (() => {});
 
-  const runId = makeId("run");
-  const startedAt = now();
+  const journal = new RunCheckpointJournal({
+    version: 1, debateId, runId: makeId("run"), startedAt: now(),
+    inputKey: JSON.stringify({ mode: "consensus", request, framed }),
+    completed: {}, snapshots: [], placeholders: {}, trace: []
+  }, options.checkpoint, options.onCheckpoint);
+  const { runId, startedAt, trace, snapshots, placeholders } = journal.state;
   const events: DebateEvent[] = [];
-  const trace: RunTraceEntry[] = [];
-  const snapshots: ModelSnapshot[] = [];
-  const placeholders: RunPlaceholders = {};
+  const step = <T>(key: string, kind: RunTraceEntry["step"], execute: Parameters<typeof runStep<T>>[2]) =>
+    journal.run(key, () => runStep(trace, kind, execute));
 
   const agentCount = clamp(request.consensus?.agentCount ?? DEFAULT_AGENT_COUNT, 3, 7);
   const roundCount = clamp(request.consensus?.rounds ?? DEFAULT_ROUNDS, 2, 5);
   const threshold = clampFloat(request.consensus?.convergenceThreshold ?? DEFAULT_CONVERGENCE_THRESHOLD, 0, 1);
 
   const recordSnapshot = (snapshot: ModelSnapshot) => {
-    snapshots.push(snapshot);
+    const index = snapshots.findIndex((item) => item.id === snapshot.id);
+    if (index === -1) snapshots.push(snapshot);
+    else snapshots[index] = snapshot;
     emit({ kind: "model_snapshot", snapshot });
   };
 
+  for (const snapshot of snapshots) emit({ kind: "model_snapshot", snapshot });
+
   pushEvent(events, debateId, runId, "queued", stageCopy);
   emit({ kind: "stage", status: "queued" });
-  await runStep(trace, "frame", async () => `Classified as ${framed.topicKind}.`);
+  await step("frame", "frame", async () => `Classified as ${framed.topicKind}.`);
   emit({
     kind: "framed",
     resolution: framed.resolution,
@@ -163,8 +173,8 @@ export async function runConsensus(
   pushEvent(events, debateId, runId, "framing", stageCopy);
   emit({ kind: "stage", status: "framing" });
 
-  let agentsPlaceholder: PlaceholderInfo | null = null;
-  const agents = await runStep(trace, "panel_builder", async () => {
+  let agentsPlaceholder: PlaceholderInfo | null = placeholders.scouts ?? null;
+  const agents = await step("panel_builder", "panel_builder", async () => {
     const fallback = { agents: fallbackLenses.slice(0, agentCount).map(({ name, lens }) => ({ name, lens })) };
     const { data, snapshot, placeholder } = await generateStructured(
       provider,
@@ -201,7 +211,7 @@ export async function runConsensus(
 
   pushEvent(events, debateId, runId, "researching", stageCopy);
   emit({ kind: "stage", status: "researching" });
-  const sources = await runStep(trace, "evidence", async () => {
+  const sources = await step("evidence", "evidence", async () => {
     const { sources: collected, diagnostic } = await collectEvidenceWithDiagnostics(
       framed.subject,
       framed.topicKind,
@@ -227,9 +237,9 @@ export async function runConsensus(
 
   for (let roundNumber = 1; roundNumber <= roundCount; roundNumber += 1) {
     const previous = rounds[rounds.length - 1];
-    let roundPlaceholder: PlaceholderInfo | null = null;
+    let roundPlaceholder: PlaceholderInfo | null = placeholders.turns?.[roundKey(roundNumber)] ?? null;
 
-    const positions = await runStep(trace, roundNumber === 1 ? "answer" : "revise", async () => {
+    const positions = await step(`round:${roundNumber}`, roundNumber === 1 ? "answer" : "revise", async () => {
       const collected: ConsensusPosition[] = [];
 
       // One call per agent. Round 1 is the whole point of the mode — an agent
@@ -253,35 +263,39 @@ export async function runConsensus(
           ]
         };
 
-        const { data, snapshot, placeholder } = await generateStructured(
-          provider,
-          `consensus agent ${agent.lens}`,
-          "consensusPositionOutput",
-          fallback,
-          consensusPositionOutputSchema,
-          config,
-          buildRoundPrompt({ framed, sources, agent, roundNumber, previous, fallback }),
-          runId
-        );
-        recordSnapshot(snapshot);
-        roundPlaceholder = roundPlaceholder ?? placeholder;
+        const completed = await journal.run(`position:${roundNumber}:${agent.id}`, async () => {
+          const { data, snapshot, placeholder } = await generateStructured(
+            provider,
+            `consensus agent ${agent.lens}`,
+            "consensusPositionOutput",
+            fallback,
+            consensusPositionOutputSchema,
+            config,
+            buildRoundPrompt({ framed, sources, agent, roundNumber, previous, fallback }),
+            runId
+          );
 
-        const raw = data.positions[0];
-        const stance = raw.stance;
-        collected.push({
-          id: makeId("position"),
-          agentId: agent.id,
-          agentName: agent.name,
-          round: roundNumber,
-          stance,
-          answer: raw.answer,
-          rationale: raw.rationale,
-          confidence: raw.confidence,
-          // Derived, not taken on the model's word.
-          changedFromPrevious: priorSelf ? priorSelf.stance !== stance : false,
-          sourceIds: raw.sourceIds,
-          ...(placeholder ? {} : { model: snapshot.model })
+          const raw = data.positions[0];
+          const stance = raw.stance;
+          const position: ConsensusPosition = {
+            id: makeId("position"),
+            agentId: agent.id,
+            agentName: agent.name,
+            round: roundNumber,
+            stance,
+            answer: raw.answer,
+            rationale: raw.rationale,
+            confidence: raw.confidence,
+            // Derived, not taken on the model's word.
+            changedFromPrevious: priorSelf ? priorSelf.stance !== stance : false,
+            sourceIds: raw.sourceIds,
+            ...(placeholder ? {} : { model: snapshot.model })
+          };
+          return { position, snapshot, placeholder };
         });
+        recordSnapshot({ ...completed.snapshot, id: `${completed.snapshot.id}-round-${roundNumber}` });
+        roundPlaceholder = roundPlaceholder ?? completed.placeholder;
+        collected.push(completed.position);
       }
 
       const moved = collected.filter((position) => position.changedFromPrevious).length;
@@ -315,8 +329,8 @@ export async function runConsensus(
   const modal = modalStance(finalRound.positions);
   const dissenters = finalRound.positions.filter((position) => position.stance !== modal);
 
-  let summaryPlaceholder: PlaceholderInfo | null = null;
-  const written = await runStep(trace, "converge", async () => {
+  let summaryPlaceholder: PlaceholderInfo | null = placeholders.summary ?? null;
+  const written = await step("converge", "converge", async () => {
     const fallback = {
       headline: `The panel settled ${finalRound.spread <= threshold ? "into agreement" : "without converging"}.`,
       finding: `After ${rounds.length} rounds the panel's stance spread was ${finalRound.spread.toFixed(2)}.`,

@@ -15,3 +15,4 @@ export * from "./runs/dispatch";
 export * from "./runs/execution";
 export * from "./runs/types";
 export * from "./workflows/debate-workflow";
+export type { RunCheckpoint } from "./runs/checkpoint";

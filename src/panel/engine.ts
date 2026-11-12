@@ -1,3 +1,4 @@
+import { RunCheckpointJournal, type RunCheckpoint } from "../runs/checkpoint";
 import { collectEvidenceWithDiagnostics } from "../providers/search";
 import { createDefaultLlmProvider, type LlmProvider } from "../providers/llm";
 import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfig } from "../debate/config";
@@ -102,6 +103,8 @@ export type AdvisoryPanelLiveEvent =
   | { kind: "error"; message: string };
 
 export interface AdvisoryPanelExecutionOptions {
+  checkpoint?: RunCheckpoint;
+  onCheckpoint?: (checkpoint: RunCheckpoint) => void | Promise<void>;
   provider?: LlmProvider;
   config?: DebateRuntimeConfig;
   emit?: AdvisoryPanelEventEmitter;
@@ -117,23 +120,30 @@ export async function runAdvisoryPanel(
   const provider = options.provider ?? createDefaultLlmProvider(config);
   const emit = options.emit ?? (() => {});
 
-  const runId = makeId("run");
-  const startedAt = now();
+  const journal = new RunCheckpointJournal({
+    version: 1, debateId, runId: makeId("run"), startedAt: now(),
+    inputKey: JSON.stringify({ mode: "advisory_panel", request, framed }),
+    completed: {}, snapshots: [], placeholders: {}, trace: []
+  }, options.checkpoint, options.onCheckpoint);
+  const { runId, startedAt, trace, snapshots, placeholders } = journal.state;
   const events: DebateEvent[] = [];
-  const trace: RunTraceEntry[] = [];
-  const snapshots: ModelSnapshot[] = [];
-  const placeholders: RunPlaceholders = {};
+  const step = <T>(key: string, kind: RunTraceEntry["step"], execute: Parameters<typeof runStep<T>>[2]) =>
+    journal.run(key, () => runStep(trace, kind, execute));
 
   const selected = dedupeLenses(request.panel?.lenses ?? [...panelLensIds]);
 
   const recordSnapshot = (snapshot: ModelSnapshot) => {
-    snapshots.push(snapshot);
+    const index = snapshots.findIndex((item) => item.id === snapshot.id);
+    if (index === -1) snapshots.push(snapshot);
+    else snapshots[index] = snapshot;
     emit({ kind: "model_snapshot", snapshot });
   };
 
+  for (const snapshot of snapshots) emit({ kind: "model_snapshot", snapshot });
+
   pushEvent(events, debateId, runId, "queued", stageCopy);
   emit({ kind: "stage", status: "queued" });
-  await runStep(trace, "frame", async () => `Classified as ${framed.topicKind}.`);
+  await step("frame", "frame", async () => `Classified as ${framed.topicKind}.`);
   emit({
     kind: "framed",
     resolution: framed.resolution,
@@ -146,7 +156,7 @@ export async function runAdvisoryPanel(
   pushEvent(events, debateId, runId, "framing", stageCopy);
   emit({ kind: "stage", status: "framing" });
 
-  const lenses = await runStep(trace, "panel_builder", async () => {
+  const lenses = await step("panel_builder", "panel_builder", async () => {
     const seated: PanelLens[] = selected.map((id) => ({
       id,
       name: lensBriefs[id].name,
@@ -161,7 +171,7 @@ export async function runAdvisoryPanel(
 
   pushEvent(events, debateId, runId, "researching", stageCopy);
   emit({ kind: "stage", status: "researching" });
-  const sources = await runStep(trace, "evidence", async () => {
+  const sources = await step("evidence", "evidence", async () => {
     const { sources: collected, diagnostic } = await collectEvidenceWithDiagnostics(
       framed.subject,
       framed.topicKind,
@@ -190,7 +200,7 @@ export async function runAdvisoryPanel(
   // the panel would be responding to it, and the chair's agreement map would
   // then be measuring echo rather than independent convergence.
   for (const lens of lenses) {
-    const given = await runStep(trace, "advise", async () => {
+    const given = await step(`advice:${lens.id}`, "advise", async () => {
       const fallback = {
         recommendation: `No advice was produced from the ${lens.name.toLowerCase()} lens.`,
         reasoning: `The ${lens.name.toLowerCase()} lens did not return usable output for this question.`,
@@ -236,6 +246,7 @@ export async function runAdvisoryPanel(
       return { message: `${lens.name} advised.`, value: { entry, placeholder } };
     });
 
+    advicePlaceholder = advicePlaceholder ?? given.placeholder;
     advice.push(given.entry);
     emit({ kind: "advice", advice: given.entry, ...(given.placeholder ? { placeholder: given.placeholder } : {}) });
   }
@@ -246,8 +257,8 @@ export async function runAdvisoryPanel(
   pushEvent(events, debateId, runId, "judging", stageCopy);
   emit({ kind: "stage", status: "judging" });
 
-  let chairPlaceholder: PlaceholderInfo | null = null;
-  const chair = await runStep(trace, "chair", async () => {
+  let chairPlaceholder: PlaceholderInfo | null = placeholders.summary ?? null;
+  const chair = await step("chair", "chair", async () => {
     const fallback: {
       headline: string;
       throughLine: string;

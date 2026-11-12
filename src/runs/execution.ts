@@ -84,40 +84,37 @@ export async function generateStructured<TSchema extends z.ZodTypeAny>(
   const requestedModel = provider.modelForRole(role);
   let lastReason = "Structured generation failed.";
   let lastSnapshot: ModelSnapshot | null = null;
+  let remaining = Math.max(1, config.llmMaxAttempts);
+  let nextPrompt = prompt ?? JSON.stringify(fallbackParse.data);
+  const history: ModelSnapshot[] = [];
 
-  for (let attempt = 1; attempt <= config.llmMaxAttempts; attempt += 1) {
+  while (remaining > 0) {
     try {
       const result = await provider.generateStructured<unknown>({
-        role,
-        schemaName,
-        prompt: prompt ?? JSON.stringify(fallbackParse.data),
-        fallback: fallbackParse.data,
-        jsonSchema: z.toJSONSchema(schema),
-        sessionId
+        role, schemaName, prompt: nextPrompt, fallback: fallbackParse.data,
+        jsonSchema: z.toJSONSchema(schema), sessionId, maxAttempts: remaining
       });
+      remaining -= Math.max(1, result.snapshot.attempts?.length ?? 1);
       const parsed = schema.safeParse(result.data);
-
       if (!parsed.success) {
         lastReason = `Structured output validation failed: ${parsed.error.message}`;
-        lastSnapshot = {
-          ...result.snapshot,
-          failure: lastReason
-        };
-        if (attempt < config.llmMaxAttempts) continue;
-        break;
+        const attempts = result.snapshot.attempts?.map((entry, index, list) => index === list.length - 1
+          ? { ...entry, status: "failed" as const, message: lastReason } : entry);
+        history.push({ ...result.snapshot, failure: lastReason, attempts });
+        lastSnapshot = mergeCallSnapshots(history, lastReason);
+        nextPrompt = `${prompt ?? JSON.stringify(fallbackParse.data)}\n\nRepair the rejected JSON below. Fix the validation errors, keep supported content, and return the complete corrected object.\nRejected output: ${JSON.stringify(result.data)}\nValidation errors: ${parsed.error.message}`;
+        continue;
       }
-
-      return {
-        data: parsed.data,
-        snapshot: result.snapshot,
-        placeholder: null
-      };
+      history.push(result.snapshot);
+      return { data: parsed.data, snapshot: mergeCallSnapshots(history), placeholder: null };
     } catch (error) {
       lastReason = error instanceof Error ? error.message : "Structured generation failed.";
       if (error instanceof LlmProviderFailure) {
-        lastSnapshot = error.snapshot;
+        history.push(error.snapshot);
+        lastSnapshot = mergeCallSnapshots(history, lastReason);
       }
       if (!config.allowDeterministicFallbacks) {
+        if (lastSnapshot) throw new LlmProviderFailure(lastReason, lastSnapshot);
         throw error;
       }
       break;
@@ -125,6 +122,7 @@ export async function generateStructured<TSchema extends z.ZodTypeAny>(
   }
 
   if (!config.allowDeterministicFallbacks) {
+    if (lastSnapshot) throw new LlmProviderFailure(lastReason, lastSnapshot);
     throw new Error(lastReason);
   }
 
@@ -150,6 +148,23 @@ export async function generateStructured<TSchema extends z.ZodTypeAny>(
       failure: lastReason
     },
     placeholder: { requestedModel, reason: lastReason }
+  };
+}
+
+/** Include every billed/failed attempt when output validation needs a repair. */
+function mergeCallSnapshots(history: ModelSnapshot[], failure?: string): ModelSnapshot {
+  const latest = history[history.length - 1];
+  const attempts = history.flatMap((snapshot) => snapshot.attempts ?? [{
+    attempt: 1, mode: "json_object" as const, status: snapshot.failure ? "failed" as const : "ok" as const,
+    durationMs: snapshot.latencyMs ?? 0, ...(snapshot.failure ? { message: snapshot.failure } : {})
+  }]).map((attempt, index) => ({ ...attempt, attempt: index + 1 }));
+  const sum = (field: "promptTokens" | "completionTokens" | "estimatedCostUsd") =>
+    history.some(item => item[field] !== undefined) ? history.reduce((total, item) => total + (item[field] ?? 0), 0) : undefined;
+  return { ...latest, failure, attempts,
+    latencyMs: history.reduce((sum, item) => sum + (item.latencyMs ?? 0), 0),
+    promptTokens: sum("promptTokens"),
+    completionTokens: sum("completionTokens"),
+    estimatedCostUsd: sum("estimatedCostUsd")
   };
 }
 

@@ -3,6 +3,8 @@ import { loadDebateRuntimeConfig, modelRosterFromConfig, type DebateRuntimeConfi
 
 export interface LlmRequest {
   role: string;
+  /** Shared HTTP-call budget remaining, including output repair. */
+  maxAttempts?: number;
   prompt: string;
   schemaName: string;
   jsonSchema?: Record<string, unknown>;
@@ -83,6 +85,7 @@ export class MockLlmProvider implements LlmProvider {
 
 type OpenRouterChatCompletion = {
   choices?: Array<{
+    finish_reason?: string;
     message?: {
       content?: string | null;
       refusal?: string | null;
@@ -99,6 +102,7 @@ type OpenRouterChatCompletion = {
 export class OpenRouterLlmProvider implements LlmProvider {
   name = "openrouter";
   configured = Boolean(process.env.OPENROUTER_API_KEY);
+  private readonly jsonObjectModels = new Set<string>();
 
   constructor(
     private readonly config = loadDebateRuntimeConfig(),
@@ -114,87 +118,48 @@ export class OpenRouterLlmProvider implements LlmProvider {
       throw new Error("OPENROUTER_API_KEY is required when POLYVISE_ENABLE_MOCK_LLM=false.");
     }
 
-    const useStrictSchema = this.config.useStrictJsonSchema && Boolean(request.jsonSchema);
-
-    try {
-      return await this.completeStructuredWithRetry<T>(
-        request,
-        model,
-        started,
-        useStrictSchema,
-        attempts
-      );
-    } catch (error) {
-      if (!useStrictSchema) {
-        throw error;
-      }
-
-      return this.completeStructuredWithRetry<T>(request, model, started, false, attempts);
-    }
-  }
-
-  private async completeStructuredWithRetry<T>(
-    request: LlmRequest,
-    model: string,
-    started: number,
-    useJsonSchema: boolean,
-    attempts: ModelCallAttempt[]
-  ): Promise<{ data: T; snapshot: ModelSnapshot }> {
+    let useJsonSchema = this.config.useStrictJsonSchema && Boolean(request.jsonSchema) && !this.jsonObjectModels.has(model);
+    const budget = Math.max(1, Math.floor(Math.min(this.config.llmMaxAttempts, request.maxAttempts ?? this.config.llmMaxAttempts)));
+    let maxTokens = this.config.llmMaxTokens;
     let lastError: unknown;
-    const mode = useJsonSchema ? "json_schema" : "json_object";
-
-    for (let attempt = 1; attempt <= this.config.llmMaxAttempts; attempt += 1) {
+    const usage: Pick<ModelSnapshot, "promptTokens" | "completionTokens" | "estimatedCostUsd"> = {};
+    const recordUsage = (value: OpenRouterChatCompletion["usage"]) => {
+      if (value?.prompt_tokens !== undefined) usage.promptTokens = (usage.promptTokens ?? 0) + value.prompt_tokens;
+      if (value?.completion_tokens !== undefined) usage.completionTokens = (usage.completionTokens ?? 0) + value.completion_tokens;
+      if (value?.cost !== undefined) usage.estimatedCostUsd = (usage.estimatedCostUsd ?? 0) + value.cost;
+    };
+    for (let attempt = 1; attempt <= budget; attempt += 1) {
+      const mode = useJsonSchema ? "json_schema" : "json_object";
       const attemptStarted = Date.now();
       try {
-        const result = await this.completeStructured<T>(request, model, started, useJsonSchema);
-        attempts.push({
-          attempt,
-          mode,
-          status: "ok",
-          durationMs: Date.now() - attemptStarted
-        });
-        return {
-          ...result,
-          snapshot: {
-            ...result.snapshot,
-            attempts: [...attempts]
-          }
-        };
+        const result = await this.completeStructured<T>(request, model, started, useJsonSchema, maxTokens, recordUsage);
+        attempts.push({ attempt, mode, status: "ok", durationMs: Date.now() - attemptStarted });
+        return { ...result, snapshot: { ...result.snapshot, ...usage, attempts: [...attempts] } };
       } catch (error) {
         lastError = error;
         const durationMs = Date.now() - attemptStarted;
-        attempts.push({
-          attempt,
-          mode,
-          status: "failed",
-          durationMs,
-          message: error instanceof Error ? sanitizeProviderMessage(error.message) : "AI model request failed."
-        });
-        logOpenRouterAttemptFailure({
-          error,
-          model,
-          role: request.role,
-          mode,
-          attempt,
-          durationMs
-        });
-        if (attempt >= this.config.llmMaxAttempts || !isRetriableOpenRouterError(error)) {
-          break;
+        attempts.push({ attempt, mode, status: "failed", durationMs,
+          message: error instanceof Error ? sanitizeProviderMessage(error.message) : "AI model request failed." });
+        logOpenRouterAttemptFailure({ error, model, role: request.role, mode, attempt, durationMs });
+        // Only an explicit schema-format rejection can switch modes. Auth,
+        // quota, model selection and exhausted transport retries must not
+        // silently receive another full retry budget.
+        const schemaRejected = useJsonSchema && error instanceof OpenRouterRequestError &&
+          [400, 404, 422].includes(error.status) && /json.?schema|response_format|structured output/i.test(error.message);
+        const retryAfter = error instanceof OpenRouterRequestError ? error.retryAfterMs : undefined;
+        if (attempt >= budget || (!schemaRejected && !isRetriableOpenRouterError(error)) || (retryAfter ?? 0) > 5000) break;
+        if (schemaRejected) {
+          useJsonSchema = false;
+          this.jsonObjectModels.add(model);
         }
-        await delay(this.config.apiRetryBaseDelayMs * attempt);
+        if (error instanceof TruncatedOutputError) maxTokens = Math.min(32768, maxTokens * 2);
+        await delay(Math.min(5000, Math.max(retryAfter ?? 0, this.config.apiRetryBaseDelayMs * attempt)));
       }
     }
-
     const message = lastError instanceof Error ? sanitizeProviderMessage(lastError.message) : "AI model request failed.";
     throw new LlmProviderFailure(message, {
-      id: snapshotId("openrouter", request),
-      provider: "openrouter",
-      model,
-      role: request.role,
-      configured: true,
-      latencyMs: Date.now() - started,
-      failure: message,
-      attempts: [...attempts]
+      id: snapshotId("openrouter", request), provider: "openrouter", model, role: request.role,
+      configured: true, latencyMs: Date.now() - started, failure: message, ...usage, attempts
     });
   }
 
@@ -202,7 +167,9 @@ export class OpenRouterLlmProvider implements LlmProvider {
     request: LlmRequest,
     model: string,
     started: number,
-    useJsonSchema: boolean
+    useJsonSchema: boolean,
+    maxTokens: number,
+    recordUsage: (usage: OpenRouterChatCompletion["usage"]) => void
   ): Promise<{ data: T; snapshot: ModelSnapshot }> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.config.llmTimeoutMs);
@@ -237,7 +204,7 @@ export class OpenRouterLlmProvider implements LlmProvider {
               ].join("\n\n")
             }
           ],
-          max_tokens: this.config.llmMaxTokens,
+          max_tokens: maxTokens,
           temperature: 0.3,
           response_format: useJsonSchema && request.jsonSchema
             ? {
@@ -259,13 +226,18 @@ export class OpenRouterLlmProvider implements LlmProvider {
         error?: { message?: string };
       };
 
+      recordUsage(payload.usage);
       if (!response.ok) {
         throw new OpenRouterRequestError(
           payload.error?.message ?? `OpenRouter request failed with ${response.status}.`,
-          response.status
+          response.status,
+          retryAfterMs(response.headers.get("retry-after"))
         );
       }
 
+      if (payload.choices?.[0]?.finish_reason === "length") {
+        throw new TruncatedOutputError("Model response exceeded the output token budget.");
+      }
       const content = payload.choices?.[0]?.message?.content;
       if (!content) {
         throw new Error(payload.choices?.[0]?.message?.refusal ?? "AI model returned an empty response.");
@@ -285,6 +257,13 @@ export class OpenRouterLlmProvider implements LlmProvider {
           estimatedCostUsd: payload.usage?.cost
         }
       };
+    } catch (error) {
+      if (controller.signal.aborted) {
+        const timeoutError = new Error("AI model request timed out.");
+        timeoutError.name = "AbortError";
+        throw timeoutError;
+      }
+      throw error;
     } finally {
       clearTimeout(timeout);
     }
@@ -322,10 +301,20 @@ export class OpenRouterLlmProvider implements LlmProvider {
   }
 }
 
+class TruncatedOutputError extends SyntaxError {}
+
+function retryAfterMs(value: string | null): number | undefined {
+  if (!value) return undefined;
+  const seconds = Number(value);
+  const ms = Number.isFinite(seconds) ? seconds * 1000 : Date.parse(value) - Date.now();
+  return Number.isFinite(ms) ? Math.max(0, ms) : undefined;
+}
+
 class OpenRouterRequestError extends Error {
   constructor(
     message: string,
-    readonly status: number
+    readonly status: number,
+    readonly retryAfterMs?: number
   ) {
     super(message);
   }

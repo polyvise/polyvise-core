@@ -12,7 +12,7 @@ import { z } from "zod";
 const lensIdSchema = z.enum(["economist", "ethicist", "operator", "skeptic"]);
 
 export const panelAdviceOutputSchema = z.object({
-  recommendation: z.string().min(1).max(400),
+  recommendation: z.string().min(1),
   reasoning: z.string().min(1),
   keyRisks: z.array(z.string().min(1)).default([]),
   conditions: z.array(z.string().min(1)).default([]),
@@ -21,8 +21,8 @@ export const panelAdviceOutputSchema = z.object({
 });
 
 export const panelChairOutputSchema = z.object({
-  headline: z.string().min(1).max(120),
-  throughLine: z.string().min(1).max(400),
+  headline: z.string().min(1),
+  throughLine: z.string().min(1),
   /**
    * Only points at least two lenses actually made. A one-lens "agreement" is a
    * single opinion, and reporting it as consensus is the failure mode this
@@ -51,7 +51,7 @@ export const panelChairOutputSchema = z.object({
       })
     )
     .default([]),
-  decisionGuidance: z.string().min(1).max(700),
+  decisionGuidance: z.string().min(1),
   confidence: z.number().min(0).max(100).optional(),
   highStakesDisclaimer: z.string().nullable().optional()
 });

@@ -31,7 +31,12 @@ con statement is generated. Append each `turns` event to the live transcript;
 the same turn IDs and content appear in the completed run. The default continues
 to emit one `turns` event per round.
 
-### Resume a failed stage
+### Resume a failed stage in any mode
+
+Debate, consensus, and advisory-panel execution options all accept a shared
+`RunCheckpoint` (exported from `@polyvise/core/runs/checkpoint`). The existing
+`DebateCheckpoint` type remains an alias for compatibility. Consensus saves
+each agent response; panels save each advisor independently.
 
 Pass an awaited `onCheckpoint` callback to store execution progress, then pass
 the saved `checkpoint` to a later call with the same debate ID, request, and
@@ -61,6 +66,25 @@ Resume replays completed events so a new subscriber can reconstruct progress.
 Consumers that retain their transcript should deduplicate `turns` events by
 turn ID. Core does not automatically start another attempt or impose an
 application's retry policy.
+
+## Provider retry budget
+
+`llmMaxAttempts` is one HTTP-call budget shared by transport retries, JSON-schema
+format fallback, and schema-validation repair. A permanent provider error does
+not start a fresh budget in another format. Only explicit schema-format rejection
+switches to JSON-object mode; local schema validation still applies. Repairs
+include the rejected output and validation errors. Custom providers must respect
+`LlmRequest.maxAttempts` and report their attempts to participate in this budget.
+
+Truncated responses increase the output-token limit up to 32,768; other failures
+keep the configured limit. Retries honor short `Retry-After` values and stop when
+the provider requests a wait longer than five seconds. Attempt numbers and known
+usage/cost are accumulated across parsing failures and output repairs. Unknown
+usage remains unknown. Timeout and attempt limits are application-configurable.
+
+Prose length belongs in product prompts. Summary and panel schemas validate
+structure, required content, enum values, and confidence ranges without rejecting
+usable analysis solely for a presentation-length limit.
 
 ## Library Boundary
 
